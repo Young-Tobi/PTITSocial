@@ -1,0 +1,13 @@
+node_modules/
+**/node_modules/
+.env
+.env.local
+**/.env
+**/.env.local
+.local-logs/
+.local-tools/
+.local-backups/
+services/content/uploads/
+apps/web/build/
+coverage/
+*.log
