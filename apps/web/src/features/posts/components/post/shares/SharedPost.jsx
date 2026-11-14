@@ -35,16 +35,6 @@ function SharedPost({ post }) {
     setIsViewerOpen(false);
   };
 
-  if (!post?.user) {
-    return (
-      <Card className={classes.post} style={{ width: '100%' }}>
-        <div className={classes.normal}>
-          Bài viết gốc không còn khả dụng. Bài viết có thể đã bị xóa.
-        </div>
-      </Card>
-    );
-  }
-
   return (
     <Card className={classes.post} innerRef={postRef} style={{ width: '100%' }}>
       <div className={classes.body}>
@@ -63,7 +53,7 @@ function SharedPost({ post }) {
           <div
             className={classes.normal}
             style={{
-              fontSize: `${post?.text?.length > 75 ? '15px' : ''}`,
+              fontSize: `${post?.text.length > 75 ? '15px' : ''}`,
               direction: `${isRTL(post?.text) ? 'rtl' : 'ltr'}`,
             }}
           >
@@ -157,7 +147,7 @@ function SharedPost({ post }) {
           <div
             className={classes.normal}
             style={{
-              fontSize: `${post?.text?.length > 40 ? '15px' : ''}`,
+              fontSize: `${post?.text.length > 40 ? '15px' : ''}`,
               direction: `${isRTL(post?.text) ? 'rtl' : 'ltr'}`,
             }}
           >

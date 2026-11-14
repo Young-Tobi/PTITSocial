@@ -29,6 +29,8 @@ exports.sendMessage = catchAsync(async (req, res, next) => {
     chat: chatId,
   });
 
+  await newMessage.save();
+
   const filteredChat = existingChat;
   filteredChat.users = filteredChat.users.filter((user) => {
     return user._id.toString() !== userId;
@@ -41,17 +43,14 @@ exports.sendMessage = catchAsync(async (req, res, next) => {
         recipient: recipient,
         sender: req.user,
         postId: existingChat._id,
-        postReact: (newMessage.content || '').slice(0, 10),
+        postReact: newMessage.content.slice(0, 10),
       }).sendMessage();
     })
   );
 
   res.status(200).json({
     status: 'success',
-    data: {
-      message: newMessage,
-      unseenMessages: (await User.findById(userId)).unseenMessages,
-    },
+    data: { message: newMessage },
   });
 });
 
@@ -109,34 +108,20 @@ exports.seenMessage = catchAsync(async (req, res, next) => {
   const { msgId } = req.params;
   const userId = req.user.id;
 
-  if (!/^[a-f0-9]{24}$/i.test(msgId)) return next(new AppError('Invalid message ID', 400));
-
   const existingMessage = await Message.findById(msgId);
 
-  if (!existingMessage) return next(new AppError('No message found', 404));
+  if (!existingMessage) return next(new AppError('No message found', 400));
 
-  const chat = await Chat.findById(existingMessage.chat);
-  if (!chat || !chat.users.some((user) => String(user._id) === userId))
-    return next(new AppError('You are not a member of this chat', 403));
+  existingMessage.seen = 'seen';
+  if (!existingMessage.seenBy.includes(userId)) existingMessage.seenBy.push(userId);
 
-  // Atomic additions preserve receipts from simultaneous readers in a group.
-  await Message.updateOne({ _id: msgId }, { $addToSet: { seenBy: userId } }, { timestamps: false });
-  const recipients = chat.users
-    .filter((user) => !user._id.equals(existingMessage.sender._id))
-    .map((user) => user._id);
-  await Message.updateOne(
-    { _id: msgId, seenBy: { $all: recipients } },
-    { $set: { seen: 'seen' } },
-    { timestamps: false }
-  );
-  const message = await Message.findById(msgId);
-  const [unseenMessages] = await Message.recalculateUnread([userId]);
+  await existingMessage.save();
 
   res.status(200).json({
     status: 'success',
     data: {
-      message,
-      unseenMessages,
+      message: existingMessage,
+      unseenMessages: req.user.unseenMessages - 1,
     },
   });
 });

@@ -2,7 +2,6 @@ const { Server } = require('socket.io');
 const { authenticate } = require('@ptitsocial/service-kit/auth');
 const Chat = require('../models/chatModel');
 const Message = require('../models/messageModel');
-const User = require('../models/userModel');
 let io;
 const online = new Map();
 
@@ -67,14 +66,9 @@ function init(server, options) {
       if (!stored || String(stored.sender._id) !== info.id) return;
       const chat = await member(String(stored.chat), info.id);
       if (!chat) return;
-      for (const user of chat.users) {
-        if (String(user._id) !== info.id) {
-          const recipient = await User.findById(user._id).select('unseenMessages');
-          io.to(`user:${user._id}`).emit('message_recieved', stored, {
-            unseenMessages: recipient?.unseenMessages || 0,
-          });
-        }
-      }
+      for (const user of chat.users)
+        if (String(user._id) !== info.id)
+          io.to(`user:${user._id}`).emit('message_recieved', stored);
     });
     on('seen', async ({ message, chat }) => {
       const stored = await member(chat?._id, info.id);

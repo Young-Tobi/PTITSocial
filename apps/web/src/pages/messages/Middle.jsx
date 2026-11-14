@@ -11,7 +11,6 @@ import typingAnimation from 'shared/components/ui/Lottie/typing.json';
 import { useInView } from 'react-intersection-observer';
 import { useSeenMessage } from 'features/messaging/hooks/useSeenMessage';
 import SeenStatus from './SeenStatus';
-import { isMessageUnread } from 'shared/lib/messageReadState';
 
 import { isFirstMsg, isLastMsg, isSameUser, isSingleMsg } from 'shared/lib/messagesPosition';
 import Right from './Right';
@@ -100,8 +99,9 @@ function Middle({ chatId, soketSlice, user, pView, setOpenInfo, openInfo }) {
   useEffect(() => {
     if (
       seenView &&
+      currentChat?.latestMessage?.seen === 'unseen' &&
       currentChat?._id === chatId &&
-      isMessageUnread(currentChat?.latestMessage, user._id)
+      currentChat?.latestMessage?.sender._id !== user._id
     ) {
       seenMessage({
         messageId: currentChat?.latestMessage?._id,

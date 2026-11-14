@@ -274,17 +274,6 @@ exports.addComment = catchAsync(async (req, res, next) => {
 
   const filteredBody = filterObj(req.body, 'photo', 'text');
 
-  if (filteredBody.text === undefined) filteredBody.text = '';
-  if (typeof filteredBody.text !== 'string')
-    return next(new AppError('Comment text must be a string', 400));
-  filteredBody.text = filteredBody.text.trim();
-  if (filteredBody.photo !== undefined && typeof filteredBody.photo !== 'string')
-    return next(new AppError('Comment photo must be a URL', 400));
-  if (!filteredBody.text && !filteredBody.photo?.trim())
-    return next(new AppError('Please provide comment text or a photo', 400));
-  if (filteredBody.text.length > 250)
-    return next(new AppError('Comment text must not exceed 250 characters', 400));
-
   const commendData = await Comment.create({
     user: user,
     post,
@@ -352,8 +341,7 @@ exports.addCommentReply = catchAsync(async (req, res, next) => {
   const comment = req.params.commentID;
   const user = req.user.id;
 
-  if (!comment || typeof text !== 'string' || !text.trim())
-    return next(new AppError('Please provide comment and text', 400));
+  if (!comment || !text) return next(new AppError('Please provide comment and text', 400));
 
   const checkComment = await Comment.findById(comment);
   if (!checkComment) return next(new AppError('No comment found', 404));

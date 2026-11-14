@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router-dom';
 import Card from 'shared/components/ui/Card/Card';
 import FormLoader from 'shared/components/FormLoader/index';
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
-import { nameValidation } from 'shared/lib/nameValidation';
 
 function SignupForm({ setRenderSignUp, renderSignUp }) {
   const dispatch = useDispatch();
@@ -49,8 +48,16 @@ function SignupForm({ setRenderSignUp, renderSignUp }) {
   } = userInfos;
 
   const signupValidation = Yup.object({
-    first_name: nameValidation,
-    last_name: nameValidation,
+    first_name: Yup.string()
+      .required("What's your first name?")
+      .max(100)
+      .min(2)
+      .matches(/^([a-zA-Z]+\s)*[a-zA-Z]+$/, 'You can use english charcters only'),
+    last_name: Yup.string()
+      .required("What's your last name?")
+      .max(100)
+      .min(2)
+      .matches(/^([a-zA-Z]+\s)*[a-zA-Z]+$/, 'You can use english charcters only'),
     email: Yup.string()
       .required("You'll need this when you log in and if you ever need to reset your password.")
       .email('Must be a valid email.')
@@ -78,8 +85,8 @@ function SignupForm({ setRenderSignUp, renderSignUp }) {
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/users/signup`,
         {
-          first_name: nameValidation.cast(values.first_name),
-          last_name: nameValidation.cast(values.last_name),
+          first_name: values.first_name,
+          last_name: values.last_name,
           email: values.email,
           password: values.password,
           passwordConfirm: values.passwordConfirm,

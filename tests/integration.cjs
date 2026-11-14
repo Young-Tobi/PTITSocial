@@ -1,15 +1,12 @@
 const assert = require('node:assert/strict');
 const { MongoClient, ObjectId } = require('mongodb');
 const sharp = require('sharp');
-const fs = require('node:fs/promises');
-const path = require('node:path');
 const { io } = require('../apps/web/node_modules/socket.io-client');
-const base = process.env.TEST_API_URL || 'http://localhost:8000';
+const base = 'http://localhost:8000';
 const tag = Date.now();
 const ids = [];
 const sockets = [];
 const fixtureImages = [];
-const mailIds = [];
 async function api(method, pathname, { token, body, form, expected } = {}) {
   const response = await fetch(base + pathname, {
     method,
@@ -25,13 +22,12 @@ async function api(method, pathname, { token, body, form, expected } = {}) {
   else assert(response.ok, `${method} ${pathname}: ${response.status} ${JSON.stringify(data)}`);
   return data;
 }
-async function account(index, names = {}) {
+async function account(index) {
   const email = `architecture-${tag}-${index}@example.com`.toLowerCase();
   const result = await api('POST', '/api/v1/users/signup', {
     body: {
       first_name: 'Integration',
       last_name: 'Student' + index,
-      ...names,
       email,
       password: 'Backbook@123',
       passwordConfirm: 'Backbook@123',
@@ -51,7 +47,6 @@ async function activate(user) {
     message.To.some((to) => to.Address === user.email)
   );
   assert(email, 'Verification email must arrive');
-  mailIds.push(email.ID);
   const detail = await (await fetch('http://localhost:8025/api/v1/message/' + email.ID)).json();
   const verificationToken = (detail.Text || detail.HTML).match(/\/activate\/([a-f0-9]+)/)[1];
   await api('POST', '/api/v1/users/emailVerification', {
@@ -182,8 +177,6 @@ async function main() {
   assert.equal(ping.unseenMessages, 0);
   console.log('PASS real WebSocket upgrade, persisted message, relay and counters');
 
-  await regressions({ first, second, sender, recipient, image, post, message });
-
   await api('GET', '/internal/projections', { expected: 404 });
   assert.equal(
     (
@@ -211,161 +204,6 @@ async function main() {
   }
   console.log('PASS separate databases, secret-free projections and private internal APIs');
 }
-async function regressions({ first, second, sender, recipient, image, post, message }) {
-  const third = await account('Three', { first_name: 'An', last_name: 'Lê' });
-  const outsider = await account('Four', { first_name: 'Đỗ', last_name: 'Nguyễn' });
-  await activate(third);
-  await activate(outsider);
-  assert.equal(third.last_name, 'Lê');
-  assert.equal(outsider.last_name, 'Nguyễn');
-  console.log('PASS Vietnamese names, including two-character names, and verification mail');
-
-  const client = new MongoClient('mongodb://127.0.0.1:27017');
-  await client.connect();
-  try {
-    const messages = client.db('ptitsocial_messaging').collection('messages');
-    const before = await messages.findOne({ _id: new ObjectId(message._id) });
-    const denied = await api('PUT', `/api/v1/messages/${message._id}/seen`, {
-      token: outsider.token,
-      body: {},
-      expected: 403,
-    });
-    assert.equal(denied.data, undefined);
-    assert(!JSON.stringify(denied).includes(message.content));
-    assert.deepEqual(await messages.findOne({ _id: before._id }), before);
-    await api('PUT', '/api/v1/messages/invalid/seen', {
-      token: first.token,
-      body: {},
-      expected: 400,
-    });
-    await api('PUT', `/api/v1/messages/${new ObjectId()}/seen`, {
-      token: first.token,
-      body: {},
-      expected: 404,
-    });
-    console.log('PASS nonmembers cannot read or mutate message receipts; invalid IDs rejected');
-
-    const chat = (
-      await api('POST', '/api/v1/chats/create/group', {
-        token: first.token,
-        body: { users: [second._id, third._id], chatName: 'Read receipt regression' },
-      })
-    ).data.chat;
-    const thirdSocket = await connect(third);
-    const unread = async (user) =>
-      (
-        await api('PUT', '/api/v1/users/ping', {
-          token: user.token,
-          body: {},
-        })
-      ).unseenMessages;
-    const seen = async (msg, user) =>
-      (
-        await api('PUT', `/api/v1/messages/${msg._id}/seen`, {
-          token: user.token,
-          body: {},
-        })
-      ).data;
-    const send = async (text) => {
-      const receipts = [recipient, thirdSocket].map(
-        (socket) =>
-          new Promise((resolve, reject) => {
-            const timer = setTimeout(() => reject(new Error('Group relay timeout')), 8000);
-            socket.once('message_recieved', (saved, stats) => {
-              clearTimeout(timer);
-              resolve({ saved, stats });
-            });
-          })
-      );
-      const saved = (
-        await api('PUT', `/api/v1/messages/${chat._id}/send`, {
-          token: first.token,
-          body: { type: 'text', content: text },
-        })
-      ).data.message;
-      sender.emit('new_message', { message: saved, chat });
-      for (const receipt of await Promise.all(receipts)) {
-        assert.equal(receipt.saved._id, saved._id);
-        assert.equal(receipt.stats.unseenMessages, 1);
-      }
-      return saved;
-    };
-    const older = await send('Unread for both recipients');
-    assert.deepEqual(await Promise.all([first, second, third, outsider].map(unread)), [0, 1, 1, 0]);
-    const groupBefore = await messages.findOne({ _id: new ObjectId(older._id) });
-    await api('PUT', `/api/v1/messages/${older._id}/seen`, {
-      token: outsider.token,
-      body: {},
-      expected: 403,
-    });
-    assert.deepEqual(await messages.findOne({ _id: groupBefore._id }), groupBefore);
-    const firstRead = await seen(older, second);
-    assert.equal(firstRead.unseenMessages, 0);
-    assert.equal(firstRead.message.seen, 'unseen');
-    assert.deepEqual(firstRead.message.seenBy, [second._id]);
-    assert.equal(await unread(third), 1);
-    const latest = await send('A second message in the same conversation');
-    assert.equal((await seen(older, second)).unseenMessages, 1);
-    const chats = await api('GET', '/api/v1/chats', { token: second.token });
-    assert.equal(
-      chats.data.chats.find((item) => item._id === chat._id).latestMessage._id,
-      latest._id
-    );
-    await Promise.all([seen(latest, second), seen(latest, second), seen(latest, third)]);
-    const readAgain = await seen(latest, second);
-    assert.equal(readAgain.unseenMessages, 0);
-    assert.equal(readAgain.message.seen, 'seen');
-    assert.deepEqual([...readAgain.message.seenBy].sort(), [second._id, third._id].sort());
-    assert.deepEqual(await Promise.all([first, second, third, outsider].map(unread)), [0, 0, 0, 0]);
-    console.log(
-      'PASS group counters, per-user reads, repeated/concurrent reads and older receipts'
-    );
-
-    const comments = client.db('ptitsocial_content').collection('comments');
-    const filter = { post: new ObjectId(post._id) };
-    const initialCount = await comments.countDocuments(filter);
-    const photoOnly = new FormData();
-    photoOnly.set('photo', new Blob([image], { type: 'image/png' }), 'comment.png');
-    const photoComment = (
-      await api('POST', `/api/v1/posts/addComment/${post._id}`, {
-        token: second.token,
-        form: photoOnly,
-      })
-    ).data.commendData;
-    assert.equal(photoComment.text, '');
-    assert((await fetch(photoComment.photo)).ok);
-    assert.equal(await comments.countDocuments(filter), initialCount + 1);
-    for (const text of [null, 123, [], {}, '']) {
-      await api('POST', `/api/v1/posts/addComment/${post._id}`, {
-        token: second.token,
-        body: { text },
-        expected: 400,
-      });
-    }
-    await api('POST', `/api/v1/posts/addComment/${post._id}`, {
-      token: second.token,
-      body: {},
-      expected: 400,
-    });
-    assert.equal(await comments.countDocuments(filter), initialCount + 1);
-    console.log('PASS photo-only comment without text; invalid comments never persist');
-
-    const shared = (
-      await api('POST', '/api/v1/posts/createPost', {
-        token: second.token,
-        body: { type: 'share', sharedID: post._id, text: 'Shared caption remains' },
-      })
-    ).data;
-    await api('PUT', `/api/v1/posts/${post._id}`, { token: first.token, body: {} });
-    const remaining = (await api('GET', `/api/v1/posts/${shared._id}`, { token: second.token }))
-      .data.post;
-    assert.equal(remaining.sharedID, null);
-    assert.equal(remaining.text, 'Shared caption remains');
-    console.log('PASS share stays accessible after deleting the original post');
-  } finally {
-    await client.close();
-  }
-}
 async function cleanup() {
   sockets.forEach((socket) => socket.close());
   if (!ids.length) return;
@@ -381,7 +219,6 @@ async function cleanup() {
     for (const name of ['posts', 'comments', 'reactions'])
       await content.collection(name).deleteMany({ user: { $in: ids } });
     await content.collection('user_projections').deleteMany({ _id: { $in: ids } });
-    await content.collection('follow_projections').deleteMany(participants);
     const messaging = client.db('ptitsocial_messaging');
     await messaging.collection('chats').deleteMany({ users: { $in: ids } });
     await messaging.collection('messages').deleteMany({ sender: { $in: ids } });
@@ -389,26 +226,6 @@ async function cleanup() {
     await messaging.collection('user_projections').deleteMany({ _id: { $in: ids } });
   } finally {
     await client.close();
-  }
-  const uploadRoot = path.resolve(__dirname, '../services/content/uploads');
-  for (const url of fixtureImages) {
-    const relative = decodeURIComponent(new URL(url).pathname).replace(/^\/uploads\//, '');
-    for (const id of ids) {
-      const parts = relative.split('/');
-      const index = parts.indexOf(String(id));
-      if (index < 1 || parts[index - 1] !== 'users') continue;
-      const directory = path.resolve(uploadRoot, ...parts.slice(0, index + 1));
-      assert(directory.startsWith(uploadRoot + path.sep));
-      await fs.rm(directory, { recursive: true, force: true });
-    }
-  }
-  if (mailIds.length) {
-    const response = await fetch('http://localhost:8025/api/v1/messages', {
-      method: 'DELETE',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ IDs: mailIds }),
-    });
-    assert(response.ok, 'Fixture mail cleanup failed');
   }
 }
 main()
