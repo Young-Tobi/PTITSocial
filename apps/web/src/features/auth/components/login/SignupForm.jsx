@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import Card from 'shared/components/ui/Card/Card';
 import FormLoader from 'shared/components/FormLoader/index';
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
+import { nameValidation } from 'shared/lib/nameValidation';
 
 function SignupForm({ setRenderSignUp, renderSignUp }) {
   const dispatch = useDispatch();
@@ -48,16 +49,8 @@ function SignupForm({ setRenderSignUp, renderSignUp }) {
   } = userInfos;
 
   const signupValidation = Yup.object({
-    first_name: Yup.string()
-      .required('Vui lòng nhập tên của bạn')
-      .max(100)
-      .min(2)
-      .matches(/^[\p{L}\p{M}]+(?:[\s'-][\p{L}\p{M}]+)*$/u, 'Tên không được chứa ký tự đặc biệt'),
-    last_name: Yup.string()
-      .required('Vui lòng nhập họ và tên đệm')
-      .max(100)
-      .min(2)
-      .matches(/^[\p{L}\p{M}]+(?:[\s'-][\p{L}\p{M}]+)*$/u, 'Tên không được chứa ký tự đặc biệt'),
+    first_name: nameValidation,
+    last_name: nameValidation,
     email: Yup.string()
       .required('Email được dùng để đăng nhập và khôi phục mật khẩu.')
       .email('Địa chỉ email không hợp lệ.')
@@ -85,8 +78,8 @@ function SignupForm({ setRenderSignUp, renderSignUp }) {
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/users/signup`,
         {
-          first_name: values.first_name,
-          last_name: values.last_name,
+          first_name: nameValidation.cast(values.first_name),
+          last_name: nameValidation.cast(values.last_name),
           email: values.email,
           password: values.password,
           passwordConfirm: values.passwordConfirm,

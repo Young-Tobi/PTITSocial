@@ -13,6 +13,7 @@ import { FiFileText, FiDownload } from 'react-icons/fi';
 import MessageMenu from 'features/messaging/components/MessageMenu';
 import MessageContext from 'features/messaging/components/MessageContext';
 import ForwardMessageModal from 'features/messaging/components/ForwardMessageModal';
+import { isMessageUnread } from 'shared/lib/messageReadState';
 
 import { isFirstMsg, isLastMsg, isSameUser, isSingleMsg } from 'shared/lib/messagesPosition';
 import Right from './Right';
@@ -123,9 +124,8 @@ function Middle({ chatId, soketSlice, user, pView, setOpenInfo, openInfo }) {
   useEffect(() => {
     if (
       seenView &&
-      currentChat?.latestMessage?.seen === 'unseen' &&
       currentChat?._id === chatId &&
-      currentChat?.latestMessage?.sender._id !== user._id
+      isMessageUnread(currentChat?.latestMessage, user._id)
     ) {
       seenMessage({
         messageId: currentChat?.latestMessage?._id,

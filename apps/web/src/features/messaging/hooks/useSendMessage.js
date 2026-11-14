@@ -1,10 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { updateNStats } from 'app/slices/userSlice';
 import { socket } from 'routes/IsLoggedIn';
 import { updateMessages } from 'shared/lib/rqUpdate';
 
 export const useSendMessage = (chat) => {
+  const dispatch = useDispatch();
   return useMutation({
     mutationKey: 'useSendMessage',
     mutationFn: async ({ content, chatId, type, replyMessageId, forwardMessageId, imageFile }) => {
@@ -31,8 +34,8 @@ export const useSendMessage = (chat) => {
     },
     onSuccess: (data) => {
       const newMessage = data?.data?.message;
-
       updateMessages(newMessage);
+      dispatch(updateNStats({ unseenMessages: data?.data?.unseenMessages }));
       socket?.emit('new_message', { message: newMessage, chat });
     },
   });

@@ -10,6 +10,7 @@ import Moment from 'react-moment';
 import Card from 'shared/components/ui/Card/Card';
 import ScrollContainer from 'react-indiana-drag-scroll';
 import SeenStatus from './SeenStatus';
+import { isMessageUnread } from 'shared/lib/messageReadState';
 import { Dots, Search } from 'shared/icons/index';
 import SearchUser from 'features/messaging/components/SearchUser';
 import CreateGroup from 'features/messaging/components/createGroup/CreateGroup';
@@ -193,12 +194,7 @@ function Left({ soketSlice, user, chatId }) {
                   {chat?.latestMessage && (
                     <p
                       style={{
-                        color: `${
-                          chat?.latestMessage.seen === 'unseen' &&
-                          user._id !== chat?.latestMessage.sender._id
-                            ? '#0096ff'
-                            : ''
-                        }`,
+                        color: `${isMessageUnread(chat.latestMessage, user._id) ? '#0096ff' : ''}`,
                       }}
                     >
                       {renderMessage(

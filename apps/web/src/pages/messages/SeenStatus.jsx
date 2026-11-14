@@ -1,6 +1,7 @@
 import React from 'react';
 import { UnSeen } from 'shared/icons/index';
 import styles from './messages.module.css';
+import { isMessageUnread } from 'shared/lib/messageReadState';
 
 function SeenStatus({ chat, user }) {
   return (
@@ -13,7 +14,7 @@ function SeenStatus({ chat, user }) {
             <UnSeen />
           </span>
         )
-      ) : chat?.latestMessage?.seen === 'unseen' ? (
+      ) : isMessageUnread(chat?.latestMessage, user._id) ? (
         <span className={styles.seen_status} />
       ) : (
         ''

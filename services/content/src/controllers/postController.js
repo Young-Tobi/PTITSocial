@@ -325,6 +325,17 @@ exports.addComment = catchAsync(async (req, res, next) => {
 
   const filteredBody = filterObj(req.body, 'photo', 'text');
 
+  if (filteredBody.text === undefined) filteredBody.text = '';
+  if (typeof filteredBody.text !== 'string')
+    return next(new AppError('Nội dung bình luận phải là văn bản', 400));
+  filteredBody.text = filteredBody.text.trim();
+  if (filteredBody.photo !== undefined && typeof filteredBody.photo !== 'string')
+    return next(new AppError('Ảnh bình luận không hợp lệ', 400));
+  if (!filteredBody.text && !filteredBody.photo?.trim())
+    return next(new AppError('Vui lòng nhập bình luận hoặc chọn ảnh', 400));
+  if (filteredBody.text.length > 250)
+    return next(new AppError('Bình luận không được quá 250 ký tự', 400));
+
   const commendData = await Comment.create({
     user: user,
     post,
@@ -392,7 +403,8 @@ exports.addCommentReply = catchAsync(async (req, res, next) => {
   const comment = req.params.commentID;
   const user = req.user.id;
 
-  if (!comment || !text) return next(new AppError('Vui lòng nhập nội dung bình luận', 400));
+  if (!comment || typeof text !== 'string' || !text.trim())
+    return next(new AppError('Vui lòng nhập nội dung bình luận', 400));
 
   const checkComment = await Comment.findById(comment);
   if (!checkComment) return next(new AppError('Không tìm thấy bình luận', 404));

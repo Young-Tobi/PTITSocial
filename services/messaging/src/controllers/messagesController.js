@@ -255,7 +255,10 @@ exports.sendMessage = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: { message: newMessage },
+    data: {
+      message: newMessage,
+      unseenMessages: (await User.findById(userId)).unseenMessages,
+    },
   });
 });
 
@@ -314,23 +317,34 @@ exports.seenMessage = catchAsync(async (req, res, next) => {
   const { msgId } = req.params;
   const userId = req.user.id;
 
+  if (!/^[a-f0-9]{24}$/i.test(msgId)) return next(new AppError('Mã tin nhắn không hợp lệ', 400));
+
   const existingMessage = await Message.findById(msgId);
 
-  if (!existingMessage) return next(new AppError('Không tìm thấy tin nhắn', 400));
+  if (!existingMessage) return next(new AppError('Không tìm thấy tin nhắn', 404));
+
   const chat = await Chat.findById(existingMessage.chat);
-  if (!chat || !chat.users.some((id) => id.equals(new ObjectId(userId))))
+  if (!chat || !chat.users.some((user) => String(user._id) === userId))
     return next(new AppError('Bạn không thuộc cuộc trò chuyện này', 403));
 
-  existingMessage.seen = 'seen';
-  if (!existingMessage.seenBy.includes(userId)) existingMessage.seenBy.push(userId);
-
-  await existingMessage.save();
+  // Atomic additions preserve receipts from simultaneous readers in a group.
+  await Message.updateOne({ _id: msgId }, { $addToSet: { seenBy: userId } }, { timestamps: false });
+  const recipients = chat.users
+    .filter((user) => !user._id.equals(existingMessage.sender._id))
+    .map((user) => user._id);
+  await Message.updateOne(
+    { _id: msgId, seenBy: { $all: recipients } },
+    { $set: { seen: 'seen' } },
+    { timestamps: false }
+  );
+  const message = await Message.findById(msgId);
+  const [unseenMessages] = await Message.recalculateUnread([userId]);
 
   res.status(200).json({
     status: 'success',
     data: {
-      message: existingMessage,
-      unseenMessages: req.user.unseenMessages - 1,
+      message,
+      unseenMessages,
     },
   });
 });

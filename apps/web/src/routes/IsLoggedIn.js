@@ -14,7 +14,7 @@ import notification_sweet from 'assets/notification_sweet.wav';
 import { setOnlineUsers } from 'app/slices/socketSlice';
 import { toast } from 'react-hot-toast';
 import Notification from 'shared/components/ui/Notification/Notification';
-import { reciveNoti } from 'app/slices/userSlice';
+import { reciveNoti, updateNStats } from 'app/slices/userSlice';
 import {
   updateChatName,
   updateChatTheme,
@@ -26,12 +26,16 @@ export let socket;
 
 function playNotificationSound() {
   const audio = new Audio(chat_notification);
-  audio.play();
+  audio.play().catch(() => {
+    // Notifications still work when the browser blocks autoplay.
+  });
 }
 
 function playNotificationSound2() {
   const audio = new Audio(notification_sweet);
-  audio.play();
+  audio.play().catch(() => {
+    // Notifications still work when the browser blocks autoplay.
+  });
 }
 
 export default function IsLoggedIn({ user }) {
@@ -84,13 +88,9 @@ export default function IsLoggedIn({ user }) {
         });
       });
 
-      socket.on('message_recieved', (newMessage) => {
+      socket.on('message_recieved', (newMessage, stats) => {
         playNotificationSound();
-        dispatch(
-          reciveNoti({
-            type: 'message',
-          })
-        );
+        if (stats) dispatch(updateNStats(stats));
         if (msgNoti(newMessage)) {
           toast.custom((t) => (
             <Notification

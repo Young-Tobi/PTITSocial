@@ -26,3 +26,19 @@ thư viện cài đặt và nhật ký không nằm trong mốc mã nguồn.
 
 Các chức năng mới tiếp tục phát triển từ mốc này. Không tự động hoàn tác dữ liệu
 người dùng khi cần đối chiếu hoặc khôi phục mã nguồn.
+
+## Khôi phục bản sửa của nhh ngày 14/11/2026
+
+Áp dụng lại commit `2e31177` sau khi đã pull lịch sử có commit hoàn tác `5c91132`.
+Giải quyết xung đột để giữ các chức năng trong mốc ở trên và giao diện tiếng Việt.
+
+- Kiểm tra thành viên trước khi xem hoặc đánh dấu tin nhắn đã đọc.
+- Theo dõi trạng thái đọc và bộ đếm riêng cho từng thành viên nhóm; đọc lại
+  hoặc đọc tin cũ không thay thế tin mới nhất và không trừ sai bộ đếm.
+- Thống nhất tên tiếng Việt từ 2 đến 25 ký tự giữa đăng ký và backend.
+- Hiển thị thông báo khi bài gốc của bài chia sẻ không còn khả dụng.
+- Cho phép bình luận chỉ có ảnh, chặn bình luận trống hoặc sai dữ liệu trước khi lưu.
+- Bắt lỗi khi trình duyệt chặn tự phát âm thanh thông báo.
+
+Kiểm tra sau khi hợp nhất: 30 kiểm thử frontend, kiểm tra kiến trúc, kiểm tra tích hợp
+toàn bộ chức năng hiện tại và các lỗi trên; bản build frontend thành công.

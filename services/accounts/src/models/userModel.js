@@ -13,9 +13,9 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Vui lòng nhập tên'],
       validate: {
         validator: function (val) {
-          return validator.isLength(val, { min: 3, max: 25 });
+          return validator.isLength(val, { min: 2, max: 25 });
         },
-        message: 'Tên phải có từ 3 đến 25 ký tự',
+        message: 'Tên phải có từ 2 đến 25 ký tự',
       },
       trim: true,
       text: true,
@@ -26,9 +26,9 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Vui lòng nhập họ và tên đệm'],
       validate: {
         validator: function (val) {
-          return validator.isLength(val, { min: 3, max: 25 });
+          return validator.isLength(val, { min: 2, max: 25 });
         },
-        message: 'Họ và tên đệm phải có từ 3 đến 25 ký tự',
+        message: 'Họ và tên đệm phải có từ 2 đến 25 ký tự',
       },
       trim: true,
       text: true,
