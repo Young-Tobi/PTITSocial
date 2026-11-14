@@ -19,7 +19,7 @@ function CodeVerification({ setVisible, setUserInfos, userInfos }) {
   };
 
   const forgotValidation = Yup.object({
-    code: Yup.string().required('Security code is required.').max(6).min(6),
+    code: Yup.string().required('Vui lòng nhập mã xác nhận.').max(6).min(6),
   });
 
   const submitHandler = async (values) => {
@@ -49,10 +49,10 @@ function CodeVerification({ setVisible, setUserInfos, userInfos }) {
 
   return (
     <Card className={styles.wrap}>
-      <div className={styles.header}>Enter security code</div>
+      <div className={styles.header}>Nhập mã xác nhận</div>
       {error ? (
         <div className={styles.error}>
-          <div className={styles.error_header}>Something went wrong!</div>
+          <div className={styles.error_header}>Đã có lỗi xảy ra!</div>
           <span>{error}</span>
         </div>
       ) : (
@@ -61,7 +61,7 @@ function CodeVerification({ setVisible, setUserInfos, userInfos }) {
 
       <div className={styles.content}>
         <span className={styles.text}>
-          Please check your emails for a message with your code. Your code is 8 numbers long.
+          Vui lòng kiểm tra email để nhận mã xác nhận gồm 8 chữ số.
         </span>
         <Formik
           enableReinitialize
@@ -78,22 +78,22 @@ function CodeVerification({ setVisible, setUserInfos, userInfos }) {
                   className={styles.input}
                   type="number"
                   name="code"
-                  placeholder="Enter Code"
+                  placeholder="Nhập mã xác nhận"
                   onChange={handleCodeChange}
                   disabled={loading}
                 />
                 <div className={styles.label_col}>
-                  <span>We sent your code to:</span>
+                  <span>Mã xác nhận đã được gửi đến:</span>
                   <span>{userInfos.email}</span>
                 </div>
               </FormLoader>
 
               <div className={styles.btns}>
                 <Link className="gray_btn" to="/login">
-                  Cancel
+                  Hủy
                 </Link>
                 <button type="submit" className="btn_blue">
-                  Continue
+                  Tiếp tục
                 </button>
               </div>
             </Form>

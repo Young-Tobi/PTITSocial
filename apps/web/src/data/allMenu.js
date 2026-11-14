@@ -1,202 +1,200 @@
 export const menu = [
   {
-    name: 'Campus',
+    name: 'Khuôn viên',
     icon: 'campus',
-    description: 'A unique, exclusive space for college students on Facebook.',
+    description: 'Không gian dành riêng cho cộng đồng sinh viên.',
   },
   {
-    name: 'Events',
+    name: 'Sự kiện',
     icon: 'events',
-    description: 'Organize or find events and other things to do online and nearby.',
+    description: 'Tổ chức hoặc tìm sự kiện trực tuyến và gần bạn.',
   },
   {
-    name: 'Find Friends',
+    name: 'Tìm bạn bè',
     icon: 'friends',
-    description: 'Search for friends or people you may know.',
+    description: 'Tìm bạn bè hoặc những người bạn có thể biết.',
   },
   {
-    name: 'Groups',
+    name: 'Nhóm',
     icon: 'groups',
-    description: 'Connect with people who share your interests.',
+    description: 'Kết nối với những người có chung sở thích.',
   },
   {
-    name: 'News Feed',
+    name: 'Bảng tin',
     icon: 'feed',
-    description: 'See relevant posts from people and Pages you follow.',
+    description: 'Xem bài viết từ những người và trang bạn theo dõi.',
   },
   {
-    name: 'Pages',
+    name: 'Trang',
     icon: 'pages',
-    description: 'Discover and connect with businesses on Facebook.',
+    description: 'Khám phá và kết nối với các doanh nghiệp.',
   },
   {
-    name: 'Gaming Video',
+    name: 'Video trò chơi',
     icon: 'gaming',
-    description: 'Watch and connect with your favorite games and streamers.',
+    description: 'Theo dõi trò chơi và người phát trực tiếp yêu thích.',
   },
   {
-    name: 'Play Games',
+    name: 'Chơi trò chơi',
     icon: 'play',
-    description: 'Play your favorite games.',
+    description: 'Chơi các trò chơi yêu thích.',
   },
   {
-    name: 'Watch',
+    name: 'Video',
     icon: 'watch',
-    description: 'A video destination personalized to your interests and connections.',
+    description: 'Khám phá video theo sở thích của bạn.',
   },
   {
-    name: 'Facebook Pay',
+    name: 'Thanh toán',
     icon: 'pay',
-    description: 'A seamless, secure way to pay on the apps you already use.',
+    description: 'Thanh toán thuận tiện và an toàn.',
   },
   {
-    name: 'Marketplace',
+    name: 'Chợ mua bán',
     icon: 'marketplace',
-    description: 'Buy and sell in your community.',
+    description: 'Mua bán trong cộng đồng của bạn.',
   },
   {
-    name: 'Recent Ad Activity',
+    name: 'Hoạt động quảng cáo gần đây',
     icon: 'recent',
-    description: 'See all the ads you interacted with on Facebook.',
+    description: 'Xem các quảng cáo bạn đã tương tác.',
   },
   {
-    name: 'Memories',
+    name: 'Kỷ niệm',
     icon: 'memories',
-    description: 'Browse your old photos, videos and posts on Facebook.',
+    description: 'Xem lại ảnh, video và bài viết cũ.',
   },
   {
-    name: 'Saved',
+    name: 'Đã lưu',
     icon: 'saved',
-    description: 'Find posts, photos and videos that you saved for later.',
+    description: 'Tìm lại bài viết, ảnh và video đã lưu.',
   },
   {
-    name: 'Weather',
+    name: 'Thời tiết',
     icon: 'weather',
-    description: 'Check your local forecast and sign up for daily weather notifications.',
+    description: 'Xem dự báo thời tiết tại nơi bạn sống.',
   },
   {
-    name: 'Ads',
+    name: 'Quảng cáo',
     icon: 'ads',
-    description: 'Create, manage and track the performance of your ads.',
+    description: 'Tạo, quản lý và theo dõi hiệu quả quảng cáo.',
   },
   {
-    name: 'Jobs',
+    name: 'Việc làm',
     icon: 'jobs',
-    description: "Find a job that's right for you.",
+    description: 'Tìm công việc phù hợp với bạn.',
   },
   {
-    name: 'Climate science center',
+    name: 'Trung tâm khoa học khí hậu',
     icon: 'climate',
-    description: 'Learn about climate change and its effects.',
+    description: 'Tìm hiểu về biến đổi khí hậu và tác động.',
   },
   {
-    name: 'COVID-19 Information Center',
+    name: 'Thông tin COVID-19',
     icon: 'covid',
-    description:
-      'See the latest prevention tips, community resources and updates from health organizations.',
+    description: 'Xem hướng dẫn phòng bệnh và cập nhật y tế mới nhất.',
   },
   {
-    name: 'Community Help',
+    name: 'Hỗ trợ cộng đồng',
     icon: 'community',
-    description:
-      'Get involved in your community by creating a drive, requesting or offering help or volunteering.',
+    description: 'Tham gia các hoạt động hỗ trợ và tình nguyện trong cộng đồng.',
   },
   {
-    name: 'Fundraisers',
+    name: 'Gây quỹ',
     icon: 'fundraisers',
-    description: 'Donate and raise money for nonprofits and personal causes.',
+    description: 'Quyên góp và gây quỹ cho cộng đồng.',
   },
   {
-    name: 'Messenger',
+    name: 'Tin nhắn',
     icon: 'messenger',
-    description: 'Chat instantly with your friends and connections.',
+    description: 'Trò chuyện với bạn bè và người quen.',
   },
   {
-    name: 'Messenger Kids',
+    name: 'Tin nhắn trẻ em',
     icon: 'messkids',
-    description: 'Let kids message with close friends and family.',
+    description: 'Giúp trẻ trò chuyện với bạn bè và gia đình.',
   },
 ];
 
 export const create = [
   {
-    name: 'Post',
+    name: 'Bài viết',
     icon: 'm_post_icon',
   },
   {
-    name: 'Story',
+    name: 'Tin',
     icon: 'm_story_icon',
   },
   {
-    name: 'Room',
+    name: 'Phòng họp',
     icon: 'm_room_icon',
   },
   {
-    name: 'Page',
+    name: 'Trang',
     icon: 'm_page_icon',
   },
 
   {
-    name: 'Ad',
+    name: 'Quảng cáo',
     icon: 'm_ad_icon',
   },
   {
-    name: 'Group',
+    name: 'Nhóm',
     icon: 'm_group_icon',
   },
   {
-    name: 'Event',
+    name: 'Sự kiện',
     icon: 'm_event_icon',
   },
   {
-    name: 'Marketplace Listing',
+    name: 'Tin đăng mua bán',
     icon: 'm_post_mar',
   },
   {
-    name: 'Job',
+    name: 'Việc làm',
     icon: 'm_post_job',
   },
 ];
 
 export const user_menu1 = [
   {
-    name: 'Settings',
+    name: 'Cài đặt',
     icon: 'settings_filled_icon',
   },
   {
-    name: 'Privacy Chekup',
+    name: 'Kiểm tra quyền riêng tư',
     icon: 'privacy_checkup_icon',
   },
   {
-    name: 'Privacy Shortcuts',
+    name: 'Lối tắt quyền riêng tư',
     icon: 'privacy_shortcuts_icon',
   },
   {
-    name: 'Activity log',
+    name: 'Nhật ký hoạt động',
     icon: 'activity_log_icon',
   },
 
   {
-    name: 'News Feed Prefrences',
+    name: 'Tùy chọn bảng tin',
     icon: 'news_icon',
   },
   {
-    name: 'Language',
+    name: 'Ngôn ngữ',
     icon: 'language_icon',
   },
 ];
 
 export const user_menu2 = [
   {
-    name: 'Help Center',
+    name: 'Trung tâm trợ giúp',
     icon: 'help_center_icon',
   },
   {
-    name: 'Support Inbox',
+    name: 'Hộp thư hỗ trợ',
     icon: 'email_icon',
   },
   {
-    name: 'Report a Problem',
+    name: 'Báo cáo sự cố',
     icon: 'info_filled_icon',
   },
 ];

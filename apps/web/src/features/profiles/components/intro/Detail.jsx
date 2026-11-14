@@ -1,3 +1,4 @@
+import { relationshipLabel } from 'app/locale';
 import { useState, useRef } from 'react';
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
 import EditArea from './EditArea';
@@ -29,13 +30,13 @@ function Detail({
         {value ? (
           <div className={classes.info_profile}>
             <img src={`../../../icons/${img}.png`} alt="" />
-            {value}
+            {name === 'relationship' ? relationshipLabel(value) : value}
             <i className="edit_icon" style={{ marginLeft: 'auto' }}></i>
           </div>
         ) : (
           <>
             <i className="rounded_plus_icon"></i>
-            <span className={classes.underline}>Add {text}</span>
+            <span className={classes.underline}>Thêm {text}</span>
           </>
         )}
       </div>

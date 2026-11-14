@@ -1,3 +1,4 @@
+import { notificationIcon, localizeSystemText } from 'app/locale';
 import React from 'react';
 import Moment from 'react-moment';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +9,7 @@ function Notification({ toast, t, notification }) {
   return (
     <div className={`${styles.main}`}>
       <div className={styles.header}>
-        <span>New notification</span>
+        <span>Thông báo mới</span>
         <div
           onClick={() => toast.dismiss(t.id)}
           className="small_circle"
@@ -37,14 +38,12 @@ function Notification({ toast, t, notification }) {
           <img src={notification?.sender?.photo} alt="" />
           <img
             className={styles.type}
-            src={`../../../reacts/${
-              notification.type === 'react' ? notification.content.split(' ')[2] : notification.type
-            }.svg`}
+            src={`../../../reacts/${notificationIcon(notification)}.svg`}
             alt=""
           />
         </div>
         <div className={styles.content_2}>
-          <span>{notification.content}</span>
+          <span>{localizeSystemText(notification.content)}</span>
           <span className={styles.time}>
             <Moment fromNow interval={30}>
               {notification.createdAt}

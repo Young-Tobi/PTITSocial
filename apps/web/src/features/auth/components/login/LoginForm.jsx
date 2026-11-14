@@ -27,10 +27,10 @@ function LoginForm({ setRenderSignUp }) {
 
   const loginValidation = Yup.object({
     email: Yup.string()
-      .required('Email address is required.')
-      .email('Must be a valid email.')
+      .required('Vui lòng nhập địa chỉ email.')
+      .email('Địa chỉ email không hợp lệ.')
       .max(100),
-    password: Yup.string().required('Password is required').min(6),
+    password: Yup.string().required('Vui lòng nhập mật khẩu').min(6),
   });
 
   const submitHandler = async (values) => {

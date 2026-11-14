@@ -1,27 +1,25 @@
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { useSelector } from 'react-redux';
 import { socket } from 'routes/IsLoggedIn';
 import { updateMessages } from 'shared/lib/rqUpdate';
 
 export const useSendMessage = (chat) => {
-  const user = useSelector((state) => ({ ...state.user.userinfo }));
-
   return useMutation({
     mutationKey: 'useSendMessage',
-    mutationFn: async ({ content, chatId, type }) => {
-      updateMessages({
-        _id: Math.floor(Math.random() * 100000000000 + 1),
-        content,
-        chat: chatId,
-        type,
-        sender: user,
-      });
-
+    mutationFn: async ({ content, chatId, type, replyMessageId, forwardMessageId, imageFile }) => {
+      let body = { content, type, replyMessageId, forwardMessageId };
+      if (imageFile) {
+        body = new FormData();
+        const isImage = imageFile.type.startsWith('image/');
+        body.append('type', isImage ? 'image' : 'file');
+        body.append(isImage ? 'image' : 'file', imageFile);
+        if (content?.trim()) body.append('caption', content.trim());
+        if (replyMessageId) body.append('replyMessageId', replyMessageId);
+      }
       const { data } = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/messages/${chatId}/send`,
-        { content, type },
+        body,
         {
           withCredentials: true,
         }
@@ -34,7 +32,8 @@ export const useSendMessage = (chat) => {
     onSuccess: (data) => {
       const newMessage = data?.data?.message;
 
-      socket.emit('new_message', { message: newMessage, chat });
+      updateMessages(newMessage);
+      socket?.emit('new_message', { message: newMessage, chat });
     },
   });
 };

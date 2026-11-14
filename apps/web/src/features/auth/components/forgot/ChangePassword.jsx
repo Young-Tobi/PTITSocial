@@ -23,15 +23,15 @@ function ChangePassword({ setUserInfos, userInfos }) {
 
   const changePasswordValid = Yup.object({
     password: Yup.string()
-      .required('Password is required')
+      .required('Vui lòng nhập mật khẩu')
       .min(6)
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#_$%^&*])(?=.{6,})/,
-        'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
+        'Mật khẩu phải có ít nhất một chữ thường, một chữ hoa, một chữ số và một ký tự đặc biệt'
       ),
     passwordConfirm: Yup.string().test(
       'passwords-match',
-      'Password confirm must match password !',
+      'Mật khẩu nhập lại không khớp!',
       function (value) {
         return this.parent.password === value;
       }
@@ -66,10 +66,10 @@ function ChangePassword({ setUserInfos, userInfos }) {
 
   return (
     <Card className={styles.wrap}>
-      <div className={styles.header}>Change Your Password</div>
+      <div className={styles.header}>Đổi mật khẩu</div>
       {error ? (
         <div className={styles.error}>
-          <div className={styles.error_header}>Something went wrong</div>
+          <div className={styles.error_header}>Đã có lỗi xảy ra</div>
           <span>{error}</span>
         </div>
       ) : (
@@ -77,7 +77,7 @@ function ChangePassword({ setUserInfos, userInfos }) {
       )}
 
       <div className={styles.content}>
-        <span className={styles.text}>Please crate a new password for your account</span>
+        <span className={styles.text}>Vui lòng tạo mật khẩu mới cho tài khoản</span>
         <Formik
           enableReinitialize
           initialValues={{ password, passwordConfirm }}
@@ -93,7 +93,7 @@ function ChangePassword({ setUserInfos, userInfos }) {
                   className={styles.input}
                   type="text"
                   name="password"
-                  placeholder="New Password"
+                  placeholder="Mật khẩu mới"
                   onChange={handlePasswordChange}
                   disabled={loading}
                 />
@@ -101,7 +101,7 @@ function ChangePassword({ setUserInfos, userInfos }) {
                   className={styles.input}
                   type="text"
                   name="passwordConfirm"
-                  placeholder="Confirm new password"
+                  placeholder="Nhập lại mật khẩu mới"
                   onChange={handlePasswordChange}
                   disabled={loading}
                 />
@@ -109,10 +109,10 @@ function ChangePassword({ setUserInfos, userInfos }) {
 
               <div className={styles.btns}>
                 <Link className="gray_btn" to="/login">
-                  Cancel
+                  Hủy
                 </Link>
                 <button type="submit" className="btn_blue">
-                  Continue
+                  Tiếp tục
                 </button>
               </div>
             </Form>

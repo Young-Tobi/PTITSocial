@@ -12,7 +12,7 @@ const chaSchema = mongoose.Schema(
         validator: function (val) {
           return val >= 1 && val <= 39;
         },
-        message: 'Theme must be between 1 and 39',
+        message: 'Chủ đề không hợp lệ',
       },
       default: 19,
     },

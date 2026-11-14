@@ -6,7 +6,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 import './styles/icons/icons.css';
 import './styles/ptitsocial.css';
-import 'moment/locale/vi';
+import './app/locale';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';

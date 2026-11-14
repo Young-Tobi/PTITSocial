@@ -304,7 +304,7 @@ function Profile() {
                   {page.data.length > 0 ? (
                     page.data.map((post) => <Post key={post._id} post={post} />)
                   ) : (
-                    <Card className={classes.no_posts}>No posts available</Card>
+                    <Card className={classes.no_posts}>Chưa có bài viết</Card>
                   )}
                 </React.Fragment>
               ))}
@@ -312,7 +312,7 @@ function Profile() {
               {isFetchingNextPage ? (
                 <PostSkeleton />
               ) : hasNextPage ? (
-                'Load Newer'
+                'Tải nội dung mới hơn'
               ) : (
                 'Bạn đã xem hết nội dung'
               )}

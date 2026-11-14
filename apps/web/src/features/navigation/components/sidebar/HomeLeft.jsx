@@ -10,8 +10,8 @@ const navigation = [
 
 export default function HomeLeft({ user }) {
   return (
-    <nav className={styles.left_home + ' scrollbar'} aria-label="Main navigation">
-      <Link to="/profile" className={styles.left_link + ' hover2'} title="My profile">
+    <nav className={styles.left_home + ' scrollbar'} aria-label="Điều hướng chính">
+      <Link to="/profile" className={styles.left_link + ' hover2'} title="Trang cá nhân của tôi">
         <img src={user?.photo} alt="" />
         <span>
           {user?.first_name} {user?.last_name}

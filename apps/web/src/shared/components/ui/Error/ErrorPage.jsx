@@ -19,7 +19,7 @@ function ErrorPage({ error }) {
         loop
         play
       />
-      <p>Something Went Wrong</p>
+      <p>Đã có lỗi xảy ra</p>
       <div
         className="btn_blue"
         style={{ maxWidth: '300px' }}
@@ -27,7 +27,7 @@ function ErrorPage({ error }) {
           navigate('/');
         }}
       >
-        Go to home
+        Về trang chủ
       </div>
     </div>
   );

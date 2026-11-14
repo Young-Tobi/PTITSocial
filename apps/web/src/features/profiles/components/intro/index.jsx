@@ -1,3 +1,4 @@
+import { relationshipLabel } from 'app/locale';
 import React, { useState, useEffect } from 'react';
 import isRTL from 'shared/lib/isRTL';
 import Card from 'shared/components/ui/Card/Card';
@@ -113,7 +114,7 @@ function Intro({ userData, isVisitor, showEdit, setShowEdit, profileSkelton }) {
               setShow={setShowBio}
               updateDetails={updateDetails}
               name="bio"
-              placeholder="Describe who you are"
+              placeholder="Viết đôi điều về bạn"
               max={100}
             />
           )}
@@ -129,11 +130,11 @@ function Intro({ userData, isVisitor, showEdit, setShowEdit, profileSkelton }) {
             <div className={classes.info_profile}>
               <img src="../../../icons/job.png" alt="" />
               <span>
-                works{details?.job && <span> as {details?.job}</span>}
+                Làm việc{details?.job && <span> với vai trò {details?.job}</span>}
                 {details?.workplace && (
                   <span>
                     {' '}
-                    at <b>{details?.workplace}</b>
+                    tại <b>{details?.workplace}</b>
                   </span>
                 )}
               </span>
@@ -142,31 +143,31 @@ function Intro({ userData, isVisitor, showEdit, setShowEdit, profileSkelton }) {
           {details?.relationship && (
             <div className={classes.info_profile}>
               <img src="../../../icons/relationship.png" alt="" />
-              {details?.relationship}
+              {relationshipLabel(details?.relationship)}
             </div>
           )}
           {details?.college && (
             <div className={classes.info_profile}>
               <img src="../../../icons/studies.png" alt="" />
-              studied at {details?.college}
+              Đã học tại {details?.college}
             </div>
           )}
           {details?.highSchool && (
             <div className={classes.info_profile}>
               <img src="../../../icons/studies.png" alt="" />
-              studied at {details?.highSchool}
+              Đã học tại {details?.highSchool}
             </div>
           )}
           {details?.currentCity && (
             <div className={classes.info_profile}>
               <img src="../../../icons/home.png" alt="" />
-              Lives in {details?.currentCity}
+              Sống tại {details?.currentCity}
             </div>
           )}
           {details?.homeTown && (
             <div className={classes.info_profile}>
               <img src="../../../icons/from.png" alt="" />
-              From {details?.homeTown}
+              Đến từ {details?.homeTown}
             </div>
           )}
           {details?.instagram && (
@@ -183,9 +184,9 @@ function Intro({ userData, isVisitor, showEdit, setShowEdit, profileSkelton }) {
           )}
           {userData?.createdAt && (
             <div className={classes.info_profile}>
-              <img width={20} src="../../../icons/join.png" alt="joindAT" />
-              Joined{' '}
-              {new Date(userData?.createdAt).toLocaleString('default', {
+              <img width={20} src="../../../icons/join.png" alt="Ngày tham gia" />
+              Tham gia{' '}
+              {new Date(userData?.createdAt).toLocaleString('vi-VN', {
                 month: 'long',
                 year: 'numeric',
                 day: 'numeric',

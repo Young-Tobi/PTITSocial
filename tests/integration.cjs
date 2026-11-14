@@ -2,11 +2,13 @@ const assert = require('node:assert/strict');
 const { MongoClient, ObjectId } = require('mongodb');
 const sharp = require('sharp');
 const { io } = require('../apps/web/node_modules/socket.io-client');
-const base = 'http://localhost:8000';
+const base = process.env.TEST_BASE_URL || 'http://localhost:8000';
 const tag = Date.now();
 const ids = [];
 const sockets = [];
 const fixtureImages = [];
+const fixtureChatImages = [];
+const fixtureAttachments = [];
 async function api(method, pathname, { token, body, form, expected } = {}) {
   const response = await fetch(base + pathname, {
     method,
@@ -128,6 +130,188 @@ async function main() {
   assert(notification.data.notifications.some((item) => item.type === 'comment'));
   console.log('PASS image upload, following feed, reaction, comment and remote notifications');
 
+  const outsider = await account('Outside');
+  await activate(outsider);
+  const acceptedList = await api('GET', '/api/v1/friends/friendsPage', { token: first.token });
+  assert(acceptedList.data.friendLists.some((friend) => friend._id === second._id));
+  assert(!acceptedList.data.friendLists.some((friend) => friend._id === outsider._id));
+  await api('POST', '/api/v1/posts/createPost', {
+    token: first.token,
+    body: {
+      type: 'normal',
+      text: 'Cannot choose a stranger',
+      audience: 'selected',
+      allowedViewers: [outsider._id],
+    },
+    expected: 400,
+  });
+  await api('PUT', `/api/v1/friends/add/${outsider._id}`, { token: first.token, body: {} });
+  const pendingList = await api('GET', '/api/v1/friends/friendsPage', { token: first.token });
+  assert(!pendingList.data.friendLists.some((friend) => friend._id === outsider._id));
+  await api('POST', '/api/v1/posts/createPost', {
+    token: first.token,
+    body: {
+      type: 'normal',
+      text: 'Pending is not accepted',
+      audience: 'selected',
+      allowedViewers: [outsider._id],
+    },
+    expected: 400,
+  });
+  await api('PUT', `/api/v1/friends/follow/${first._id}`, { token: outsider.token, body: {} });
+  await api('POST', '/api/v1/posts/createPost', {
+    token: first.token,
+    body: { type: 'normal', text: 'Invalid audience', audience: 'selected', allowedViewers: [] },
+    expected: 400,
+  });
+  const restrictedForm = new FormData();
+  restrictedForm.set('type', 'image');
+  restrictedForm.set('text', 'Only the chosen viewer');
+  restrictedForm.set('audience', 'selected');
+  restrictedForm.set('allowedViewers', JSON.stringify([second._id]));
+  restrictedForm.set('images', new Blob([image], { type: 'image/png' }), 'private.png');
+  const restricted = (
+    await api('POST', '/api/v1/posts/createPost/images', {
+      token: first.token,
+      form: restrictedForm,
+    })
+  ).data;
+  for (const viewer of [first, second]) {
+    await api('GET', `/api/v1/posts/${restricted._id}`, { token: viewer.token });
+    const ownFeed = await api('GET', '/api/v1/posts/getAllPosts', { token: viewer.token });
+    assert(ownFeed.data.some((item) => item._id === restricted._id));
+    const ownProfile = await api('GET', `/api/v1/users/getProfile/${first.username}/posts`, {
+      token: viewer.token,
+    });
+    assert(ownProfile.data.some((item) => item._id === restricted._id));
+  }
+  const hiddenFeed = await api('GET', '/api/v1/posts/getAllPosts', { token: outsider.token });
+  assert(!hiddenFeed.data.some((item) => item._id === restricted._id));
+  const hiddenProfile = await api('GET', `/api/v1/users/getProfile/${first.username}/posts`, {
+    token: outsider.token,
+  });
+  assert(!hiddenProfile.data.some((item) => item._id === restricted._id));
+  await api('GET', `/api/v1/posts/${post._id}`, { token: outsider.token });
+  for (const suffix of ['', '/reacts'])
+    await api('GET', `/api/v1/posts/${restricted._id}${suffix}`, {
+      token: outsider.token,
+      expected: 404,
+    });
+  await api('GET', `/api/v1/posts/comments/${restricted._id}`, {
+    token: outsider.token,
+    expected: 404,
+  });
+  await api('PUT', `/api/v1/posts/${restricted._id}/reacts`, {
+    token: outsider.token,
+    body: { type: 'like' },
+    expected: 404,
+  });
+  await api('POST', `/api/v1/posts/addComment/${restricted._id}`, {
+    token: outsider.token,
+    body: { text: 'Denied' },
+    expected: 404,
+  });
+  const privateComment = (
+    await api('POST', `/api/v1/posts/addComment/${restricted._id}`, {
+      token: second.token,
+      body: { text: 'Allowed' },
+    })
+  ).data.commendData;
+  await api('PUT', `/api/v1/posts/comments/${privateComment._id}/like`, {
+    token: outsider.token,
+    body: {},
+    expected: 404,
+  });
+  await api('POST', `/api/v1/posts/comments/${privateComment._id}/reply`, {
+    token: outsider.token,
+    body: { text: 'Denied' },
+    expected: 404,
+  });
+  await api('POST', '/api/v1/posts/createPost', {
+    token: second.token,
+    body: { type: 'share', sharedID: restricted._id },
+    expected: 403,
+  });
+  const spoofedShare = (
+    await api('POST', '/api/v1/posts/createPost', {
+      token: outsider.token,
+      body: { type: 'normal', text: 'Unrelated public post', sharedID: restricted._id },
+    })
+  ).data;
+  assert(!spoofedShare.sharedID, 'Non-share posts must not embed a restricted post');
+  const privateUrl = base + new URL(restricted.images[0]).pathname;
+  assert.equal((await fetch(privateUrl)).status, 401);
+  assert.equal(
+    (await fetch(privateUrl, { headers: { authorization: `Bearer ${outsider.token}` } })).status,
+    404
+  );
+  assert.equal(
+    (await fetch(privateUrl, { headers: { authorization: `Bearer ${second.token}` } })).status,
+    200
+  );
+  const encodedUrl = privateUrl.replace('/restricted/', '/%72estricted/');
+  assert.equal((await fetch(encodedUrl)).status, 401);
+  assert.equal((await fetch(privateUrl.replace('/restricted/', '/restricted./'))).status, 400);
+  assert.equal((await fetch(privateUrl.replace('/restricted/', '/restricted%20/'))).status, 400);
+  const privatePhotos = await api('GET', `/api/v1/users/getProfile/${first.username}/photos`, {
+    token: outsider.token,
+  });
+  assert(!privatePhotos.data.resources.some((photo) => photo.url === restricted.images[0]));
+  console.log(
+    'PASS selected audience: owner/viewer access, public compatibility, feed/profile filtering, comments, shares and protected images'
+  );
+  const friendsForm = new FormData();
+  friendsForm.set('type', 'image');
+  friendsForm.set('text', 'All accepted friends');
+  friendsForm.set('audience', 'friends');
+  friendsForm.set('images', new Blob([image], { type: 'image/png' }), 'friends.png');
+  const friendsPost = (
+    await api('POST', '/api/v1/posts/createPost/images', { token: first.token, form: friendsForm })
+  ).data;
+  for (const viewer of [first, second]) {
+    await api('GET', `/api/v1/posts/${friendsPost._id}`, { token: viewer.token });
+    const friendFeed = await api('GET', '/api/v1/posts/getAllPosts', { token: viewer.token });
+    assert(friendFeed.data.some((item) => item._id === friendsPost._id));
+  }
+  await api('GET', `/api/v1/posts/${friendsPost._id}`, { token: outsider.token, expected: 404 });
+  await api('GET', `/api/v1/posts/comments/${friendsPost._id}`, {
+    token: outsider.token,
+    expected: 404,
+  });
+  const outsiderProfile = await api('GET', `/api/v1/users/getProfile/${first.username}/posts`, {
+    token: outsider.token,
+  });
+  assert(!outsiderProfile.data.some((item) => item._id === friendsPost._id));
+  const friendsImage = base + new URL(friendsPost.images[0]).pathname;
+  assert.equal(
+    (await fetch(friendsImage, { headers: { authorization: `Bearer ${second.token}` } })).status,
+    200
+  );
+  assert.equal(
+    (await fetch(friendsImage, { headers: { authorization: `Bearer ${outsider.token}` } })).status,
+    404
+  );
+  await api('POST', '/api/v1/posts/createPost', {
+    token: second.token,
+    body: { type: 'share', sharedID: friendsPost._id },
+    expected: 403,
+  });
+  // Accepting a pending invitation grants access only to the all-friends post.
+  const invitations = await api('GET', '/api/v1/friends/friendsPage', { token: outsider.token });
+  const invite = invitations.data.recivedRequests.find((item) => item.sender._id === first._id);
+  assert(invite);
+  await api('PUT', `/api/v1/friends/acceptRequest/${invite._id}`, {
+    token: outsider.token,
+    body: {},
+  });
+  await api('GET', `/api/v1/posts/${friendsPost._id}`, { token: outsider.token });
+  await api('GET', `/api/v1/posts/${restricted._id}`, { token: outsider.token, expected: 404 });
+  await api('PUT', `/api/v1/friends/remove/${invite._id}`, { token: outsider.token, body: {} });
+  await api('GET', `/api/v1/posts/${friendsPost._id}`, { token: outsider.token, expected: 404 });
+  console.log(
+    'PASS all-friends audience, pending requests excluded, new friendship access and revoked access after unfriend'
+  );
+
   const avatar = new FormData();
   avatar.set('photo', new Blob([image], { type: 'image/png' }), 'avatar.png');
   avatar.set('text', 'Updated avatar');
@@ -176,6 +360,266 @@ async function main() {
   const ping = await api('PUT', '/api/v1/users/ping', { token: second.token, body: {} });
   assert.equal(ping.unseenMessages, 0);
   console.log('PASS real WebSocket upgrade, persisted message, relay and counters');
+
+  const reply = (
+    await api('PUT', `/api/v1/messages/${chat._id}/send`, {
+      token: second.token,
+      body: {
+        type: 'text',
+        content: 'Reply to this specific message',
+        replyMessageId: message._id,
+        replyTo: { content: 'Forged quotation' },
+      },
+    })
+  ).data.message;
+  assert.equal(reply.replyTo.messageId, message._id);
+  assert.equal(reply.replyTo.content, message.content);
+  assert.equal(reply.replyTo.sender.id, first._id);
+  const replyDelivered = new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('Reply relay timeout')), 8000);
+    sender.once('message_recieved', (incoming) => {
+      clearTimeout(timer);
+      resolve(incoming);
+    });
+  });
+  recipient.emit('new_message', { message: reply });
+  assert.equal((await replyDelivered).replyTo.messageId, message._id);
+  const history = await api('GET', `/api/v1/messages/${chat._id}?page=1&sort=-createdAt`, {
+    token: first.token,
+  });
+  assert.equal(
+    history.data.messages.find((item) => item._id === reply._id).replyTo.content,
+    message.content
+  );
+  const otherChat = (
+    await api('POST', '/api/v1/chats/create/private', {
+      token: first.token,
+      body: { userId: outsider._id },
+    })
+  ).data.chat;
+  await api('PUT', `/api/v1/messages/${otherChat._id}/send`, {
+    token: first.token,
+    body: { type: 'text', content: 'Cross-chat reply denied', replyMessageId: message._id },
+    expected: 400,
+  });
+  await api('PUT', `/api/v1/messages/${otherChat._id}/send`, {
+    token: outsider.token,
+    body: { forwardMessageId: message._id },
+    expected: 403,
+  });
+  await api('PUT', `/api/v1/messages/${chat._id}/send`, {
+    token: outsider.token,
+    body: { forwardMessageId: message._id },
+    expected: 400,
+  });
+  const forwarded = (
+    await api('PUT', `/api/v1/messages/${otherChat._id}/send`, {
+      token: first.token,
+      body: { forwardMessageId: reply._id, type: 'image', content: 'Forged forwarding content' },
+    })
+  ).data.message;
+  assert.equal(forwarded.content, reply.content);
+  assert.equal(forwarded.type, 'text');
+  assert.equal(forwarded.forwarded, true);
+  assert(!forwarded.replyTo, 'Forwarding must not expose the source conversation quotation');
+  assert.equal(forwarded.sender._id, first._id);
+  const outsideSocket = await connect(outsider);
+  const forwardDelivered = new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('Forward relay timeout')), 8000);
+    outsideSocket.once('message_recieved', (incoming) => {
+      clearTimeout(timer);
+      resolve(incoming);
+    });
+  });
+  sender.emit('new_message', { message: forwarded });
+  const liveForward = await forwardDelivered;
+  assert.equal(liveForward.forwarded, true);
+  assert.equal(liveForward.content, reply.content);
+  assert(!liveForward.replyTo);
+
+  const forwardedHistory = await api('GET', `/api/v1/messages/${otherChat._id}?page=1`, {
+    token: outsider.token,
+  });
+  assert(
+    forwardedHistory.data.messages.some((item) => item._id === forwarded._id && item.forwarded)
+  );
+  await api('PUT', `/api/v1/messages/${otherChat._id}/send`, {
+    token: first.token,
+    body: { forwardMessageId: 'invalid' },
+    expected: 400,
+  });
+  await api('PUT', `/api/v1/messages/${chat._id}/send`, {
+    token: first.token,
+    body: { replyMessageId: message._id, forwardMessageId: reply._id },
+    expected: 400,
+  });
+  console.log(
+    'PASS persisted reply quotations, real-time replies, forwarding, canonical source content and conversation access checks'
+  );
+
+  const themeChange = await api('PUT', `/api/v1/chats/${chat._id}/theme`, {
+    token: first.token,
+    body: { theme: 1 },
+  });
+  assert.equal(themeChange.data.theme, 1);
+  const themeInfo = (
+    await api('PUT', `/api/v1/messages/${chat._id}/send`, {
+      token: first.token,
+      body: { type: 'info', content: `${themeChange.data.name} changed the theme.` },
+    })
+  ).data.message;
+  assert.equal(themeInfo.type, 'info');
+  const infoHistory = await api('GET', `/api/v1/messages/${chat._id}?page=1`, {
+    token: second.token,
+  });
+  assert(
+    infoHistory.data.messages.some((item) => item._id === themeInfo._id && item.type === 'info')
+  );
+  await api('PUT', `/api/v1/messages/${chat._id}/send`, {
+    token: first.token,
+    body: { type: 'unsupported', content: 'Invalid type remains rejected' },
+    expected: 400,
+  });
+  console.log('PASS theme changes and informational chat messages without message-type errors');
+
+  const imageForm = new FormData();
+  imageForm.set('type', 'image');
+  imageForm.set('caption', 'Ảnh gửi trong chat 😀');
+  imageForm.set('replyMessageId', message._id);
+  imageForm.set('image', new Blob([image], { type: 'image/png' }), 'chat.png');
+  const photoMessage = (
+    await api('PUT', `/api/v1/messages/${chat._id}/send`, { token: first.token, form: imageForm })
+  ).data.message;
+  fixtureChatImages.push(photoMessage._id);
+  assert.equal(photoMessage.type, 'image');
+  assert.equal(photoMessage.caption, 'Ảnh gửi trong chat 😀');
+  assert.equal(photoMessage.replyTo.messageId, message._id);
+  const mediaUrl = base + new URL(photoMessage.content).pathname;
+  assert.equal((await fetch(mediaUrl)).status, 401);
+  assert.equal(
+    (await fetch(mediaUrl, { headers: { authorization: `Bearer ${outsider.token}` } })).status,
+    403
+  );
+  const readableImage = await fetch(mediaUrl, {
+    headers: { authorization: `Bearer ${second.token}` },
+  });
+  assert.equal(readableImage.status, 200);
+  assert.equal(readableImage.headers.get('content-type'), 'image/webp');
+  assert((await sharp(Buffer.from(await readableImage.arrayBuffer())).metadata()).width > 0);
+  const imageDelivered = new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('Image relay timeout')), 8000);
+    recipient.once('message_recieved', (incoming) => {
+      clearTimeout(timer);
+      resolve(incoming);
+    });
+  });
+  sender.emit('new_message', { message: photoMessage });
+  assert.equal((await imageDelivered).caption, photoMessage.caption);
+  const forwardedPhoto = (
+    await api('PUT', `/api/v1/messages/${otherChat._id}/send`, {
+      token: first.token,
+      body: { forwardMessageId: photoMessage._id },
+    })
+  ).data.message;
+  assert.equal(forwardedPhoto.caption, photoMessage.caption);
+  assert.notEqual(forwardedPhoto.content, photoMessage.content);
+  const forwardedMedia = base + new URL(forwardedPhoto.content).pathname;
+  assert.equal(
+    (await fetch(forwardedMedia, { headers: { authorization: `Bearer ${outsider.token}` } }))
+      .status,
+    200
+  );
+  const invalidImage = new FormData();
+  invalidImage.set('type', 'image');
+  invalidImage.set('image', new Blob(['not an image'], { type: 'image/png' }), 'invalid.png');
+  await api('PUT', `/api/v1/messages/${chat._id}/send`, {
+    token: first.token,
+    form: invalidImage,
+    expected: 400,
+  });
+  const emojiMessage = (
+    await api('PUT', `/api/v1/messages/${chat._id}/send`, {
+      token: first.token,
+      body: { type: 'text', content: 'Xin chào 😀❤️' },
+    })
+  ).data.message;
+  assert.equal(emojiMessage.content, 'Xin chào 😀❤️');
+  console.log(
+    'PASS chat image uploads, captions, protected media, live image delivery, image forwarding and emoji text'
+  );
+  const documentFixtures = [
+    {
+      name: 'báo-cáo.pdf',
+      mime: 'application/pdf',
+      bytes: Buffer.from('%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\n%%EOF'),
+    },
+    {
+      name: 'bài-tập.docx',
+      mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      bytes: Buffer.from(
+        'UEsDBBQAAAAIAK96bl26d6ScywAAAFMBAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbJWQvVLDQAyEX+XmWiYnQ0HB2E4BtEDBC2jOsn3D/c1JCeHtkRNIQUcp7Wq/HfX7U4rmSI1DyYO9dZ3dj/37VyU2qmQe7CpSHwDYr5SQXamUVZlLSyg6tgUq+g9cCO667h58yUJZdrJl2LF/ohkPUczzSdcXSqPI1jxejBtrsFhrDB5FdTjm6Q9l90Nwenn28Boq36jBwti/av0WJjJv2OQFk8bBZ2kTTMUfkiLcZvwXr8xz8HS939JqK56YQ15SdFclYci/PeD8tvEbUEsDBBQAAAAIAK96bl1fM5VSlQAAAAcBAAALAAAAX3JlbHMvLnJlbHONzzsOwjAMBuCrRD5AnTIwoKZdWLoiLhAlblPRPOSE1+3JwEARA6N///osd8PDr+JGnJcYFLSNhKHvTrTqUoPslpRFbYSswJWSDojZOPI6NzFRqJspsteljjxj0uaiZ8KdlHvkTwO2phitAh5tC+L8TPSPHadpMXSM5uoplB8nvhpV1jxTUXCPbNG+46aygH2Hmxf7F1BLAwQUAAAACACvem5dvHEdRpoAAAC/AAAAEQAAAHdvcmQvZG9jdW1lbnQueG1sRY7LDcIwEERbsVxANnDgEOXTBA2ExCQWWa+1djCcOdAGDVBBjlSSTrDDgcsbjZ40mrK54SSuip0mU8ldlsumLkPRUzejMl5EbVwRKjl6bwsA140KW5eRVSa6MzG2PlYeIBD3lqlTzmkz4AT7PD8AttrINHmi/p7SJnCCr4+flxaTXpfnLC4xHij8uC7vEpJN5I12428B/u/qL1BLAQIUABQAAAAIAK96bl26d6ScywAAAFMBAAATAAAAAAAAAAAAAACAAQAAAABbQ29udGVudF9UeXBlc10ueG1sUEsBAhQAFAAAAAgAr3puXV8zlVKVAAAABwEAAAsAAAAAAAAAAAAAAIAB/AAAAF9yZWxzLy5yZWxzUEsBAhQAFAAAAAgAr3puXbxxHUaaAAAAvwAAABEAAAAAAAAAAAAAAIABugEAAHdvcmQvZG9jdW1lbnQueG1sUEsFBgAAAAADAAMAuQAAAIMCAAAAAA==',
+        'base64'
+      ),
+    },
+  ];
+  for (const fixture of documentFixtures) {
+    const form = new FormData();
+    form.set('type', 'file');
+    form.set('file', new Blob([fixture.bytes], { type: fixture.mime }), fixture.name);
+    form.set('caption', 'Tài liệu của tôi');
+    const documentMessage = (
+      await api('PUT', `/api/v1/messages/${chat._id}/send`, { token: first.token, form })
+    ).data.message;
+    fixtureAttachments.push(documentMessage._id + require('node:path').extname(fixture.name));
+    assert.equal(documentMessage.type, 'file');
+    assert.equal(documentMessage.attachment.name, fixture.name);
+    assert.equal(documentMessage.attachment.size, fixture.bytes.length);
+    const download = base + new URL(documentMessage.content).pathname;
+    assert.equal((await fetch(download)).status, 401);
+    assert.equal(
+      (await fetch(download, { headers: { authorization: `Bearer ${outsider.token}` } })).status,
+      403
+    );
+    const readable = await fetch(download, {
+      headers: { authorization: `Bearer ${second.token}` },
+    });
+    assert.equal(readable.status, 200);
+    assert(readable.headers.get('content-disposition').startsWith('attachment;'));
+    assert.deepEqual(Buffer.from(await readable.arrayBuffer()), fixture.bytes);
+    const forwardDocument = (
+      await api('PUT', `/api/v1/messages/${otherChat._id}/send`, {
+        token: first.token,
+        body: { forwardMessageId: documentMessage._id },
+      })
+    ).data.message;
+    assert.equal(forwardDocument.attachment.name, fixture.name);
+    assert.equal(
+      (
+        await fetch(base + new URL(forwardDocument.content).pathname, {
+          headers: { authorization: `Bearer ${outsider.token}` },
+        })
+      ).status,
+      200
+    );
+    const fileReply = (
+      await api('PUT', `/api/v1/messages/${chat._id}/send`, {
+        token: second.token,
+        body: { type: 'text', content: 'Đã nhận tài liệu', replyMessageId: documentMessage._id },
+      })
+    ).data.message;
+    assert.equal(fileReply.replyTo.attachmentName, fixture.name);
+  }
+  const rejected = new FormData();
+  rejected.set('type', 'file');
+  rejected.set('file', new Blob(['invalid'], { type: 'application/octet-stream' }), 'program.exe');
+  await api('PUT', `/api/v1/messages/${chat._id}/send`, {
+    token: first.token,
+    form: rejected,
+    expected: 400,
+  });
+  console.log(
+    'PASS PDF and Word uploads, Vietnamese filenames, downloads, forwarding, reply and private access'
+  );
 
   await api('GET', '/internal/projections', { expected: 404 });
   assert.equal(
@@ -226,6 +670,34 @@ async function cleanup() {
     await messaging.collection('user_projections').deleteMany({ _id: { $in: ids } });
   } finally {
     await client.close();
+    for (const filename of fixtureAttachments) {
+      assert(/^[a-f0-9]{24}\.[a-z0-9]+$/.test(filename));
+      await require('node:fs/promises')
+        .unlink(
+          require('node:path').resolve(
+            __dirname,
+            '../services/messaging/uploads/messages',
+            filename
+          )
+        )
+        .catch((error) => {
+          if (error.code !== 'ENOENT') throw error;
+        });
+    }
+    for (const id of fixtureChatImages) {
+      assert(/^[a-f0-9]{24}$/.test(id));
+      await require('node:fs/promises')
+        .unlink(
+          require('node:path').resolve(
+            __dirname,
+            '../services/messaging/uploads/messages',
+            id + '.webp'
+          )
+        )
+        .catch((error) => {
+          if (error.code !== 'ENOENT') throw error;
+        });
+    }
   }
 }
 main()

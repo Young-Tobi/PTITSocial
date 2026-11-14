@@ -11,10 +11,10 @@ exports.createChat = catchAsync(async (req, res, next) => {
   const user = req.user.id;
   const { userId } = req.body;
 
-  if (!userId) return next(new AppError('Please Provide a userId', 400));
+  if (!userId) return next(new AppError('Vui lòng chọn người dùng', 400));
 
   const checkUser = await User.findById(userId);
-  if (!checkUser) return next(new AppError('No user found', 400));
+  if (!checkUser) return next(new AppError('Không tìm thấy người dùng', 400));
 
   const existingChat = await Chat.findOne({
     type: 'private',
@@ -88,9 +88,9 @@ exports.createGroupChat = catchAsync(async (req, res, next) => {
   const { users, chatName } = req.body;
 
   if (!users || !chatName)
-    return next(new AppError('Please Provide a users array and chatName', 400));
+    return next(new AppError('Vui lòng nhập tên nhóm và chọn thành viên', 400));
 
-  if (users.length < 2) return next(new AppError('Please Provide at least 2 users', 400));
+  if (users.length < 2) return next(new AppError('Vui lòng chọn ít nhất 2 thành viên', 400));
 
   users.push(user);
 
@@ -116,16 +116,16 @@ exports.renameGroupChat = catchAsync(async (req, res, next) => {
   const user = req.user.id;
   const { chatName, chatId } = req.body;
 
-  if (!chatId || !chatName) return next(new AppError('Please Provide a chatId and chatName', 400));
+  if (!chatId || !chatName) return next(new AppError('Vui lòng chọn nhóm và nhập tên nhóm', 400));
 
   const existingeGroupChat = await Chat.findById(chatId);
-  if (!existingeGroupChat) return next(new AppError('No Group Chat found', 400));
+  if (!existingeGroupChat) return next(new AppError('Không tìm thấy cuộc trò chuyện', 400));
 
   if (existingeGroupChat.groupAdmin._id.toString() !== user)
-    return next(new AppError('You are not the admin of this group', 400));
+    return next(new AppError('Bạn không phải quản trị viên nhóm', 400));
 
   if (existingeGroupChat.chatName === chatName.trim())
-    return next(new AppError('Same name please type a diffrent name', 400));
+    return next(new AppError('Tên mới trùng tên hiện tại. Vui lòng chọn tên khác', 400));
 
   existingeGroupChat.chatName = chatName;
   await existingeGroupChat.save();
@@ -141,17 +141,18 @@ exports.addToGroupChat = catchAsync(async (req, res, next) => {
   const user = req.user.id;
   const { userId, chatId } = req.body;
 
-  if (!chatId || !userId) return next(new AppError('Please Provide a chatId and userId', 400));
+  if (!chatId || !userId)
+    return next(new AppError('Vui lòng chọn cuộc trò chuyện và người dùng', 400));
 
   const existingeGroupChat = await Chat.findById(chatId);
-  if (!existingeGroupChat) return next(new AppError('No Group Chat found', 400));
+  if (!existingeGroupChat) return next(new AppError('Không tìm thấy cuộc trò chuyện', 400));
 
   if (existingeGroupChat.groupAdmin._id.toString() !== user)
-    return next(new AppError('You are not the admin of this group', 400));
+    return next(new AppError('Bạn không phải quản trị viên nhóm', 400));
 
   const targetId = new ObjectId(userId);
   if (existingeGroupChat.users.some((id) => id.equals(targetId)))
-    return next(new AppError('This user alerdy exist in the group', 400));
+    return next(new AppError('Người dùng này đã ở trong nhóm', 400));
 
   const newGroupChat = await Chat.findByIdAndUpdate(
     chatId,
@@ -174,17 +175,18 @@ exports.removeFromGroupChat = catchAsync(async (req, res, next) => {
   const user = req.user.id;
   const { userId, chatId } = req.body;
 
-  if (!chatId || !userId) return next(new AppError('Please Provide a chatId and userId', 400));
+  if (!chatId || !userId)
+    return next(new AppError('Vui lòng chọn cuộc trò chuyện và người dùng', 400));
 
   const existingeGroupChat = await Chat.findById(chatId);
-  if (!existingeGroupChat) return next(new AppError('No Group Chat found', 400));
+  if (!existingeGroupChat) return next(new AppError('Không tìm thấy cuộc trò chuyện', 400));
 
   if (existingeGroupChat.groupAdmin._id.toString() !== user)
-    return next(new AppError('You are not the admin of this group', 400));
+    return next(new AppError('Bạn không phải quản trị viên nhóm', 400));
 
   const targetId = new ObjectId(userId);
   if (!existingeGroupChat.users.some((id) => id.equals(targetId)))
-    return next(new AppError('This user not member of this group group', 400));
+    return next(new AppError('Người dùng này không thuộc nhóm', 400));
 
   const deletedUser = existingeGroupChat.users.find((id) => id.equals(targetId));
 
@@ -211,14 +213,14 @@ exports.changeTheme = catchAsync(async (req, res, next) => {
   const { chatId } = req.params;
 
   if (!theme || theme < 1 || theme > 39)
-    return next(new AppError('Please Provide a valid theme between 1 and 39', 400));
+    return next(new AppError('Vui lòng chọn một chủ đề hợp lệ', 400));
 
   const existingChat = await Chat.findById(chatId);
-  if (!existingChat) return next(new AppError('No Group Chat found', 400));
+  if (!existingChat) return next(new AppError('Không tìm thấy cuộc trò chuyện', 400));
 
   const targetId = new ObjectId(userId);
   if (!existingChat.users.some((id) => id.equals(targetId)))
-    return next(new AppError('You are not member in this chat', 400));
+    return next(new AppError('Bạn không thuộc cuộc trò chuyện này', 400));
 
   existingChat.theme = theme;
   await existingChat.save();

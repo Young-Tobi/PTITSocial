@@ -28,7 +28,7 @@ export const useRenameGroup = (chat) => {
       updateChatName(newchatName, chat._id);
 
       sendMessage({
-        content: `Group name changed to ${newchatName}`,
+        content: `Tên nhóm đã được đổi thành ${newchatName}`,
         type: 'info',
         chatId: chat._id,
       });

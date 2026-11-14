@@ -75,7 +75,7 @@ function Comment({ comment }) {
         </div>
         <div className={classes.comment_info_footer}>
           <p className={isliked ? classes.liked : ''} onClick={commentLikeHandler}>
-            Like
+            Thích
           </p>
           <p
             onClick={() => {
@@ -85,7 +85,7 @@ function Comment({ comment }) {
               }, 50);
             }}
           >
-            Reply
+            Trả lời
           </p>
           <Moment fromNow interval={30} className={classes.c_time}>
             {comment.createdAt}
@@ -122,7 +122,7 @@ function Comment({ comment }) {
                       }, 50);
                     }}
                   >
-                    Reply
+                    Trả lời
                   </p>
                   <Moment fromNow interval={30} className={classes.c_time}>
                     {comment.createdAt}
@@ -153,10 +153,10 @@ function Comment({ comment }) {
                 {count === 0 ? (
                   <>
                     <IoReturnDownForwardOutline />
-                    {` ${replies.length} ${replies.length === 1 ? 'reply' : 'replies'}`}
+                    {` ${replies.length} phản hồi`}
                   </>
                 ) : (
-                  `( ${replies.length - count} ) replies View more replies`
+                  `( ${replies.length - count} ) phản hồi · Xem thêm phản hồi`
                 )}
               </div>
             </>
@@ -164,7 +164,7 @@ function Comment({ comment }) {
         </div>
         {showReply && (
           <CreateComment
-            placholdertxt={`@${comment.user.first_name} ${comment.user.last_name} reply ...`}
+            placholdertxt={`@${comment.user.first_name} ${comment.user.last_name} trả lời…`}
             commentRef={replyCommentRef}
             type="reply"
             setReplies={setReplies}

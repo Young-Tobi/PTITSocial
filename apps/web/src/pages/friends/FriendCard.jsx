@@ -15,7 +15,7 @@ export default function FriendCard({ user, type, requestId, refetch }) {
   };
 
   const cancelRequestHandler = async (userId) => {
-    mutate({ id: requestId, type: 'cancel' });
+    mutate({ id: requestId, type: 'Hủy' });
   };
 
   useEffect(() => {

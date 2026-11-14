@@ -5,13 +5,18 @@ const router = express.Router();
 router.post(
   '/createPost/images',
   postController.uploadPostImages,
+  postController.prepareAudience,
   postController.resizePostImages,
   postController.createPost
 );
-router.post('/createPost', postController.createPost);
+router.post('/createPost', postController.prepareAudience, postController.createPost);
+router.use('/:postID/reacts', postController.checkAccess);
+router.use('/addComment/:postID', postController.checkAccess);
+router.use('/comments/:commentID/like', postController.checkAccess);
+router.use('/comments/:commentID/reply', postController.checkAccess);
 router.put('/:postID', postController.deletePost);
 router.get('/getAllPosts', postController.getAllPosts);
-router.get('/:postID', postController.getPost);
+router.get('/:postID', postController.checkAccess, postController.getPost);
 
 router.put('/:postID/reacts', postController.addReact);
 router.post(
@@ -29,6 +34,6 @@ router.post(
   postController.resizeCommentPhoto,
   postController.addCommentReply
 );
-router.get('/comments/:postID', postController.getComments);
+router.get('/comments/:postID', postController.checkAccess, postController.getComments);
 
 module.exports = router;

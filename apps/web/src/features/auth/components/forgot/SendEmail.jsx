@@ -33,10 +33,10 @@ function SendEmail({ setVisible, userInfos }) {
 
   return (
     <Card className={styles.wrap}>
-      <div className={styles.header}>Reset Your Password</div>
+      <div className={styles.header}>Đặt lại mật khẩu</div>
       {error ? (
         <div className={styles.error}>
-          <div className={styles.error_header}>Error</div>
+          <div className={styles.error_header}>Lỗi</div>
           <span>{error}</span>
         </div>
       ) : (
@@ -47,12 +47,12 @@ function SendEmail({ setVisible, userInfos }) {
         <div className={styles.s_content}>
           <div className={styles.s_left}>
             <span className={styles.s_left_text}>
-              How do you want to receive the code to reset your password?
+              Bạn muốn nhận mã đặt lại mật khẩu bằng cách nào?
             </span>
             <label htmlFor="email" className="hover1">
               <input type="radio" name="" id="email" checked readOnly />
               <div className={styles.label_col}>
-                <span>Send code via email</span>
+                <span>Gửi mã qua email</span>
                 <span>{userInfos.email}</span>
               </div>
             </label>
@@ -66,10 +66,10 @@ function SendEmail({ setVisible, userInfos }) {
       </FormLoader>
       <div className={styles.btns}>
         <button className="gray_btn" onClick={() => setVisible(0)}>
-          Not You?
+          Không phải bạn?
         </button>
         <button className="btn_blue" onClick={submitHandler}>
-          Continue
+          Tiếp tục
         </button>
       </div>
     </Card>

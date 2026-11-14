@@ -6,7 +6,7 @@ export const chatThemes = [
     color: 'rgb(87, 77, 193)',
     topColor: 'rgb(69, 51, 255)',
     downColor: 'rgb(108, 100, 190)',
-    name: 'Black History Month 🖤',
+    name: 'Lịch sử người da đen 🖤',
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ export const chatThemes = [
     color: 'rgb(232, 75, 40)',
     topColor: 'rgb(246, 149, 0)',
     downColor: 'rgb(218, 0, 80)',
-    name: 'Lunar New Year 🧧',
+    name: 'Tết Nguyên đán 🧧',
   },
   {
     id: 3,
@@ -24,7 +24,7 @@ export const chatThemes = [
     color: 'rgb(102, 169, 255)',
     topColor: 'rgb(140, 179, 255)',
     downColor: 'rgb(140, 179, 255)',
-    name: 'Chill 🥶',
+    name: 'Thư giãn 🥶',
   },
   {
     id: 4,
@@ -51,7 +51,7 @@ export const chatThemes = [
     color: 'rgb(110, 91, 4)',
     topColor: 'rgb(237, 159, 154)',
     downColor: 'rgb(237, 159, 154)',
-    name: 'Support 💛',
+    name: 'Đồng hành 💛',
   },
   {
     id: 7,
@@ -60,7 +60,7 @@ export const chatThemes = [
     color: 'rgb(11, 0, 133)',
     topColor: 'rgb(47, 169, 228)',
     downColor: 'rgb(155, 115, 242)',
-    name: 'Music 🔈',
+    name: 'Âm nhạc 🔈',
   },
   {
     id: 8,
@@ -69,7 +69,7 @@ export const chatThemes = [
     color: 'rgb(72, 39, 25)',
     topColor: 'rgb(130, 2, 2)',
     downColor: 'rgb(163, 17, 17)',
-    name: 'Things 🙃',
+    name: 'Sắc màu 🙃',
   },
   {
     id: 9,
@@ -87,7 +87,7 @@ export const chatThemes = [
     color: 'rgb(79, 77, 255)',
     topColor: 'rgb(0, 128, 255)',
     downColor: 'rgb(159, 26, 255) ',
-    name: ' Sky 🌤',
+    name: 'Bầu trời 🌤',
   },
   {
     id: 11,
@@ -96,7 +96,7 @@ export const chatThemes = [
     color: 'rgb(178, 75, 119)',
     topColor: 'rgb(241, 97, 78)',
     downColor: 'rgb(102, 15, 132)',
-    name: 'Celebration 🥳',
+    name: 'Lễ hội 🥳',
   },
   {
     id: 12,
@@ -105,7 +105,7 @@ export const chatThemes = [
     color: 'rgb(87, 151, 252)',
     topColor: 'rgb(74, 201, 228)',
     downColor: ' rgb(140, 145, 255)',
-    name: 'Care 😌',
+    name: 'Quan tâm 😌',
   },
   {
     id: 13,
@@ -114,7 +114,7 @@ export const chatThemes = [
     color: 'rgb(255, 89, 92)',
     topColor: 'rgb(255, 35, 154) ',
     downColor: 'rgb(255, 140, 33)',
-    name: 'Astrology 💫',
+    name: 'Chiêm tinh 💫',
   },
   {
     id: 14,
@@ -123,7 +123,7 @@ export const chatThemes = [
     color: 'rgb(0, 101, 40)',
     topColor: 'rgb(0, 213, 47)',
     downColor: 'rgb(0, 101, 40)',
-    name: 'Cottagecore 🍄',
+    name: 'Đồng quê 🍄',
   },
   {
     id: 15,
@@ -132,7 +132,7 @@ export const chatThemes = [
     color: 'rgb(1, 121, 240)',
     topColor: 'rgb(0, 199, 211)',
     downColor: 'rgb(54, 83, 232)',
-    name: 'Ocean 🐋',
+    name: 'Đại dương 🐋',
   },
   {
     id: 16,
@@ -141,7 +141,7 @@ export const chatThemes = [
     color: 'rgb(249, 0, 90)',
     topColor: ' rgb(255, 13, 158)',
     downColor: 'rgb(249, 0, 90)',
-    name: 'Love 💕',
+    name: 'Tình yêu 💕',
   },
   {
     id: 17,
@@ -150,13 +150,13 @@ export const chatThemes = [
     color: 'rgb(0, 82, 205)',
     topColor: 'rgb(0, 82, 205)',
     downColor: 'rgb(0, 82, 205)',
-    name: 'Tie-Dye ✌️',
+    name: 'Nhuộm màu ✌️',
   },
   {
     id: 18,
     type: 'color',
     color: 'rgb(96, 96, 96)',
-    name: 'Monochrome 🖤',
+    name: 'Đơn sắc 🖤',
   },
   {
     id: 19,
@@ -174,7 +174,7 @@ export const chatThemes = [
     color: 'rgb(240, 29, 106)',
     topColor: 'rgb(0, 95, 255)',
     downColor: 'rgb(255, 46, 25)',
-    name: 'Berry',
+    name: 'Quả mọng',
   },
   {
     id: 21,
@@ -183,7 +183,7 @@ export const chatThemes = [
     color: 'rgb(255, 124, 168)',
     topColor: 'rgb(255, 143, 178)',
     downColor: 'rgb(0, 229, 255)',
-    name: 'Candy',
+    name: 'Kẹo ngọt',
   },
   {
     id: 22,
@@ -192,7 +192,7 @@ export const chatThemes = [
     color: 'rgb(58, 29, 138)',
     topColor: 'rgb(251, 69, 222)',
     downColor: 'rgb(58, 29, 138)',
-    name: 'Unicorn',
+    name: 'Kỳ lân',
   },
   {
     id: 23,
@@ -201,7 +201,7 @@ export const chatThemes = [
     color: 'rgb(159, 213, 45)',
     topColor: 'rgb(42, 127, 227)',
     downColor: 'rgb(159, 213, 45)',
-    name: 'Tropical',
+    name: 'Nhiệt đới',
   },
   {
     id: 24,
@@ -210,7 +210,7 @@ export const chatThemes = [
     color: 'rgb(217, 169, 0)',
     topColor: 'rgb(85, 0, 41)',
     downColor: 'rgb(217, 169, 0)',
-    name: 'Maple',
+    name: 'Lá phong',
   },
   {
     id: 25,
@@ -228,7 +228,7 @@ export const chatThemes = [
     color: 'rgb(58, 18, 255)',
     topColor: 'rgb(250, 175, 0)',
     downColor: 'rgb(58, 18, 255)',
-    name: 'Rocket',
+    name: 'Tên lửa',
   },
   {
     id: 27,
@@ -237,7 +237,7 @@ export const chatThemes = [
     color: 'rgb(26, 219, 91)',
     topColor: 'rgb(255, 210, 0)',
     downColor: 'rgb(0, 223, 187)',
-    name: 'Citrus',
+    name: 'Cam chanh',
   },
   {
     id: 28,
@@ -246,7 +246,7 @@ export const chatThemes = [
     color: 'rgb(255, 98, 91)',
     topColor: 'rgb(77, 62, 194)',
     downColor: 'rgb(77, 62, 194)',
-    name: 'Citrus',
+    name: 'Cam chanh',
   },
   {
     id: 29,
@@ -255,49 +255,49 @@ export const chatThemes = [
     color: 'rgb(40, 37, 181)',
     topColor: 'rgb(94, 0, 126)',
     downColor: 'rgb(40, 37, 181)',
-    name: 'Shadow',
+    name: 'Bóng tối',
   },
   {
     id: 30,
     type: 'color',
     color: 'rgb(255, 49, 30)',
-    name: 'Rose',
+    name: 'Hoa hồng',
   },
   {
     id: 31,
     type: 'color',
     color: 'rgb(167, 151, 255)',
-    name: 'Lavender',
+    name: 'Oải hương',
   },
   {
     id: 32,
     type: 'color',
     color: 'rgb(251, 69, 222)',
-    name: 'Tulip',
+    name: 'Hoa tulip',
   },
   {
     id: 33,
     type: 'color',
     color: 'rgb(0, 153, 255)',
-    name: 'Classic',
+    name: 'Cổ điển',
   },
   {
     id: 34,
     type: 'color',
     color: 'rgb(170, 50, 50)',
-    name: 'Apple',
+    name: 'Táo',
   },
   {
     id: 35,
     type: 'color',
     color: 'rgb(242, 92, 84)',
-    name: 'Peach',
+    name: 'Đào',
   },
   {
     id: 36,
     type: 'color',
     color: 'rgb(250, 175, 0)',
-    name: 'Honey',
+    name: 'Mật ong',
   },
   {
     id: 37,
@@ -309,12 +309,12 @@ export const chatThemes = [
     id: 38,
     type: 'color',
     color: 'rgb(77, 62, 194)',
-    name: 'Ocean',
+    name: 'Đại dương',
   },
   {
     id: 39,
     type: 'color',
     color: 'rgb(94, 0, 126)',
-    name: 'Grape',
+    name: 'Nho',
   },
 ];

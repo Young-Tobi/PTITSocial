@@ -49,34 +49,34 @@ function SignupForm({ setRenderSignUp, renderSignUp }) {
 
   const signupValidation = Yup.object({
     first_name: Yup.string()
-      .required("What's your first name?")
+      .required('Vui lòng nhập tên của bạn')
       .max(100)
       .min(2)
-      .matches(/^([a-zA-Z]+\s)*[a-zA-Z]+$/, 'You can use english charcters only'),
+      .matches(/^[\p{L}\p{M}]+(?:[\s'-][\p{L}\p{M}]+)*$/u, 'Tên không được chứa ký tự đặc biệt'),
     last_name: Yup.string()
-      .required("What's your last name?")
+      .required('Vui lòng nhập họ và tên đệm')
       .max(100)
       .min(2)
-      .matches(/^([a-zA-Z]+\s)*[a-zA-Z]+$/, 'You can use english charcters only'),
+      .matches(/^[\p{L}\p{M}]+(?:[\s'-][\p{L}\p{M}]+)*$/u, 'Tên không được chứa ký tự đặc biệt'),
     email: Yup.string()
-      .required("You'll need this when you log in and if you ever need to reset your password.")
-      .email('Must be a valid email.')
+      .required('Email được dùng để đăng nhập và khôi phục mật khẩu.')
+      .email('Địa chỉ email không hợp lệ.')
       .max(100),
     password: Yup.string()
-      .required('Password is required')
+      .required('Vui lòng nhập mật khẩu')
       .min(6)
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#_$%^&*])(?=.{6,})/,
-        'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
+        'Mật khẩu phải có ít nhất một chữ thường, một chữ hoa, một chữ số và một ký tự đặc biệt'
       ),
     passwordConfirm: Yup.string().test(
       'passwords-match',
-      'Password confirm must match password !',
+      'Mật khẩu nhập lại không khớp!',
       function (value) {
         return this.parent.password === value;
       }
     ),
-    gender: Yup.string().required('Gender is required'),
+    gender: Yup.string().required('Vui lòng chọn giới tính'),
   });
 
   const submitHandler = async (values) => {
@@ -152,11 +152,11 @@ function SignupForm({ setRenderSignUp, renderSignUp }) {
             let noMoreThan70 = new Date(1970 + 70, 0, 1);
             if (current_date - picked_date < atleast14) {
               setDateError(
-                'it looks like you(ve enetered the wrong info.Please make sure that you use your real date of birth.'
+                'Ngày sinh không hợp lệ. Vui lòng kiểm tra lại ngày sinh thực tế của bạn.'
               );
             } else if (current_date - picked_date > noMoreThan70) {
               setDateError(
-                "it looks like you've enetered the wrong info.Please make sure that you use your real date of birth."
+                'Ngày sinh không hợp lệ. Vui lòng kiểm tra lại ngày sinh thực tế của bạn.'
               );
             } else {
               setDateError(false);

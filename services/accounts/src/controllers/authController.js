@@ -76,7 +76,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // check if email and password exist
-  if (!email || !password) return next(new AppError('Please provide email and password', 400));
+  if (!email || !password) return next(new AppError('Vui lòng nhập email và mật khẩu', 400));
 
   // check if user exist and password is correct
   const user = await User.findOne({ email }).select(
@@ -84,7 +84,7 @@ exports.login = catchAsync(async (req, res, next) => {
   );
 
   if (!user || !(await user.correctPassword(password, user.password)))
-    return next(new AppError('Incorrect email or password', 401));
+    return next(new AppError('Email hoặc mật khẩu không đúng', 401));
 
   const recivedRequestsCount = await Friend.countDocuments({
     recipient: user.id,
@@ -136,9 +136,10 @@ exports.activateAccount = catchAsync(async (req, res, next) => {
     verificationEmailToken: hashedToken,
   });
 
-  if (!user) return next(new AppError('Invalid or expired token', 400));
+  if (!user) return next(new AppError('Liên kết không hợp lệ hoặc đã hết hạn', 400));
 
-  if (user.id !== req.user.id) return next(new AppError('Invalid token please try again', 400));
+  if (user.id !== req.user.id)
+    return next(new AppError('Mã xác nhận không hợp lệ. Vui lòng thử lại', 400));
 
   user.verified = true;
   user.verificationEmailToken = undefined;
@@ -151,7 +152,7 @@ exports.resendEmailVerification = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user.id);
 
   if (user.verified)
-    return next(new AppError('Your account is already verified, try logging in again.', 400));
+    return next(new AppError('Tài khoản đã được xác minh. Vui lòng đăng nhập lại.', 400));
 
   const verificationEmailToken = user.createVerificationEmailToken();
   await user.save({ validateBeforeSave: false });
@@ -170,18 +171,18 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.cookies.jwt;
   }
 
-  if (!token) return next(new AppError('You are not logged in, please log in to access', 401));
+  if (!token) return next(new AppError('Vui lòng đăng nhập để tiếp tục', 401));
 
   // 2) verifcation token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // 3) check if user still exist
   const currentUser = await User.findById(decoded.id).select('+passwordChangedAt');
-  if (!currentUser) return next(new AppError('The token does no longer exist', 401));
+  if (!currentUser) return next(new AppError('Phiên đăng nhập không còn tồn tại', 401));
 
   // 4) if user change password after the token was issued
   if (currentUser.changedPasswordAfter(decoded.iat))
-    return next(new AppError('User recently changed password, please login again', 401));
+    return next(new AppError('Mật khẩu đã thay đổi. Vui lòng đăng nhập lại', 401));
 
   // GRANT ACCESS
   req.user = currentUser;
@@ -190,7 +191,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 exports.requireVerified = (req, res, next) => {
   if (!req.user.verified) {
-    return next(new AppError('Please verify your email before using Backbook', 403));
+    return next(new AppError('Vui lòng xác minh email trước khi sử dụng PTITSocial', 403));
   }
   next();
 };
@@ -226,12 +227,12 @@ exports.findUser = catchAsync(async (req, res, next) => {
   const { email } = req.query;
 
   // check if email and password exist
-  if (!email) return next(new AppError('Please provide email', 400));
+  if (!email) return next(new AppError('Vui lòng nhập email', 400));
 
   // check if user exist and password is correct
   const user = await User.findOne({ email });
 
-  if (!user) return next(new AppError('No user found, please try again', 401));
+  if (!user) return next(new AppError('Không tìm thấy tài khoản. Vui lòng thử lại', 401));
 
   // is everything okay , send jwt to the client
   res.status(200).json({
@@ -246,7 +247,7 @@ exports.findUser = catchAsync(async (req, res, next) => {
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
-  if (!user) return next(new AppError('There is no user with these email', 404));
+  if (!user) return next(new AppError('Không tìm thấy tài khoản với email này', 404));
 
   const resetCode = user.createPasswordResetCode();
   await user.save({ validateBeforeSave: false });
@@ -260,7 +261,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
       status: 'success',
-      message: 'Token sent to email',
+      message: 'Đã gửi mã xác nhận qua email',
     });
   } catch (error) {
     user.passwordResetToken = undefined;
@@ -269,7 +270,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
     console.log(error);
 
-    return next(new AppError('There is an error while sending the email, try again later! ', 500));
+    return next(new AppError('Không thể gửi email. Vui lòng thử lại sau! ', 500));
   }
 });
 
@@ -277,7 +278,7 @@ exports.validateResetCode = catchAsync(async (req, res, next) => {
   const { email, code } = req.body;
 
   // check if email and password exist
-  if (!email || !code) return next(new AppError('Please provide email and reset code', 400));
+  if (!email || !code) return next(new AppError('Vui lòng nhập email và mã khôi phục', 400));
 
   // check if user exist and password is correct
   const user = await User.findOne({
@@ -287,14 +288,13 @@ exports.validateResetCode = catchAsync(async (req, res, next) => {
     },
   }).select('passwordResetToken');
 
-  if (!user) return next(new AppError('No user found or token expired, please try again', 401));
+  if (!user)
+    return next(new AppError('Không tìm thấy tài khoản hoặc mã đã hết hạn. Vui lòng thử lại', 401));
 
   const hashedCode = crypto.createHash('sha256').update(code.toString()).digest('hex');
 
   if (user.passwordResetToken !== hashedCode)
-    return next(
-      new AppError("The number that you've entered doesn't match your code. Please try again.", 401)
-    );
+    return next(new AppError('Mã xác nhận không đúng. Vui lòng thử lại.', 401));
 
   // create token
   const resetToken = user.createPasswordResetToken();
@@ -321,7 +321,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     },
   });
 
-  if (!user) return next(new AppError('Invalid or expired TOKEN', 400));
+  if (!user) return next(new AppError('Mã xác nhận không hợp lệ hoặc đã hết hạn', 400));
 
   user.password = password;
   user.passwordConfirm = passwordConfirm;

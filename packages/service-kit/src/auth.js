@@ -9,7 +9,7 @@ function tokenFrom(req) {
 }
 
 async function authenticate(token) {
-  if (!token) throw new AppError('Please log in to continue', 401);
+  if (!token) throw new AppError('Vui lòng đăng nhập để tiếp tục', 401);
   return (await request('accounts', '/internal/auth/verify', { method: 'POST', body: { token } }))
     .user;
 }
@@ -21,7 +21,7 @@ const protect = catchAsync(async (req, res, next) => {
 
 function requireVerified(req, res, next) {
   if (!req.user.verified)
-    return next(new AppError('Please verify your email before using PTITSocial', 403));
+    return next(new AppError('Vui lòng xác minh email trước khi sử dụng PTITSocial', 403));
   next();
 }
 

@@ -24,7 +24,7 @@ function createApp(name) {
 }
 
 async function start(app, { name, port, realtime } = {}) {
-  app.all('*', (req, res, next) => next(new AppError('Endpoint not found', 404)));
+  app.all('*', (req, res, next) => next(new AppError('Không tìm thấy chức năng này', 404)));
   app.use(errorHandler);
   mongoose.set('strictQuery', false);
   await mongoose.connect(process.env.DATABASE);

@@ -32,7 +32,7 @@ function CreateSharePost({ showSharePost, setShowSharePost, post, setSharesCount
       setTimeout(() => {
         setShowSharePost(false);
         setSharesCount((perv) => perv + 1);
-        toast.success('Successfully Shared!');
+        toast.success('Đã chia sẻ thành công!');
       }, 300);
     }
   }, [data, isSuccess]);
@@ -41,7 +41,7 @@ function CreateSharePost({ showSharePost, setShowSharePost, post, setSharesCount
       <div className={`${classes.wrap} blur`}>
         <Card className={classes.card} innerRef={createShareRef}>
           <div className={classes.header}>
-            Share Post
+            Chia sẻ bài viết
             <div className="small_circle" onClick={() => setShowSharePost(false)}>
               <i className="exit_icon"></i>
             </div>
@@ -53,7 +53,7 @@ function CreateSharePost({ showSharePost, setShowSharePost, post, setSharesCount
                   fontSize: `${description && description.length > 75 ? '15px' : ''}`,
                   direction: `${isRTL(description) ? 'rtl' : 'ltr'}`,
                 }}
-                placeholder="Description"
+                placeholder="Mô tả"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className={classes.textarea_blue}
@@ -61,7 +61,7 @@ function CreateSharePost({ showSharePost, setShowSharePost, post, setSharesCount
               <SharedPost post={post} />
               <div className={classes.btns}>
                 <button className="gray_btn" onClick={() => setShowSharePost(false)}>
-                  Cancel
+                  Hủy
                 </button>
                 <button className="btn_blue" onClick={() => sharePostHandler()}>
                   Chia sẻ

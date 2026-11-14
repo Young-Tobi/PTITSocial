@@ -197,3 +197,176 @@
 :global(.dark) .privacy img {
   filter: invert(100%);
 }
+
+.privacy {
+  border: 0;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-family: inherit;
+}
+.card {
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+.composerHidden {
+  display: none;
+}
+.audience {
+  padding: 18px 16px 16px;
+  color: var(--color-primary);
+}
+.audienceIntro {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--color-secondary);
+}
+.audienceOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+.audienceOption:hover,
+.friendRow:hover {
+  background: var(--bg-third);
+}
+.activeOption {
+  border-color: #b32130;
+  background: rgba(179, 33, 48, 0.07);
+}
+.audienceIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--bg-third);
+  font-size: 23px;
+}
+.optionText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.optionText strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.optionText small {
+  font-size: 12px;
+  color: var(--color-secondary);
+}
+.audience input[type='radio'],
+.audience input[type='checkbox'] {
+  accent-color: #b32130;
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.friendPicker {
+  border-top: 1px solid var(--divider);
+  margin-top: 14px;
+  padding-top: 16px;
+}
+.friendListHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+.friendListHeading span {
+  font-size: 12px;
+  color: var(--color-secondary);
+}
+.friendSearch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-third);
+  border-radius: 20px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  color: var(--color-secondary);
+}
+.friendSearch input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  color: var(--color-primary);
+  border: 0;
+  outline: none;
+  font-size: 14px;
+}
+.friendSearch:focus-within {
+  outline: 2px solid #b32130;
+}
+.viewerResults {
+  max-height: min(280px, 35vh);
+  min-height: 70px;
+  overflow-y: auto;
+}
+.friendRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+}
+.friendRow img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.selectedFriend {
+  background: rgba(179, 33, 48, 0.07);
+}
+.listMessage {
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-secondary);
+  padding: 16px 8px;
+  line-height: 1.5;
+}
+.listMessage button {
+  color: var(--color-primary);
+  background: var(--bg-third);
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.audienceDone {
+  width: 100%;
+  margin-top: 16px;
+}
+.audienceDone:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.audienceBack {
+  position: absolute;
+  left: 12px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  background: var(--bg-third);
+  color: var(--color-primary);
+  cursor: pointer;
+}

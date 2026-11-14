@@ -34,7 +34,7 @@ const server = http.createServer(async (req, res) => {
     );
   }
   const target = targetFor(pathname);
-  if (!target) return fail(res, 404, 'Endpoint not found');
+  if (!target) return fail(res, 404, 'Không tìm thấy chức năng này');
   const upstream = http.request(
     new URL(req.url, targets[target]),
     { method: req.method, headers: { ...req.headers, host: new URL(targets[target]).host } },
@@ -44,7 +44,9 @@ const server = http.createServer(async (req, res) => {
     }
   );
   upstream.setTimeout(30000, () => upstream.destroy());
-  upstream.on('error', () => fail(res, 503, `${target} service is unavailable`));
+  upstream.on('error', () =>
+    fail(res, 503, 'Dịch vụ tạm thời không khả dụng. Vui lòng thử lại sau.')
+  );
   req.on('aborted', () => upstream.destroy());
   req.pipe(upstream);
 });

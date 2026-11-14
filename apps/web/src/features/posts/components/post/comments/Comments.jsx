@@ -61,8 +61,8 @@ function Comments({ lastComment, commentsCount, postID, lastCommentData, comment
       {commentsCount > comments.length ? (
         <>
           <div className={classes.view_more} onClick={viewMoreHandler}>
-            View more comments
-            {isFetching && ' Loading...'}
+            Xem thêm bình luận
+            {isFetching && ' Đang tải…'}
           </div>
         </>
       ) : (

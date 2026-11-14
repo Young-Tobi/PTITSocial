@@ -1,4 +1,5 @@
 ﻿const mongoose = require('mongoose');
+const { visibilityFilter, assertView, parseAudience } = require('../utils/postAccess');
 const multer = require('multer');
 const sharp = require('sharp');
 const Post = require('../models/postModel');
@@ -11,6 +12,36 @@ const AppError = require('@ptitsocial/service-kit/appError');
 const APIFeatures = require('@ptitsocial/service-kit/apiFeatures');
 const { uploadImage } = require('../storage/mediaStorage');
 const Notification = require('@ptitsocial/service-kit/notificationClient');
+const { request } = require('@ptitsocial/service-kit/http');
+
+exports.prepareAudience = catchAsync(async (req, res, next) => {
+  req.postAudience = parseAudience(req.body, req.user.id);
+  if (req.postAudience.audience === 'selected') {
+    const { valid } = await request('accounts', '/internal/friends/validate', {
+      method: 'POST',
+      body: { userId: req.user.id, friendIds: req.postAudience.allowedViewers },
+    });
+    if (!valid) throw new AppError('Chỉ có thể chọn những người đã kết bạn', 400);
+  }
+  req.newPostId = new mongoose.Types.ObjectId();
+  if (req.body.type === 'share') {
+    const original = assertView(await Post.findById(req.body.sharedID), req.user.id, req.friendIds);
+    if ((original.audience && original.audience !== 'public') || original.type === 'share')
+      throw new AppError('Không thể chia sẻ lại bài viết giới hạn người xem', 403);
+  }
+  next();
+});
+
+exports.checkAccess = catchAsync(async (req, res, next) => {
+  let postId = req.params.postID;
+  if (req.params.commentID) {
+    const comment = await Comment.findById(req.params.commentID);
+    if (!comment) throw new AppError('Không tìm thấy bình luận', 404);
+    postId = comment.post;
+  }
+  req.accessPost = assertView(await Post.findById(postId), req.user.id, req.friendIds);
+  next();
+});
 
 const filterObj = (obj, ...allowed) => {
   const newObj = {};
@@ -25,7 +56,7 @@ const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
     cb(null, true);
   } else {
-    cb(new AppError('Please upload only images', 400), false);
+    cb(new AppError('Vui lòng chọn tệp ảnh', 400), false);
   }
 };
 
@@ -44,20 +75,26 @@ exports.resizePostImages = catchAsync(async (req, res, next) => {
     return next();
   }
 
-  if (req.files.images.length > 5) return next(new AppError('You can opload 5 images max', 400));
+  if (req.files.images.length > 5) return next(new AppError('Chỉ được tải lên tối đa 5 ảnh', 400));
 
   req.body.images = [];
 
   await Promise.all(
     req.files.images.map(async (file, i) => {
-      const path = `${process.env.APP_NAME}/users/${req.user.id}/public/posts/`;
+      const restricted = req.postAudience.audience !== 'public';
+      const path = restricted
+        ? `restricted/posts/${req.newPostId}/`
+        : `${process.env.APP_NAME}/users/${req.user.id}/public/posts/`;
 
       const processedImage = await sharp(file.buffer)
         .toFormat('webp')
         .webp({ quality: 70 })
         .toBuffer();
 
-      const filePath = await uploadImage(processedImage, path);
+      const filePath = await (restricted ? require('../storage/localMedia').upload : uploadImage)(
+        processedImage,
+        path
+      );
 
       req.body.images.push(filePath.url);
     })
@@ -71,14 +108,20 @@ exports.uploadCommentPhoto = upload.single('photo');
 exports.resizeCommentPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
 
-  const path = `${process.env.APP_NAME}/users/${req.user.id}/sec/comments/`;
+  const restricted = req.accessPost?.audience && req.accessPost.audience !== 'public';
+  const path = restricted
+    ? `restricted/posts/${req.accessPost.id}/comments/`
+    : `${process.env.APP_NAME}/users/${req.user.id}/sec/comments/`;
 
   const processedImage = await sharp(req.file.buffer)
     .toFormat('webp')
     .webp({ quality: 30 })
     .toBuffer();
 
-  const filePath = await uploadImage(processedImage, path);
+  const filePath = await (restricted ? require('../storage/localMedia').upload : uploadImage)(
+    processedImage,
+    path
+  );
 
   req.body.photo = filePath.url;
 
@@ -90,12 +133,14 @@ exports.createPost = catchAsync(async (req, res, next) => {
 
   const user = req.user.id;
   const newPost = await Post.create({
+    _id: req.newPostId,
+    ...req.postAudience,
     user,
     type,
     text,
     images,
     background,
-    sharedID,
+    sharedID: type === 'share' ? sharedID : undefined,
   });
 
   await newPost.save();
@@ -117,13 +162,20 @@ exports.getAllPosts = catchAsync(async (req, res, next) => {
   const following = await Follow.find({ sender: user });
   const followingIds = following.map((el) => el.recipient.toString());
 
-  let filter = { user: { $in: [...followingIds, user] } };
+  let filter = {
+    $or: [
+      { user: { $in: [...followingIds, user] } },
+      { audience: 'selected', allowedViewers: user },
+      { audience: 'friends', user: { $in: req.friendIds } },
+    ],
+  };
   const features = new APIFeatures(Post.find(filter), req.query)
     .filter()
     .sort()
     .limitFields()
     .paginate();
   // const doc = await features.query.explain();
+  features.query.and([visibilityFilter(user, req.friendIds)]);
   const posts = await features.query;
   const ids = posts.map((el) => el._id);
 
@@ -154,7 +206,7 @@ exports.getPost = catchAsync(async (req, res, next) => {
   const user = req.user.id;
 
   const checkPost = await Post.findById(post);
-  if (!checkPost) return next(new AppError('No post found', 404));
+  if (!checkPost) return next(new AppError('Không tìm thấy bài viết', 404));
 
   const reaction = await Reaction.findOne({
     user: user,
@@ -176,10 +228,9 @@ exports.deletePost = catchAsync(async (req, res, next) => {
   const user = req.user.id;
 
   const checkPost = await Post.findById(post);
-  if (!checkPost) return next(new AppError('No post found', 404));
+  if (!checkPost) return next(new AppError('Không tìm thấy bài viết', 404));
 
-  if (checkPost.user.id !== user)
-    return next(new AppError('You are not the owner of this post', 404));
+  if (checkPost.user.id !== user) return next(new AppError('Bạn không phải tác giả bài viết', 404));
 
   checkPost.deleted = true;
   await checkPost.save();
@@ -195,10 +246,10 @@ exports.addReact = catchAsync(async (req, res, next) => {
   const post = req.params.postID;
   const user = req.user.id;
 
-  if (!post || !type) return next(new AppError('Please provide post and type', 400));
+  if (!post || !type) return next(new AppError('Vui lòng chọn bài viết và loại tương tác', 400));
 
   const checkPost = await Post.findById(post);
-  if (!checkPost) return next(new AppError('No posts found', 400));
+  if (!checkPost) return next(new AppError('Không tìm thấy bài viết', 400));
 
   const checkReact = await Reaction.findOne({
     post: post,
@@ -249,10 +300,10 @@ exports.getReacts = catchAsync(async (req, res, next) => {
   const post = req.params.postID;
   const user = req.user.id;
 
-  if (!post) return next(new AppError('Please provide post and type', 400));
+  if (!post) return next(new AppError('Vui lòng chọn bài viết và loại tương tác', 400));
 
   const checkPost = await Post.findById(post);
-  if (!checkPost) return next(new AppError('No posts found', 400));
+  if (!checkPost) return next(new AppError('Không tìm thấy bài viết', 400));
 
   const reacts = await Reaction.find({ post });
   const stats = await Reaction.calcReactions(mongoose.Types.ObjectId(post));
@@ -267,10 +318,10 @@ exports.addComment = catchAsync(async (req, res, next) => {
   const post = req.params.postID;
   const user = req.user.id;
 
-  if (!post) return next(new AppError('Please provide comment data and post', 400));
+  if (!post) return next(new AppError('Vui lòng nhập bình luận và chọn bài viết', 400));
 
   const checkPost = await Post.findById(post);
-  if (!checkPost) return next(new AppError('No post found', 404));
+  if (!checkPost) return next(new AppError('Không tìm thấy bài viết', 404));
 
   const filteredBody = filterObj(req.body, 'photo', 'text');
 
@@ -307,7 +358,7 @@ exports.commentLike = catchAsync(async (req, res, next) => {
   const user = req.user.id;
 
   const checkComment = await Comment.findById(comment);
-  if (!checkComment) return next(new AppError('No comment found', 404));
+  if (!checkComment) return next(new AppError('Không tìm thấy bình luận', 404));
 
   let newNotification = null;
 
@@ -341,10 +392,10 @@ exports.addCommentReply = catchAsync(async (req, res, next) => {
   const comment = req.params.commentID;
   const user = req.user.id;
 
-  if (!comment || !text) return next(new AppError('Please provide comment and text', 400));
+  if (!comment || !text) return next(new AppError('Vui lòng nhập nội dung bình luận', 400));
 
   const checkComment = await Comment.findById(comment);
-  if (!checkComment) return next(new AppError('No comment found', 404));
+  if (!checkComment) return next(new AppError('Không tìm thấy bình luận', 404));
 
   const filteredBody = filterObj(req.body, 'photo', 'text');
 
@@ -381,10 +432,10 @@ exports.getComments = catchAsync(async (req, res, next) => {
   const post = req.params.postID;
   const user = req.user.id;
 
-  if (!post) return next(new AppError('Please provide post', 400));
+  if (!post) return next(new AppError('Vui lòng chọn bài viết', 400));
 
   const checkPost = await Post.findById(post);
-  if (!checkPost) return next(new AppError('No post found', 404));
+  if (!checkPost) return next(new AppError('Không tìm thấy bài viết', 404));
 
   let filter = { post: checkPost.id };
 

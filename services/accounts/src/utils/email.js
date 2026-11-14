@@ -33,13 +33,13 @@ module.exports = class Email {
   }
 
   async sendVerificationEmail() {
-    await this.send('VerificationEmail', 'PTITSocial email verification');
+    await this.send('VerificationEmail', 'Xác minh email PTITSocial');
   }
 
   async sendPasswordReset() {
     await this.send(
       'PasswordReset',
-      this.url + ' is your PTITSocial recovery code (Valid for 10 min)'
+      this.url + ' là mã khôi phục PTITSocial của bạn (có hiệu lực trong 10 phút)'
     );
   }
 };

@@ -36,7 +36,7 @@ export default function DateSelector({
       onMouseLeave={() => setShow(false)}
     >
       <div className={styles.colHeader}>
-        Date of birth{' '}
+        Ngày sinh{' '}
         {dateError ? (
           <i className={`error_icon ${styles.err_icon}`}></i>
         ) : (
