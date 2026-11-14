@@ -41,65 +41,52 @@ messageSchema.pre(/^find/, async function (next) {
   next();
 });
 
-messageSchema.statics.updateLatestMessage = async function (chatId, messageId, th) {
-  const existingeGroupChat = await Chat.findById(chatId);
-  existingeGroupChat.latestMessage = messageId;
-  await existingeGroupChat.save();
-
-  const userId = existingeGroupChat.users.filter((user) => {
-    return user._id.toString() !== th.sender._id.toString();
-  });
-
-  const result = await Chat.aggregate([
-    {
-      $match: {
-        users: {
-          $elemMatch: {
-            $eq: mongoose.Types.ObjectId(userId[0]),
+// The badge counts conversations whose latest message this user has not read.
+messageSchema.statics.recalculateUnread = async function (userIds) {
+  return Promise.all(
+    userIds.map(async (id) => {
+      const userId = new mongoose.Types.ObjectId(id);
+      const result = await Chat.aggregate([
+        { $match: { users: userId } },
+        {
+          $lookup: {
+            from: 'messages',
+            localField: 'latestMessage',
+            foreignField: '_id',
+            as: 'latestMessage',
           },
         },
-      },
-    },
-    {
-      $lookup: {
-        from: 'messages',
-        localField: 'latestMessage',
-        foreignField: '_id',
-        as: 'latestMessage',
-      },
-    },
-    {
-      $unwind: '$latestMessage',
-    },
-    {
-      $match: {
-        'latestMessage.seen': 'unseen',
-      },
-    },
-    {
-      $match: {
-        'latestMessage.sender': {
-          $ne: mongoose.Types.ObjectId(userId[0]),
+        { $unwind: '$latestMessage' },
+        {
+          $match: {
+            'latestMessage.sender': { $ne: userId },
+            'latestMessage.seenBy': { $ne: userId },
+          },
         },
-      },
-    },
-    {
-      $count: 'count',
-    },
-  ]);
-
-  await User.findByIdAndUpdate(userId[0], {
-    unseenMessages: result[0]?.count || 0,
-  });
+        { $count: 'count' },
+      ]);
+      const count = result[0]?.count || 0;
+      await User.updateOne({ _id: userId }, { $set: { unseenMessages: count } });
+      return count;
+    })
+  );
 };
 
+messageSchema.pre('save', function () {
+  this.$locals.wasNew = this.isNew;
+});
+
 messageSchema.post('save', async function () {
-  // this points to current review
-  this.populate({
+  // Updating a read receipt must never move the conversation back to an older message.
+  if (this.$locals.wasNew) {
+    await Chat.updateOne({ _id: this.chat }, { $set: { latestMessage: this._id } });
+    const chat = await Chat.findById(this.chat);
+    if (chat) await this.constructor.recalculateUnread(chat.users.map((user) => user._id));
+  }
+  await this.populate({
     path: 'sender',
     select: 'first_name last_name photo username confirmed',
   });
-  await this.constructor.updateLatestMessage(this.chat, this._id, this);
 });
 
 const Message = mongoose.model('Message', messageSchema);
