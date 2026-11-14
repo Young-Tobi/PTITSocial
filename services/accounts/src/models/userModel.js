@@ -13,9 +13,9 @@ const userSchema = new mongoose.Schema(
       required: [true, 'A user must have a first name'],
       validate: {
         validator: function (val) {
-          return validator.isLength(val, { min: 3, max: 25 });
+          return validator.isLength(val, { min: 2, max: 25 });
         },
-        message: 'First name should be between 3 and 25 charcters',
+        message: 'First name should be between 2 and 25 characters',
       },
       trim: true,
       text: true,
@@ -26,9 +26,9 @@ const userSchema = new mongoose.Schema(
       required: [true, 'A user must have a last name'],
       validate: {
         validator: function (val) {
-          return validator.isLength(val, { min: 3, max: 25 });
+          return validator.isLength(val, { min: 2, max: 25 });
         },
-        message: 'Last name should be between 3 and 25 charcters',
+        message: 'Last name should be between 2 and 25 characters',
       },
       trim: true,
       text: true,

@@ -75,14 +75,18 @@ Một MongoDB local phục vụ năm database tách biệt; không có dịch v�
 npm.cmd run test:architecture
 npm.cmd run test:quiz
 npm.cmd run test:coding
+npm.cmd --prefix apps/web test -- --watchAll=false --runInBand
 # Cần hệ thống đang chạy:
 npm.cmd run test:integration
 npm.cmd run test:quiz:integration
 npm.cmd run test:coding:integration
+npm.cmd run test:coding:languages
 npm.cmd run build:web
 ```
 
-Kiểm tra tích hợp tạo tài khoản thử riêng và xóa dữ liệu thử trong các database mới khi kết thúc. Email thử và file ảnh thử có thể còn trong Mailpit/thư mục upload; không xóa dữ liệu người dùng hiện có.
+Nếu Gateway chạy ở cổng khác, đặt `$env:TEST_API_URL='http://localhost:8010'` trước khi chạy kiểm tra tích hợp.
+
+Kiểm tra tích hợp bao gồm xác minh email, kết bạn, ảnh, bình luận, WebSocket, quyền đọc tin nhắn và trạng thái đã đọc riêng cho từng thành viên nhóm. Các kiểm thử giao diện kiểm tra tên tiếng Việt, bài chia sẻ đã mất bài gốc và cập nhật trạng thái đọc. Bộ kiểm tra tích hợp tạo tài khoản thử riêng rồi dọn dữ liệu, email trong Mailpit và ảnh local của lần chạy đó; không xóa dữ liệu người dùng hiện có.
 
 ## Chuyển dữ liệu cũ
 

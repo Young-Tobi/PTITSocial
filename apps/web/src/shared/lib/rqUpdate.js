@@ -47,30 +47,36 @@ export function updateMessages(newMessage) {
 export function updateSeenMessages(newMessage, chat) {
   queryClient.setQueryData(['getMessages', chat._id], (oldData) => {
     if (!oldData) return oldData;
-    let newData = oldData;
-    newData.pages[0].data.chat.latestMessage = newMessage;
     return {
       ...oldData,
-      newData,
+      pages: oldData.pages.map((page) => ({
+        ...page,
+        data: {
+          ...page.data,
+          messages: page.data.messages.map((message) =>
+            message._id === newMessage._id ? newMessage : message
+          ),
+          chat:
+            page.data.chat?.latestMessage?._id === newMessage._id
+              ? { ...page.data.chat, latestMessage: newMessage }
+              : page.data.chat,
+        },
+      })),
     };
   });
 
   queryClient.setQueryData(['getChats'], (oldData) => {
     if (!oldData) return oldData;
-    let newData = oldData;
-    newData.data.chats = newData.data.chats.map((chat) => {
-      if (chat._id === newMessage.chat) {
-        return {
-          ...chat,
-          latestMessage: newMessage,
-        };
-      }
-      return chat;
-    });
-
     return {
       ...oldData,
-      newData,
+      data: {
+        ...oldData.data,
+        chats: oldData.data.chats.map((item) =>
+          item._id === newMessage.chat && item.latestMessage?._id === newMessage._id
+            ? { ...item, latestMessage: newMessage }
+            : item
+        ),
+      },
     };
   });
 }

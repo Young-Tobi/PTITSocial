@@ -1,24 +1,17 @@
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { updateNStats } from 'app/slices/userSlice';
 import { socket } from 'routes/IsLoggedIn';
 import { updateMessages } from 'shared/lib/rqUpdate';
 
 export const useSendMessage = (chat) => {
-  const user = useSelector((state) => ({ ...state.user.userinfo }));
+  const dispatch = useDispatch();
 
   return useMutation({
     mutationKey: 'useSendMessage',
     mutationFn: async ({ content, chatId, type }) => {
-      updateMessages({
-        _id: Math.floor(Math.random() * 100000000000 + 1),
-        content,
-        chat: chatId,
-        type,
-        sender: user,
-      });
-
       const { data } = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/messages/${chatId}/send`,
         { content, type },
@@ -33,7 +26,8 @@ export const useSendMessage = (chat) => {
     },
     onSuccess: (data) => {
       const newMessage = data?.data?.message;
-
+      updateMessages(newMessage);
+      dispatch(updateNStats({ unseenMessages: data?.data?.unseenMessages }));
       socket.emit('new_message', { message: newMessage, chat });
     },
   });
