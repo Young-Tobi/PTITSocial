@@ -366,7 +366,7 @@ function Middle({ chatId, soketSlice, user, pView, setOpenInfo, openInfo }) {
                   ? skl
                   : hasNextPage
                     ? 'Đang tải tin nhắn cũ…'
-                    : 'Bạn đã xem hết tin nhắn'}
+                    : null}
               </div>
             </>
           ) : (

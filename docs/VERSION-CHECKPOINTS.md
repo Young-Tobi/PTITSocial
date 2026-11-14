@@ -1,5 +1,20 @@
 # Mốc phiên bản PTITSocial
 
+## BASE — mốc khôi phục theo yêu cầu người dùng
+
+Tên Git tag: `BASE`.
+
+Đây là trạng thái mã nguồn được người dùng chọn làm BASE ngày 14/11/2026.
+Khi người dùng yêu cầu "quay về BASE", dùng đúng tag này làm mốc khôi phục.
+
+Mốc bao gồm toàn bộ chức năng đã hoàn thành trong các phần bên dưới, sáu sửa lỗi
+được khôi phục từ nhh và thay đổi bỏ dòng "Bạn đã xem hết tin nhắn" trong chat.
+Tính năng AI gợi ý roadmap mới được trao đổi ý tưởng, chưa được triển khai.
+
+Không di chuyển hoặc ghi đè tag BASE khi tiếp tục thêm chức năng. Trước khi
+khôi phục sau này, lưu riêng những thay đổi mới cần giữ. Mốc chỉ lưu mã nguồn,
+không hoàn tác MongoDB, cấu hình `.env` hay tệp người dùng đã tải lên.
+
 ## checkpoint-2026-11-14-vi-chat
 
 Mốc mã nguồn ngày 14/11/2026, trước đợt bổ sung chức năng tiếp theo.
