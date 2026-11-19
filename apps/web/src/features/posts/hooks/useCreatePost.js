@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { queryClient } from 'App';
+import { prependPost, syncSharedPostCount } from 'shared/lib/postCache';
 
 const CreatePost = async ({ data, type }) => {
   const reqdata = axios.post(
@@ -19,30 +20,11 @@ export const useCreatePost = (usernameID) => {
   return useMutation({
     mutationKey: 'useCreatePost',
     mutationFn: CreatePost,
-    onSuccess: (data) => {
-      queryClient.setQueryData(['getProfilePosts', usernameID], (oldData) => {
-        if (!oldData) return;
-
-        let newData = oldData;
-        const newPost = data.data.data;
-        newData.pages[0].data = [newPost, ...newData.pages[0].data];
-        return {
-          ...oldData,
-          newData,
-        };
-      });
-
-      queryClient.setQueryData(['allPosts'], (oldData) => {
-        if (!oldData) return oldData;
-
-        let newData = oldData;
-        const newPost = data.data.data;
-        newData.pages[0].data = [newPost, ...newData?.pages[0]?.data];
-        return {
-          ...oldData,
-          newData,
-        };
-      });
+    onSuccess: (response) => {
+      const newPost = response.data.data;
+      queryClient.setQueryData(['getProfilePosts', usernameID], (old) => prependPost(old, newPost));
+      queryClient.setQueryData(['allPosts'], (old) => prependPost(old, newPost));
+      syncSharedPostCount(queryClient, newPost);
     },
   });
 };

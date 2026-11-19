@@ -84,7 +84,12 @@ async function connect(user) {
 }
 async function main() {
   const health = await api('GET', '/health');
-  assert.deepEqual(health.services, { accounts: 'ok', content: 'ok', messaging: 'ok' });
+  assert.deepEqual(health.services, {
+    accounts: 'ok',
+    content: 'ok',
+    messaging: 'ok',
+    learning: 'ok',
+  });
   const first = await account('One');
   const second = await account('Two');
   await api('GET', '/api/v1/posts/getAllPosts', { token: first.token, expected: 403 });
@@ -799,11 +804,35 @@ async function regressions({ first, second, sender, recipient, image, post, mess
         body: { type: 'share', sharedID: post._id, text: 'Shared caption remains' },
       })
     ).data;
+    assert.equal(shared.sharesCount, 0);
+    assert.equal(shared.sharedID.sharesCount, 1);
+    assert.equal(
+      (await api('GET', `/api/v1/posts/${post._id}`, { token: second.token })).data.post
+        .sharesCount,
+      1
+    );
+    const anotherShare = (
+      await api('POST', '/api/v1/posts/createPost', {
+        token: second.token,
+        body: { type: 'share', sharedID: post._id, text: 'Second test share' },
+      })
+    ).data;
+    assert.equal(anotherShare.sharedID.sharesCount, 2);
+    await api('PUT', `/api/v1/posts/${anotherShare._id}`, { token: second.token, body: {} });
+    assert.equal(
+      (await api('GET', `/api/v1/posts/${post._id}`, { token: second.token })).data.post
+        .sharesCount,
+      1
+    );
+    console.log(
+      'PASS original share count increments, returns authoritative count and excludes deleted shares'
+    );
     await api('PUT', `/api/v1/posts/${post._id}`, { token: first.token, body: {} });
     const remaining = (await api('GET', `/api/v1/posts/${shared._id}`, { token: second.token }))
       .data.post;
     assert.equal(remaining.sharedID, null);
     assert.equal(remaining.text, 'Shared caption remains');
+    await api('PUT', `/api/v1/posts/${shared._id}`, { token: second.token, body: {} });
     console.log('PASS share stays accessible after deleting the original post');
   } finally {
     await client.close();

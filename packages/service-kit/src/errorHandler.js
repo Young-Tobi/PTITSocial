@@ -94,7 +94,7 @@ module.exports = (err, req, res, next) => {
   if (err.name === 'CastError') err = handleCastErrorDB(err);
   if (err.code === 11000) err = handleDuplicateFieldsDB(err);
   if (err.name === 'ValidationError') err = handleValidationErrorDB(err);
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV !== 'production') {
     sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = Object.assign(err);

@@ -100,6 +100,7 @@ function SendMessage({
           if (imageInputRef.current) imageInputRef.current.value = '';
           onCancelReply?.();
           scrollToBottom();
+          messageRef.current?.focus();
         },
       }
     );
@@ -286,7 +287,7 @@ function SendMessage({
             }}
             value={messageText}
             maxLength={400}
-            disabled={isSending}
+            readOnly={isSending}
             ref={messageRef}
             onChange={(e) => {
               typingHandler();

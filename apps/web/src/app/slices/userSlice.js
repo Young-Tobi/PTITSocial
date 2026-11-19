@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { normalizeLocalUrls } from '../../shared/lib/localUrls';
 
 const initialValue = {
-  userinfo: Cookies.get('user') ? JSON.parse(Cookies.get('user')) : null,
+  userinfo: Cookies.get('user') ? normalizeLocalUrls(JSON.parse(Cookies.get('user'))) : null,
   theme: Cookies.get('theme')
     ? JSON.parse(Cookies.get('theme'))
     : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches

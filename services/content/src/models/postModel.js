@@ -125,9 +125,12 @@ const postSchema = new mongoose.Schema(
 );
 
 postSchema.statics.calcShares = async function (postId) {
+  const originalId = postId?._id || postId;
+  if (!originalId || !mongoose.isValidObjectId(originalId)) return 0;
+  const sharedId = new mongoose.Types.ObjectId(String(originalId));
   const sharesStats = await this.aggregate([
     {
-      $match: { sharedID: postId },
+      $match: { type: 'share', sharedID: sharedId, deleted: { $ne: true } },
     },
     {
       $group: {
@@ -138,7 +141,7 @@ postSchema.statics.calcShares = async function (postId) {
   ]);
 
   await Post.findByIdAndUpdate(
-    postId,
+    sharedId,
     {
       sharesCount: sharesStats[0]?.count || 0,
     },

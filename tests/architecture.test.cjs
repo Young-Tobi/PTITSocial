@@ -7,6 +7,7 @@ const { targetFor } = require('../services/gateway/src/routes');
 test('gateway routes each public capability to its data owner', () => {
   for (const [url, owner] of [
     ['/api/v1/users/login', 'accounts'],
+    ['/api/v1/learning/sessions', 'learning'],
     ['/api/v1/users/getProfile/minhanh', 'accounts'],
     ['/api/v1/friends/all', 'accounts'],
     ['/api/v1/users/getProfile/minhanh/posts', 'content'],
@@ -36,7 +37,7 @@ function files(directory) {
     );
 }
 test('services never import source code or owned models from a sibling service', () => {
-  for (const domain of ['accounts', 'content', 'messaging', 'gateway'])
+  for (const domain of ['accounts', 'content', 'messaging', 'learning', 'gateway'])
     for (const file of files(`services/${domain}/src`)) {
       const source = fs.readFileSync(file, 'utf8');
       for (const [, specifier] of source.matchAll(/require\(['"]([^'"]+)['"]\)/g)) {

@@ -7,8 +7,28 @@ const Profile = React.lazy(() => import('pages/profile/index'));
 const FriendsPage = React.lazy(() => import('pages/friends/index'));
 const PostPage = React.lazy(() => import('pages/post/PostPage'));
 const Messages = React.lazy(() => import('pages/messages/index'));
+const Learning = React.lazy(() => import('pages/learning/index'));
+const Flashcards = React.lazy(() => import('pages/learning/Flashcards'));
+const Roadmaps = React.lazy(() => import('pages/learning/Roadmaps'));
 
 const pagesData = [
+  { path: '/learning/flashcards', element: <Flashcards />, title: 'flashcards', priv: true },
+  {
+    path: '/learning/flashcards/:deckId',
+    element: <Flashcards />,
+    title: 'flashcard-deck',
+    priv: true,
+  },
+  { path: '/learning', element: <Roadmaps />, title: 'roadmaps', priv: true },
+  { path: '/learning/roadmaps/:roadmapId', element: <Roadmaps />, title: 'roadmap', priv: true },
+  { path: '/learning/ai', element: <Learning />, title: 'learning-ai', priv: true },
+  {
+    path: '/learning/ai/:sessionId',
+    element: <Learning />,
+    title: 'learning-ai-detail',
+    priv: true,
+  },
+  { path: '/learning/:sessionId', element: <Learning />, title: 'learning-detail', priv: true },
   {
     path: '',
     element: <Home />,

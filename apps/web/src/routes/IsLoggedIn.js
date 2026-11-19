@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { io } from 'socket.io-client';
+import { normalizeLocalUrls } from 'shared/lib/localUrls';
 import { queryClient } from 'App';
 import chat_notification from 'assets/chat_notification.wav';
 import notification_sweet from 'assets/notification_sweet.wav';
@@ -52,6 +53,7 @@ export default function IsLoggedIn({ user }) {
         withCredentials: true,
         auth: { token: JSON.parse(Cookies.get('token') || 'null') },
       });
+      socket.onAny((event, ...args) => args.forEach((value) => normalizeLocalUrls(value)));
       socket.emit('setup', {
         userId: user.userinfo._id,
         info: {

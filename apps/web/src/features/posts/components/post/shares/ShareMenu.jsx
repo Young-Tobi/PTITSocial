@@ -8,7 +8,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import toast from 'react-hot-toast';
 import CreateSharePost from './CreateSharePost';
 
-function ShareMenu({ showMenu, setShowMenu, post, user, postRef, setSharesCount }) {
+function ShareMenu({ showMenu, setShowMenu, post, user, postRef }) {
   const menuRef = useRef();
 
   const [showSharePost, setShowSharePost] = useState(false);
@@ -53,7 +53,6 @@ function ShareMenu({ showMenu, setShowMenu, post, user, postRef, setSharesCount 
           showSharePost={showSharePost}
           setShowSharePost={setShowSharePost}
           post={post}
-          setSharesCount={setSharesCount}
         />
       )}
     </Card>

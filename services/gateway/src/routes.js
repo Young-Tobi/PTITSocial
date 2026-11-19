@@ -1,6 +1,7 @@
 // Keep legacy public URLs stable while routing each domain to its owner.
 function targetFor(pathname) {
   if (pathname.startsWith('/internal')) return null;
+  if (/^\/api\/v1\/learning(\/|$)/.test(pathname)) return 'learning';
   if (
     pathname.startsWith('/socket.io') ||
     /^\/api\/v1\/(chats|messages)(\/|$)/.test(pathname) ||

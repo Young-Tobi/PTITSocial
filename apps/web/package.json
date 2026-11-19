@@ -15,7 +15,9 @@
     "firebase": "^9.15.0",
     "formik": "^2.2.9",
     "js-cookie": "^3.0.1",
+    "markdown-to-jsx": "^9.10.6",
     "moment": "^2.29.4",
+    "prismjs": "^1.30.0",
     "react": "^18.2.0",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
@@ -66,5 +68,11 @@
   },
   "engines": {
     "node": ">=16.0.0"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^markdown-to-jsx/react$": "<rootDir>/node_modules/markdown-to-jsx/dist/react.cjs",
+      "^markdown-to-jsx/entities$": "<rootDir>/node_modules/markdown-to-jsx/dist/entities.browser.cjs"
+    }
   }
 }

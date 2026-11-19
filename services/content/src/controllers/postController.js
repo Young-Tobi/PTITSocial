@@ -147,7 +147,7 @@ exports.createPost = catchAsync(async (req, res, next) => {
   if (type === 'share')
     await newPost.populate({
       path: 'sharedID',
-      select: 'images user type text background',
+      select: 'images user type text background sharesCount',
     });
 
   res.status(200).json({

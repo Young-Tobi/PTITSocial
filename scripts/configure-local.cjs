@@ -35,6 +35,7 @@ shared.INTERNAL_API_KEY = current.INTERNAL_API_KEY || crypto.randomBytes(48).toS
 shared.ACCOUNTS_URL = 'http://127.0.0.1:8001';
 shared.CONTENT_URL = 'http://127.0.0.1:8002';
 shared.MESSAGING_URL = 'http://127.0.0.1:8003';
+shared.LEARNING_URL = 'http://127.0.0.1:8004';
 delete shared.PORT;
 delete shared.DATABASE;
 save(path.join(root, '.env'), shared);
@@ -43,8 +44,16 @@ for (const [name, port] of [
   ['accounts', 8001],
   ['content', 8002],
   ['messaging', 8003],
+  ['learning', 8004],
 ]) {
   const config = { ...shared, ...read(path.join(root, 'services', name, '.env')), PORT: port };
+  if (name === 'learning') {
+    config.GEMINI_API_KEY ??= '';
+    config.GEMINI_API_KEYS ??= '';
+    config.GEMINI_MODEL ||= 'gemini-3.5-flash-lite';
+    config.GEMINI_EMBEDDING_MODEL ||= 'gemini-embedding-001';
+    config.AI_DAILY_LIMIT ||= '30';
+  }
   if (name !== 'gateway') config.DATABASE = `mongodb://127.0.0.1:27017/ptitsocial_${name}`;
   save(path.join(root, 'services', name, '.env'), config);
 }

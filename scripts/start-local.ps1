@@ -11,6 +11,7 @@ $components = @(
   @{Name='accounts'; Port=8001; Directory='services\accounts'; Entry='src\server.js'},
   @{Name='content'; Port=8002; Directory='services\content'; Entry='src\server.js'},
   @{Name='messaging'; Port=8003; Directory='services\messaging'; Entry='src\server.js'},
+  @{Name='learning'; Port=8004; Directory='services\learning'; Entry='src\server.js'},
   @{Name='gateway'; Port=8000; Directory='services\gateway'; Entry='src\server.js'},
   @{Name='frontend'; Port=3000; Directory='apps\web'; Entry='node_modules\react-scripts\bin\react-scripts.js'; Extra='start'}
 )

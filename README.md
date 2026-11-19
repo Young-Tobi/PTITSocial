@@ -2,7 +2,7 @@
 
 Repository nhóm (private): [Young-Tobi/PTITSocial](https://github.com/Young-Tobi/PTITSocial).
 
-Mạng xã hội dành cho sinh viên, dùng React, Express, Node.js và MongoDB. Backend được tách thành ba dịch vụ và một API Gateway; mỗi dịch vụ sở hữu database riêng.
+Mạng xã hội dành cho sinh viên, dùng React, Express, Node.js và MongoDB. Backend được tách thành bốn dịch vụ và một API Gateway; mỗi dịch vụ sở hữu database riêng.
 
 ## Cấu trúc
 
@@ -18,6 +18,7 @@ services/
   accounts/                Tài khoản, hồ sơ, kết bạn, theo dõi, tìm kiếm
   content/                 Bài viết, bình luận, lượt thích, ảnh
   messaging/               Chat, tin nhắn, thông báo và trạng thái online
+  learning/                Trợ lý Gemini, tìm kiếm ngữ nghĩa và lộ trình cá nhân
 packages/service-kit/      Xử lý lỗi, HTTP client, xác thực và bản sao dữ liệu công khai
 scripts/                   Khởi động, dừng, cấu hình, chuyển dữ liệu
 tests/                     Kiểm tra ranh giới dịch vụ và luồng tích hợp
@@ -59,15 +60,19 @@ Máy đang làm bài đã được chuyển dữ liệu từ bản cũ, bao gồ
 | Accounts   | 8001 | `ptitsocial_accounts`  |
 | Content    | 8002 | `ptitsocial_content`   |
 | Messaging  | 8003 | `ptitsocial_messaging` |
+| Learning   | 8004 | `ptitsocial_learning`  |
 
 Từng dịch vụ có `package.json`, `src/server.js`, `.env` và `/health` riêng. Có thể chạy riêng bằng `npm.cmd run start:accounts`, `start:content`, `start:messaging`, `start:gateway`. Khi gọi từ root bằng npm workspace, working directory được đặt vào dịch vụ tương ứng.
 
-Một MongoDB local phục vụ ba database tách biệt; không có dịch vụ nào truy vấn trực tiếp database của dịch vụ khác. Các bản sao tên, avatar và quan hệ theo dõi chỉ phục vụ đọc, được đồng bộ qua API nội bộ.
+Một MongoDB local phục vụ bốn database tách biệt; không có dịch vụ nào truy vấn trực tiếp database của dịch vụ khác. Các bản sao tên, avatar và quan hệ theo dõi chỉ phục vụ đọc, được đồng bộ qua API nội bộ.
+
+Góc học tập tại `/learning` có sáu roadmap tương tác, không cần API key. Chế độ **Learn with AI** tại `/learning/ai` dùng `GEMINI_API_KEY` trong `services/learning/.env` để tạo lộ trình và hỏi đáp. Xem [hướng dẫn Roadmap và Gemini](docs/AI-LEARNING.md).
 
 ## Kiểm tra
 
 ```powershell
 npm.cmd run test:architecture
+npm.cmd run test:learning
 npm.cmd --prefix apps/web test -- --watchAll=false --runInBand
 # Cần hệ thống đang chạy:
 npm.cmd run test:integration
@@ -92,7 +97,10 @@ Lệnh sao chép từ database `backbook`, giữ nguyên ObjectId và không s�
 
 ## Đọc tiếp
 
+- [Flashcard: sử dụng, thuật toán lịch ôn và cách giải thích với thầy](docs/FLASHCARDS.md)
+- [Học và trình bày BASE, Roadmap và Learn with AI](docs/HUONG-DAN-BAO-VE-PROJECT.md)
 - [Kiến trúc và quyền sở hữu dữ liệu](docs/ARCHITECTURE.md)
+- [Truy cập từ máy khác cùng Wi-Fi](docs/LAN.md)
 - [Đường đi của API](docs/API.md)
 - [Nên đọc và sửa file nào](docs/CODE-GUIDE.md)
 - [Làm việc nhóm: clone, chia nhánh và Pull Request](docs/TEAM-WORKFLOW.md)

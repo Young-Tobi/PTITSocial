@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import ProfileMenu from './ProfileMenu';
 import Post from 'features/posts/components/post/index';
 import Card from 'shared/components/ui/Card/Card';
 import Photos from './Photos';
@@ -261,7 +260,6 @@ function Profile() {
 
           <div className="line"></div>
 
-          <ProfileMenu />
         </div>
       </div>
       <div className={classes.bottom}>

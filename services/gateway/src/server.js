@@ -5,6 +5,7 @@ const targets = {
   accounts: process.env.ACCOUNTS_URL,
   content: process.env.CONTENT_URL,
   messaging: process.env.MESSAGING_URL,
+  learning: process.env.LEARNING_URL || 'http://127.0.0.1:8004',
 };
 function fail(res, status, message) {
   if (!res.headersSent) res.writeHead(status, { 'content-type': 'application/json' });
@@ -43,7 +44,7 @@ const server = http.createServer(async (req, res) => {
       response.pipe(res);
     }
   );
-  upstream.setTimeout(30000, () => upstream.destroy());
+  upstream.setTimeout(target === 'learning' ? 240000 : 30000, () => upstream.destroy());
   upstream.on('error', () =>
     fail(res, 503, 'Dịch vụ tạm thời không khả dụng. Vui lòng thử lại sau.')
   );
@@ -77,6 +78,8 @@ server.on('upgrade', (req, socket, head) => {
   upstream.on('error', () => socket.destroy());
   upstream.end();
 });
-server.listen(Number(process.env.PORT || 8000), '127.0.0.1', () =>
-  console.log('API Gateway ready at http://localhost:8000')
+server.listen(Number(process.env.PORT || 8000), process.env.GATEWAY_HOST || '127.0.0.1', () =>
+  console.log(
+    `API Gateway ready on ${process.env.GATEWAY_HOST || '127.0.0.1'}:${process.env.PORT || 8000}`
+  )
 );

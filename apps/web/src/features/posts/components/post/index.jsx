@@ -49,7 +49,7 @@ function Post({ post }) {
   const [delayHandler, setDelayHandler] = useState(null);
   const [reactions, setReactions] = useState(null);
   const [commentsCount, setCommentsCount] = useState(post?.commentsCount);
-  const [sharesCount, setSharesCount] = useState(post?.sharesCount);
+  const sharesCount = post?.sharesCount || 0;
   const user = useSelector((state) => ({ ...state.user.userinfo }));
 
   const postRef = useRef();
@@ -422,7 +422,6 @@ function Post({ post }) {
                   setShowMenu={setShowShare}
                   post={post}
                   postRef={postRef}
-                  setSharesCount={setSharesCount}
                 />
               )}
             </>
@@ -446,7 +445,6 @@ function Post({ post }) {
         postID={post._id}
         lastCommentData={lastCommentData}
         user={user}
-        commentRef={commentRef}
       />
 
       {isViewerOpen && (

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { useCreatePost } from 'features/posts/hooks/useCreatePost';
 import isRTL from 'shared/lib/isRTL';
 import Portal from 'shared/lib/Portal';
@@ -9,33 +10,38 @@ import SharedPost from './SharedPost';
 import toast from 'react-hot-toast';
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
 
-function CreateSharePost({ showSharePost, setShowSharePost, post, setSharesCount }) {
+function CreateSharePost({ showSharePost, setShowSharePost, post }) {
   const [description, setDescription] = useState('');
   const createShareRef = useRef();
 
-  const { data, isLoading, isSuccess, mutate } = useCreatePost();
+  const username = useSelector((state) => state.user.userinfo?.username);
+  const { isLoading, mutate } = useCreatePost(username);
 
   useOnClickOutside(createShareRef, showSharePost, () => {
     setShowSharePost(false);
   });
 
   const sharePostHandler = () => {
+    if (isLoading) return;
     let form = new FormData();
     form.append('type', 'share');
     form.append('text', description);
     form.append('sharedID', post._id);
-    mutate({ data: Object.fromEntries(form), type: 'share' });
+    mutate(
+      { data: Object.fromEntries(form), type: 'share' },
+      {
+        onSuccess: () => {
+          setShowSharePost(false);
+          toast.success('Đã chia sẻ thành công!');
+        },
+        onError: (error) =>
+          toast.error(
+            error.response?.data?.message || 'Chưa chia sẻ được bài viết. Vui lòng thử lại.'
+          ),
+      }
+    );
   };
 
-  useEffect(() => {
-    if (isSuccess && data?.data?.status === 'success') {
-      setTimeout(() => {
-        setShowSharePost(false);
-        setSharesCount((perv) => perv + 1);
-        toast.success('Đã chia sẻ thành công!');
-      }, 300);
-    }
-  }, [data, isSuccess]);
   return (
     <Portal>
       <div className={`${classes.wrap} blur`}>
@@ -63,7 +69,11 @@ function CreateSharePost({ showSharePost, setShowSharePost, post, setSharesCount
                 <button className="gray_btn" onClick={() => setShowSharePost(false)}>
                   Hủy
                 </button>
-                <button className="btn_blue" onClick={() => sharePostHandler()}>
+                <button
+                  className="btn_blue"
+                  disabled={isLoading}
+                  onClick={() => sharePostHandler()}
+                >
                   Chia sẻ
                 </button>
               </div>

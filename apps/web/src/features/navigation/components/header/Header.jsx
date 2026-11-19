@@ -1,3 +1,4 @@
+import RoadmapIcon from 'shared/icons/RoadmapIcon';
 import React, { useState, useRef } from 'react';
 import styles from './Header.module.css';
 import { Link, NavLink, useLocation } from 'react-router-dom';
@@ -102,6 +103,17 @@ function Header() {
               {user?.recivedRequestsCount}
             </div>
           )}
+        </NavLink>
+        <NavLink
+          to="/learning"
+          title="Lộ trình học tập"
+          aria-label="Lộ trình học tập"
+          className={({ isActive }) =>
+            isActive ? `${styles.active} ${styles.middle_icon}` : styles.middle_icon
+          }
+        >
+          <RoadmapIcon size={30} className={`${styles.active_icon} ${styles.roadmapIcon}`} />
+          <RoadmapIcon size={30} className={`${styles.icon} ${styles.roadmapIcon}`} />
         </NavLink>
       </div>
       <div className={styles.right}>

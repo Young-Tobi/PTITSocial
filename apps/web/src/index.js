@@ -13,6 +13,12 @@ import { Provider } from 'react-redux';
 import { store } from './app/store';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { normalizeLocalUrls } from './shared/lib/localUrls';
+
+axios.interceptors.response.use((response) => {
+  response.data = normalizeLocalUrls(response.data);
+  return response;
+});
 
 const token = Cookies.get('token') ? JSON.parse(Cookies.get('token')) : null;
 
