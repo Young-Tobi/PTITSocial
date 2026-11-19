@@ -7,11 +7,11 @@ const tag = Date.now();
 const ids = [];
 const sockets = [];
 const fixtureImages = [];
-async function api(method, pathname, { token, body, form, expected } = {}) {
+async function api(method, pathname, { token, body, form, expected, includeHeaders = false } = {}) {
   const response = await fetch(base + pathname, {
     method,
     headers: {
-      ...(token ? { authorization: `Bearer ${token}` } : {}),
+      ...(token ? { cookie: token } : {}),
       ...(body ? { 'content-type': 'application/json' } : {}),
     },
     body: form || (body ? JSON.stringify(body) : undefined),
@@ -20,11 +20,12 @@ async function api(method, pathname, { token, body, form, expected } = {}) {
   const data = await response.json();
   if (expected) assert.equal(response.status, expected, JSON.stringify(data));
   else assert(response.ok, `${method} ${pathname}: ${response.status} ${JSON.stringify(data)}`);
-  return data;
+  return includeHeaders ? { data, headers: response.headers } : data;
 }
 async function account(index) {
   const email = `architecture-${tag}-${index}@example.com`.toLowerCase();
-  const result = await api('POST', '/api/v1/users/signup', {
+  const response = await api('POST', '/api/v1/users/signup', {
+    includeHeaders: true,
     body: {
       first_name: 'Integration',
       last_name: 'Student' + index,
@@ -37,7 +38,11 @@ async function account(index) {
       birth_Day: 15,
     },
   });
-  const user = { ...result.data.user, token: result.data.token, email };
+  const user = {
+    ...response.data.data.user,
+    token: response.headers.get('set-cookie').split(';')[0],
+    email,
+  };
   ids.push(new ObjectId(user._id));
   return user;
 }
@@ -56,7 +61,7 @@ async function activate(user) {
 }
 async function connect(user) {
   const socket = io(base, {
-    auth: { token: user.token },
+    extraHeaders: { cookie: user.token },
     transports: ['websocket'],
     reconnection: false,
   });

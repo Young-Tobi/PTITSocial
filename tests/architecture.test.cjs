@@ -18,6 +18,9 @@ test('gateway routes each public capability to its data owner', () => {
     ['/api/v1/chats', 'messaging'],
     ['/api/v1/messages/123/send', 'messaging'],
     ['/socket.io/', 'messaging'],
+    ['/api/v1/study/focus-rooms', 'study'],
+    ['/api/v1/study/locations', 'study'],
+    ['/study-socket.io/', 'study'],
   ])
     assert.equal(targetFor(url), owner, url);
   for (const url of ['/internal/projections', '/internal/auth/verify', '/api/v1/usersExtra'])
@@ -36,7 +39,7 @@ function files(directory) {
     );
 }
 test('services never import source code or owned models from a sibling service', () => {
-  for (const domain of ['accounts', 'content', 'messaging', 'gateway'])
+  for (const domain of ['accounts', 'content', 'messaging', 'study', 'gateway'])
     for (const file of files(`services/${domain}/src`)) {
       const source = fs.readFileSync(file, 'utf8');
       for (const [, specifier] of source.matchAll(/require\(['"]([^'"]+)['"]\)/g)) {

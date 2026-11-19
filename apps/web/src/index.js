@@ -12,11 +12,9 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
-const token = Cookies.get('token') ? JSON.parse(Cookies.get('token')) : null;
-
-if (token) axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+// Gui cookie HttpOnly toi API. Token khong con duoc luu trong JavaScript.
+axios.defaults.withCredentials = true;
 
 const root = ReactDOMClient.createRoot(document.getElementById('backbook'));
 root.render(

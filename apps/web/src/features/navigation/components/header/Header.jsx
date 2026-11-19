@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import styles from './Header.module.css';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { FiHeadphones, FiMapPin } from 'react-icons/fi';
 
 import {
   ArrowDown,
@@ -102,6 +103,26 @@ function Header() {
               {user?.recivedRequestsCount}
             </div>
           )}
+        </NavLink>
+        <NavLink
+          to="/focus"
+          aria-label="Focus Room"
+          title="Focus Room"
+          className={({ isActive }) =>
+            isActive ? `${styles.active} ${styles.middle_icon}` : styles.middle_icon
+          }
+        >
+          <FiHeadphones size={24} />
+        </NavLink>
+        <NavLink
+          to="/study-spots"
+          aria-label="Study Spot"
+          title="Study Spot"
+          className={({ isActive }) =>
+            isActive ? `${styles.active} ${styles.middle_icon}` : styles.middle_icon
+          }
+        >
+          <FiMapPin size={24} />
         </NavLink>
       </div>
       <div className={styles.right}>

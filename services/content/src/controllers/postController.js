@@ -29,7 +29,11 @@ const multerFilter = (req, file, cb) => {
   }
 };
 
-const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: { fileSize: 5 * 1024 * 1024, files: 5 },
+});
 
 exports.uploadPostImages = upload.fields([{ name: 'images', maxCount: 5 }]);
 

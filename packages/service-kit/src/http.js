@@ -4,6 +4,7 @@ const serviceUrls = {
   accounts: () => process.env.ACCOUNTS_URL,
   content: () => process.env.CONTENT_URL,
   messaging: () => process.env.MESSAGING_URL,
+  study: () => process.env.STUDY_URL,
 };
 
 async function request(service, pathname, options = {}) {

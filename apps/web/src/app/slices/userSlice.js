@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const initialValue = {
@@ -21,10 +20,6 @@ export const userSlice = createSlice({
       Cookies.set('user', JSON.stringify(action.payload.data.user), {
         expires: 90,
       });
-      Cookies.set('token', JSON.stringify(action.payload.data.token), {
-        expires: 90,
-      });
-      axios.defaults.headers.common['Authorization'] = `Bearer ${action.payload.data.token}`;
     },
 
     updateProfilePhoto: (state, action) => {
@@ -74,10 +69,10 @@ export const userSlice = createSlice({
       });
     },
 
-    logout: (state, action) => {
+    logout: (state) => {
       state.userinfo = null;
-      Cookies.set('user', null);
-      Cookies.set('token', null);
+      Cookies.remove('user');
+      Cookies.remove('token');
     },
 
     changeTheme: (state, action) => {

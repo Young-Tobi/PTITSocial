@@ -7,6 +7,12 @@ const Profile = React.lazy(() => import('pages/profile/index'));
 const FriendsPage = React.lazy(() => import('pages/friends/index'));
 const PostPage = React.lazy(() => import('pages/post/PostPage'));
 const Messages = React.lazy(() => import('pages/messages/index'));
+const FocusDiscover = React.lazy(() => import('pages/focus/FocusDiscover'));
+const FocusCreate = React.lazy(() => import('pages/focus/FocusCreate'));
+const FocusRoom = React.lazy(() => import('pages/focus/FocusRoom'));
+const StudySpotMap = React.lazy(() => import('pages/studySpot/StudySpotMap'));
+const StudySpotDetail = React.lazy(() => import('pages/studySpot/StudySpotDetail'));
+const MyMeetups = React.lazy(() => import('pages/studySpot/MyMeetups'));
 
 const pagesData = [
   {
@@ -61,6 +67,42 @@ const pagesData = [
     path: '/:username/posts/:post',
     element: <PostPage />,
     title: 'profile',
+    priv: true,
+  },
+  {
+    path: 'focus',
+    element: <FocusDiscover />,
+    title: 'focus-discover',
+    priv: true,
+  },
+  {
+    path: 'focus/new',
+    element: <FocusCreate />,
+    title: 'focus-create',
+    priv: true,
+  },
+  {
+    path: 'focus/:roomId',
+    element: <FocusRoom />,
+    title: 'focus-room',
+    priv: true,
+  },
+  {
+    path: 'study-spots',
+    element: <StudySpotMap />,
+    title: 'study-spots',
+    priv: true,
+  },
+  {
+    path: 'study-spots/:locationId',
+    element: <StudySpotDetail />,
+    title: 'study-spot-detail',
+    priv: true,
+  },
+  {
+    path: 'study-meetups',
+    element: <MyMeetups />,
+    title: 'study-meetups',
     priv: true,
   },
   {

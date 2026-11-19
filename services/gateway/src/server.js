@@ -5,11 +5,23 @@ const targets = {
   accounts: process.env.ACCOUNTS_URL,
   content: process.env.CONTENT_URL,
   messaging: process.env.MESSAGING_URL,
+  study: process.env.STUDY_URL,
 };
 function fail(res, status, message) {
   if (!res.headersSent) res.writeHead(status, { 'content-type': 'application/json' });
   res.end(JSON.stringify({ status: 'fail', message }));
 }
+
+function proxyHeaders(req, targetUrl) {
+  // Ghi de X-Forwarded-For de client khong the gia mao dia chi nguon.
+  return {
+    ...req.headers,
+    host: new URL(targetUrl).host,
+    'x-forwarded-for': req.socket.remoteAddress || '',
+    'x-forwarded-proto': req.socket.encrypted ? 'https' : 'http',
+  };
+}
+
 const server = http.createServer(async (req, res) => {
   const pathname = new URL(req.url, 'http://localhost').pathname;
   if (pathname === '/health') {
@@ -37,7 +49,7 @@ const server = http.createServer(async (req, res) => {
   if (!target) return fail(res, 404, 'Endpoint not found');
   const upstream = http.request(
     new URL(req.url, targets[target]),
-    { method: req.method, headers: { ...req.headers, host: new URL(targets[target]).host } },
+    { method: req.method, headers: proxyHeaders(req, targets[target]) },
     (response) => {
       res.writeHead(response.statusCode, response.headers);
       response.pipe(res);
@@ -50,10 +62,10 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.on('upgrade', (req, socket, head) => {
-  if (targetFor(new URL(req.url, 'http://localhost').pathname) !== 'messaging')
-    return socket.destroy();
-  const upstream = http.request(new URL(req.url, targets.messaging), {
-    headers: { ...req.headers, host: new URL(targets.messaging).host },
+  const target = targetFor(new URL(req.url, 'http://localhost').pathname);
+  if (!['messaging', 'study'].includes(target)) return socket.destroy();
+  const upstream = http.request(new URL(req.url, targets[target]), {
+    headers: proxyHeaders(req, targets[target]),
   });
   upstream.on('upgrade', (response, peer, peerHead) => {
     socket.write(

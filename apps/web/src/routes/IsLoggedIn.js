@@ -1,12 +1,9 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 import Header from 'features/navigation/components/header/Header';
 import Loading from 'shared/components/ui/Loading/Loading';
 import VerificationRequired from 'features/auth/components/activation/VerificationRequired';
-import Cookies from 'js-cookie';
-import { useEffect } from 'react';
-import { useState } from 'react';
 import { io } from 'socket.io-client';
 import { queryClient } from 'App';
 import chat_notification from 'assets/chat_notification.wav';
@@ -46,7 +43,6 @@ export default function IsLoggedIn({ user }) {
     if (user.userinfo?.verified) {
       socket = io(process.env.REACT_APP_BACKEND_URL, {
         withCredentials: true,
-        auth: { token: JSON.parse(Cookies.get('token') || 'null') },
       });
       socket.emit('setup', {
         userId: user.userinfo._id,

@@ -112,8 +112,13 @@ exports.seenMessage = catchAsync(async (req, res, next) => {
 
   if (!existingMessage) return next(new AppError('No message found', 400));
 
+  // Chi thanh vien cua cuoc tro chuyen moi duoc danh dau tin nhan da xem.
+  const isChatMember = await Chat.exists({ _id: existingMessage.chat, users: userId });
+  if (!isChatMember) return next(new AppError('Message not found', 404));
+
   existingMessage.seen = 'seen';
-  if (!existingMessage.seenBy.includes(userId)) existingMessage.seenBy.push(userId);
+  if (!existingMessage.seenBy.some((id) => String(id) === String(userId)))
+    existingMessage.seenBy.push(userId);
 
   await existingMessage.save();
 
@@ -121,7 +126,7 @@ exports.seenMessage = catchAsync(async (req, res, next) => {
     status: 'success',
     data: {
       message: existingMessage,
-      unseenMessages: req.user.unseenMessages - 1,
+      unseenMessages: Math.max(0, (req.user.unseenMessages || 0) - 1),
     },
   });
 });

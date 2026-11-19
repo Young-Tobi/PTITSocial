@@ -35,6 +35,10 @@ shared.INTERNAL_API_KEY = current.INTERNAL_API_KEY || crypto.randomBytes(48).toS
 shared.ACCOUNTS_URL = 'http://127.0.0.1:8001';
 shared.CONTENT_URL = 'http://127.0.0.1:8002';
 shared.MESSAGING_URL = 'http://127.0.0.1:8003';
+shared.STUDY_URL = 'http://127.0.0.1:8004';
+shared.LIVEKIT_URL = current.LIVEKIT_URL || 'ws://localhost:7880';
+shared.LIVEKIT_API_KEY = current.LIVEKIT_API_KEY || 'devkey';
+shared.LIVEKIT_API_SECRET = current.LIVEKIT_API_SECRET || 'secret';
 delete shared.PORT;
 delete shared.DATABASE;
 save(path.join(root, '.env'), shared);
@@ -43,6 +47,7 @@ for (const [name, port] of [
   ['accounts', 8001],
   ['content', 8002],
   ['messaging', 8003],
+  ['study', 8004],
 ]) {
   const config = { ...shared, ...read(path.join(root, 'services', name, '.env')), PORT: port };
   if (name !== 'gateway') config.DATABASE = `mongodb://127.0.0.1:27017/ptitsocial_${name}`;

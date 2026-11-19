@@ -1,8 +1,23 @@
+param(
+  [switch]$SkipInfrastructure
+)
+
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $projectRoot
-docker compose up -d
-if ($LASTEXITCODE -ne 0) { throw 'Start Docker Desktop first.' }
+$mongoListener = Get-NetTCPConnection -State Listen -LocalPort 27017 -ErrorAction SilentlyContinue | Select-Object -First 1
+if (-not $SkipInfrastructure) {
+  if ($mongoListener) {
+    $mongoProcess = Get-CimInstance Win32_Process -Filter "ProcessId=$($mongoListener.OwningProcess)" -ErrorAction SilentlyContinue
+    if ($mongoProcess.Name -ne 'mongod.exe') { throw 'Port 27017 is occupied by an application that is not MongoDB.' }
+    docker compose up -d mailpit livekit
+  } else {
+    docker compose up -d
+  }
+  if ($LASTEXITCODE -ne 0) { throw 'Start Docker Desktop first.' }
+} elseif (-not $mongoListener) {
+  throw 'MongoDB must be running when infrastructure startup is skipped.'
+}
 node scripts/configure-local.cjs
 if ($LASTEXITCODE -ne 0) { throw 'Local configuration failed.' }
 $logDir = Join-Path $projectRoot '.local-logs'
@@ -11,6 +26,7 @@ $components = @(
   @{Name='accounts'; Port=8001; Directory='services\accounts'; Entry='src\server.js'},
   @{Name='content'; Port=8002; Directory='services\content'; Entry='src\server.js'},
   @{Name='messaging'; Port=8003; Directory='services\messaging'; Entry='src\server.js'},
+  @{Name='study'; Port=8004; Directory='services\study'; Entry='src\server.js'},
   @{Name='gateway'; Port=8000; Directory='services\gateway'; Entry='src\server.js'},
   @{Name='frontend'; Port=3000; Directory='apps\web'; Entry='node_modules\react-scripts\bin\react-scripts.js'; Extra='start'}
 )
@@ -39,7 +55,10 @@ for ($attempt = 0; $attempt -lt 45; $attempt++) {
   Start-Sleep -Seconds 1
 }
 if (-not $ready) { throw "Startup failed. Inspect $logDir" }
+npm.cmd run seed:study
+if ($LASTEXITCODE -ne 0) { Write-Warning 'Study location sample data could not be seeded.' }
 Write-Host 'PTITSocial: http://localhost:3000'
 Write-Host 'Gateway health: http://localhost:8000/health'
 Write-Host 'Local email: http://localhost:8025'
+Write-Host 'LiveKit (local development): ws://localhost:7880'
 Write-Host "Logs: $logDir"

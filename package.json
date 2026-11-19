@@ -10,13 +10,17 @@
     "start:accounts": "npm run start --workspace @ptitsocial/accounts",
     "start:content": "npm run start --workspace @ptitsocial/content",
     "start:messaging": "npm run start --workspace @ptitsocial/messaging",
+    "start:study": "npm run start --workspace @ptitsocial/study",
     "start:gateway": "npm run start --workspace @ptitsocial/gateway",
     "start:web": "npm --prefix apps/web start",
     "build:web": "npm --prefix apps/web run build",
+    "seed:study": "npm run seed --workspace @ptitsocial/study",
+    "seed:demo-accounts": "node scripts/seed-demo-accounts.cjs",
     "migrate:legacy": "node scripts/migrate-legacy.cjs",
     "check:migration": "node scripts/check-migration.cjs",
     "test:architecture": "node --test tests/architecture.test.cjs",
     "test:integration": "node tests/integration.cjs",
+    "test:study": "node tests/study.integration.cjs",
     "format": "prettier --write services packages scripts tests apps/web/src"
   },
   "engines": {
@@ -42,11 +46,13 @@
     "pug": "^3.0.2",
     "sharp": "^0.31.2",
     "socket.io": "^4.5.4",
+    "livekit-server-sdk": "^2.13.1",
     "unique-username-generator": "^1.1.3",
     "validator": "^13.7.0",
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
-    "prettier": "3.6.2"
+    "prettier": "3.6.2",
+    "socket.io-client": "^4.5.4"
   }
 }
