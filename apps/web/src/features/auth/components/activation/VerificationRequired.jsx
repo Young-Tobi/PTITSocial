@@ -23,7 +23,7 @@ export default function VerificationRequired() {
       delete axios.defaults.headers.common.Authorization;
       dispatch(logout());
     } catch {
-      setError('Unable to log out. Please try again.');
+      setError('Không thể đăng xuất. Vui lòng thử lại.');
     }
   }
   return (

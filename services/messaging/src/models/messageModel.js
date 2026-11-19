@@ -8,8 +8,8 @@ const messageSchema = mongoose.Schema(
     sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     type: {
       type: String,
-      enum: ['text', 'image', 'like', 'info'],
-      required: [true, 'message type is required'],
+      enum: ['text', 'image', 'file', 'like', 'info'],
+      required: [true, 'Vui lòng chọn loại tin nhắn'],
     },
     content: {
       type: String,
@@ -19,10 +19,32 @@ const messageSchema = mongoose.Schema(
           if (this.type === 'like') return true;
           return validator.isLength(val, { min: 1, max: 400 });
         },
-        message: 'Message must have a content at least 1 charcters ',
+        message: 'Tin nhắn phải có từ 1 đến 400 ký tự ',
       },
     },
     chat: { type: mongoose.Schema.Types.ObjectId, ref: 'Chat' },
+    imageFile: { type: String, select: false },
+    attachmentFile: { type: String, select: false },
+    attachment: { name: String, size: Number, mimeType: String },
+    caption: { type: String, trim: true, maxlength: [400, 'Chú thích không được quá 400 ký tự'] },
+    replyTo: {
+      type: new mongoose.Schema(
+        {
+          messageId: { type: mongoose.Schema.Types.ObjectId, required: true },
+          sender: {
+            id: mongoose.Schema.Types.ObjectId,
+            first_name: String,
+            last_name: String,
+          },
+          type: { type: String, enum: ['text', 'image', 'file', 'like'] },
+          content: String,
+          attachmentName: String,
+        },
+        { _id: false }
+      ),
+      default: undefined,
+    },
+    forwarded: { type: Boolean, default: false },
     seen: {
       type: String,
       enum: ['seen', 'unseen'],

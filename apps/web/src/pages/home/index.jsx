@@ -42,9 +42,7 @@ function Home() {
         mutate({ fcm: token });
       }
     } else if (permission === 'denied') {
-      alert(
-        'You denied for the notification access, please allow it to be able to recieve notifications'
-      );
+      alert('Bạn đã chặn thông báo. Vui lòng cho phép thông báo trong trình duyệt.');
     }
   }
 

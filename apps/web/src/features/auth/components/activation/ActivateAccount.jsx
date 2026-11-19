@@ -49,7 +49,7 @@ function ActivateAccount({ token }) {
     <Portal>
       <div className="blur">
         <Card className={styles.card}>
-          <div className={styles.header}>Activating Your Account</div>
+          <div className={styles.header}>Đang kích hoạt tài khoản</div>
           <div className={styles.body}>
             {isLoading ? (
               <BarLoader color="#1876f2" size={20} width="100%" loading={isLoading} />
@@ -83,7 +83,7 @@ function ActivateAccount({ token }) {
                   play
                   loop={false}
                 />
-                <p className="text_success">Your account activated succesfully</p>
+                <p className="text_success">Tài khoản của bạn đã được kích hoạt thành công</p>
               </div>
             )}
           </div>

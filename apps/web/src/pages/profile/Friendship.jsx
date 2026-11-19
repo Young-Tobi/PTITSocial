@@ -48,7 +48,7 @@ function Friendship({ friendship: friendshipData, userID, usernameID }) {
   };
 
   const cancelRequestHandler = () => {
-    mutate({ id: friendship.requestID, type: 'cancel' });
+    mutate({ id: friendship.requestID, type: 'Hủy' });
   };
 
   const getChatHandler = () => {
@@ -84,17 +84,17 @@ function Friendship({ friendship: friendshipData, userID, usernameID }) {
               {friendship?.following ? (
                 <div className={`${classes.item} hover1`} onClick={() => unfollowHandler()}>
                   <img src="../../../icons/unfollowOutlined.png" alt="" />
-                  Unfollow
+                  Bỏ theo dõi
                 </div>
               ) : (
                 <div className={`${classes.item} hover1`} onClick={() => followHandler()}>
                   <img src="../../../icons/unfollowOutlined.png" alt="" />
-                  Follow
+                  Theo dõi
                 </div>
               )}
               <div className={`${classes.item} hover1`} onClick={() => unfriendHandler()}>
                 <i className="unfriend_outlined_icon"></i>
-                Unfriend
+                Hủy kết bạn
               </div>
             </Card>
           )}
@@ -104,7 +104,7 @@ function Friendship({ friendship: friendshipData, userID, usernameID }) {
         !friendship?.requestReceived && (
           <button className="btn_blue" onClick={() => addFriendHandler()}>
             <img src="../../../icons/addFriend.png" alt="" className="invert" />
-            <span>Add Friend</span>
+            <span>Thêm bạn bè</span>
           </button>
         )
       )}
@@ -118,7 +118,7 @@ function Friendship({ friendship: friendshipData, userID, usernameID }) {
           <>
             <button className="gray_btn" onClick={() => setRespondMenu((perv) => !perv)}>
               <img src="../../../icons/friends.png" alt="" />
-              <span>Respond</span>
+              <span>Phản hồi</span>
             </button>
             {respondMenu && friendship?.requestReceived && (
               <Card className={classes.open_cover_menu} innerRef={menu1}>
@@ -136,12 +136,12 @@ function Friendship({ friendship: friendshipData, userID, usernameID }) {
       {friendship?.following ? (
         <button className="gray_btn" onClick={() => unfollowHandler()}>
           <img src="../../../icons/follow.png" alt="" />
-          <span>Following</span>
+          <span>Đang theo dõi</span>
         </button>
       ) : (
         <button className="btn_blue" onClick={() => followHandler()}>
           <img src="../../../icons/follow.png" className="invert" alt="" />
-          <span style={{ color: '#fff' }}>Follow</span>
+          <span style={{ color: '#fff' }}>Theo dõi</span>
         </button>
       )}
       <button
@@ -149,7 +149,7 @@ function Friendship({ friendship: friendshipData, userID, usernameID }) {
         onClick={() => getChatHandler()}
       >
         <img src="../../../icons/message.png" className={friendship?.friends && 'invert'} alt="" />
-        <span>Message</span>
+        <span>Nhắn tin</span>
       </button>
     </div>
   );

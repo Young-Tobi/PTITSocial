@@ -1,112 +1,112 @@
 export const left = [
   {
-    text: 'Find friends',
+    text: 'Tìm bạn bè',
     img: 'friends',
   },
   {
-    text: 'Memories',
+    text: 'Kỷ niệm',
     img: 'memories',
   },
   {
-    text: 'Groups',
+    text: 'Nhóm',
     img: 'groups',
-    notification: '5 new',
+    notification: '5 nội dung mới',
   },
   {
-    text: 'Marketplace',
+    text: 'Chợ mua bán',
     img: 'marketplace',
   },
   {
-    text: 'Watch',
+    text: 'Video',
     img: 'watch',
-    notification: '9 new videos',
+    notification: '9 video mới',
   },
   {
-    text: 'Saved',
+    text: 'Đã lưu',
     img: 'saved',
   },
   {
-    text: 'Pages',
+    text: 'Trang',
     img: 'pages',
   },
   {
-    text: 'Events',
+    text: 'Sự kiện',
     img: 'events',
   },
   {
-    text: 'Ad Center',
+    text: 'Trung tâm quảng cáo',
     img: 'ad',
   },
   {
-    text: 'Ads Manager',
+    text: 'Trình quản lý quảng cáo',
     img: 'ads',
   },
   {
-    text: 'Campus',
+    text: 'Khuôn viên',
     img: 'campus',
   },
   {
-    text: 'Climate science center',
+    text: 'Trung tâm khoa học khí hậu',
     img: 'climate',
   },
   {
-    text: 'Community Help',
+    text: 'Hỗ trợ cộng đồng',
     img: 'community',
   },
   {
-    text: 'COVID-19 Information Centrer',
+    text: 'Thông tin COVID-19',
     img: 'covid',
   },
   {
-    text: 'Emotional health',
+    text: 'Sức khỏe tinh thần',
     img: 'emotional',
   },
   {
-    text: 'Facebook Pay',
+    text: 'Thanh toán',
     img: 'pay',
   },
   {
-    text: 'Favorites',
+    text: 'Yêu thích',
     img: 'fav',
   },
   {
-    text: 'Fundraisers',
+    text: 'Gây quỹ',
     img: 'fund',
   },
   {
-    text: 'Gaming Video',
+    text: 'Video trò chơi',
     img: 'gaming',
   },
   {
-    text: 'Jobs',
+    text: 'Việc làm',
     img: 'jobs',
   },
   {
-    text: 'Live videos',
+    text: 'Video trực tiếp',
     img: 'live',
   },
   {
-    text: 'Messenger',
+    text: 'Tin nhắn',
     img: 'messenger',
   },
   {
-    text: 'Messenger Kids',
+    text: 'Tin nhắn trẻ em',
     img: 'messkids',
   },
   {
-    text: 'Most recent',
+    text: 'Gần đây nhất',
     img: 'recent',
   },
   {
-    text: 'Play Games',
+    text: 'Chơi trò chơi',
     img: 'play',
   },
   {
-    text: 'Recent ad activity',
+    text: 'Hoạt động quảng cáo gần đây',
     img: 'recentad',
   },
   {
-    text: 'Weather',
+    text: 'Thời tiết',
     img: 'weather',
   },
 ];

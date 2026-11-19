@@ -33,14 +33,14 @@ function EditArea({
           onChange={handleChange}
         >
           <option value="" disabled defaultValue>
-            Select status
+            Chọn tình trạng
           </option>
 
-          <option value="Single">Single</option>
-          <option value="In a realationship">In a relationship</option>
-          <option value="Married">Married</option>
-          <option value="Divorced">Divorced</option>
-          <option value="">Remove relationship</option>
+          <option value="Single">Độc thân</option>
+          <option value="In a realationship">Đang hẹn hò</option>
+          <option value="Married">Đã kết hôn</option>
+          <option value="Divorced">Đã ly hôn</option>
+          <option value="">Xóa tình trạng quan hệ</option>
         </select>
       ) : (
         <textarea
@@ -57,10 +57,10 @@ function EditArea({
           name={name}
         ></textarea>
       )}
-      {name === 'bio' && <div className={classes.remaining}>{remain} characters remaining</div>}
+      {name === 'bio' && <div className={classes.remaining}>{remain} ký tự còn lại</div>}
       <div className={classes.save_btns}>
         <button className="gray_btn" onClick={() => setShow(false)}>
-          Cancel
+          Hủy
         </button>
         <button
           disabled={isChanged}
@@ -74,7 +74,7 @@ function EditArea({
             cursor: `${isChanged ? `not-allowed` : `pointer`}`,
           }}
         >
-          Save
+          Lưu
         </button>
       </div>
     </div>

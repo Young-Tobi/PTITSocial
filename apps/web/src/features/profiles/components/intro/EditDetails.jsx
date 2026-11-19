@@ -24,28 +24,28 @@ function EditDetails({ showEdit, setShowEdit, infos, handleChange, updateDetails
           </div>
           <div className={classes.content}>
             <div className={classes.h_col}>
-              <span className={classes.t1}>Customize your intro</span>
-              <span className={classes.t2}>Details you select will be public.</span>
-              <div className={classes.details_header}>Other Name</div>
+              <span className={classes.t1}>Chỉnh sửa phần giới thiệu</span>
+              <span className={classes.t2}>Các thông tin bạn chọn sẽ được hiển thị công khai.</span>
+              <div className={classes.details_header}>Tên khác</div>
               <Detail
                 value={details?.otherName}
                 img="studies"
-                placeholder="Add other name"
+                placeholder="Thêm tên khác"
                 name="otherName"
-                text="Other Name"
+                text="Tên khác"
                 handleChange={handleChange}
                 updateDetails={updateDetails}
                 infos={infos}
                 details={details}
                 max={20}
               />
-              <div className={classes.details_header}>Work</div>
+              <div className={classes.details_header}>Công việc</div>
               <Detail
                 value={details?.job}
                 img="job"
-                placeholder="Add a job"
+                placeholder="Thêm công việc"
                 name="job"
-                text="A job"
+                text="công việc"
                 handleChange={handleChange}
                 updateDetails={updateDetails}
                 infos={infos}
@@ -55,22 +55,22 @@ function EditDetails({ showEdit, setShowEdit, infos, handleChange, updateDetails
               <Detail
                 value={details?.workplace}
                 img="job"
-                placeholder="Add a workplace"
+                placeholder="Thêm nơi làm việc"
                 name="workplace"
-                text="A workplace"
+                text="nơi làm việc"
                 handleChange={handleChange}
                 updateDetails={updateDetails}
                 infos={infos}
                 details={details}
                 max={20}
               />
-              <div className={classes.details_header}>Education</div>
+              <div className={classes.details_header}>Học vấn</div>
               <Detail
                 value={details?.highSchool}
                 img="studies"
-                placeholder="Add a high School"
+                placeholder="Thêm trường trung học"
                 name="highSchool"
-                text="A highSchool"
+                text="trường trung học"
                 handleChange={handleChange}
                 updateDetails={updateDetails}
                 infos={infos}
@@ -80,48 +80,48 @@ function EditDetails({ showEdit, setShowEdit, infos, handleChange, updateDetails
               <Detail
                 value={details?.college}
                 img="studies"
-                placeholder="Add a college"
+                placeholder="Thêm trường đại học"
                 name="college"
-                text="A college"
+                text="trường đại học"
                 handleChange={handleChange}
                 updateDetails={updateDetails}
                 infos={infos}
                 details={details}
                 max={20}
               />
-              <div className={classes.details_header}>Current City</div>
+              <div className={classes.details_header}>Nơi sống hiện tại</div>
               <Detail
                 value={details?.currentCity}
                 img="home"
-                placeholder="Add a current city"
+                placeholder="Thêm nơi sống hiện tại"
                 name="currentCity"
-                text="A current city"
+                text="nơi sống hiện tại"
                 handleChange={handleChange}
                 updateDetails={updateDetails}
                 infos={infos}
                 details={details}
                 max={20}
               />
-              <div className={classes.details_header}>Hometown</div>
+              <div className={classes.details_header}>Quê quán</div>
               <Detail
                 value={details?.homeTown}
                 img="from"
-                placeholder="Add a hometown"
+                placeholder="Thêm quê quán"
                 name="homeTown"
-                text="A hometown"
+                text="quê quán"
                 handleChange={handleChange}
                 updateDetails={updateDetails}
                 infos={infos}
                 details={details}
                 max={20}
               />
-              <div className={classes.details_header}>Relationship</div>
+              <div className={classes.details_header}>Tình trạng quan hệ</div>
               <Detail
                 value={details?.relationship}
                 img="relationship"
-                placeholder="Add a relationship"
+                placeholder="Thêm tình trạng quan hệ"
                 name="relationship"
-                text="A relationship"
+                text="tình trạng quan hệ"
                 handleChange={handleChange}
                 updateDetails={updateDetails}
                 infos={infos}
@@ -133,9 +133,9 @@ function EditDetails({ showEdit, setShowEdit, infos, handleChange, updateDetails
               <Detail
                 value={details?.instagram}
                 img="instagram"
-                placeholder="Add a instagram"
+                placeholder="Thêm tài khoản Instagram"
                 name="instagram"
-                text="A instagram"
+                text="tài khoản Instagram"
                 handleChange={handleChange}
                 updateDetails={updateDetails}
                 infos={infos}

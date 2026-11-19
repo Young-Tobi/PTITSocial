@@ -85,7 +85,7 @@ function Right({
             )}
             {true ? (
               <>
-                <ChatInfo title={'Chat Members'}>
+                <ChatInfo title={'Thành viên cuộc trò chuyện'}>
                   {chat?.groupAdmin?._id === user._id ? (
                     <div
                       className={`${styles.chat_info_item} hover2`}
@@ -97,7 +97,7 @@ function Right({
                       <div className="small_circle">
                         <img src="../../../icons/plus.png" alt="" className="invert1" />
                       </div>
-                      Add member
+                      Thêm thành viên
                     </div>
                   ) : (
                     ''
@@ -112,7 +112,7 @@ function Right({
                       <div className={styles.group_member_info} style={{ flex: '1' }}>
                         <span>{`${member.first_name} ${member.last_name}`}</span>
                         <span className={styles.group_member_info2}>
-                          {chat?.groupAdmin?._id === member._id ? 'Group Admin' : 'Member'}
+                          {chat?.groupAdmin?._id === member._id ? 'Quản trị viên nhóm' : 'Member'}
                         </span>
                       </div>
                       {chat?.groupAdmin?._id === user._id ? (
@@ -122,7 +122,7 @@ function Right({
                             removeMemberHandler(member._id);
                           }}
                         >
-                          Remove
+                          Xóa
                         </span>
                       ) : (
                         ''
@@ -131,7 +131,7 @@ function Right({
                   ))}
                 </ChatInfo>
                 {chat?.groupAdmin?._id === user._id || chat?.type === 'private' ? (
-                  <ChatInfo title={'Customize chat'}>
+                  <ChatInfo title={'Tùy chỉnh cuộc trò chuyện'}>
                     {chat?.type === 'group' ? (
                       <div
                         className={`${styles.chat_info_item} hover2`}
@@ -143,7 +143,7 @@ function Right({
                         <div className="small_circle">
                           <img src="../../../icons/plus.png" alt="" className="invert1" />
                         </div>
-                        Change Name
+                        Đổi tên
                       </div>
                     ) : (
                       ''
@@ -166,7 +166,7 @@ function Right({
                           className={styles.theme_circle}
                         />
                       </div>
-                      Change theme
+                      Đổi chủ đề
                     </div>
                   </ChatInfo>
                 ) : (

@@ -14,7 +14,7 @@ function OldCovers({ setShowOldCover, setImage, photosData, showOldCover }) {
     <div className={`${classes.wrap} blur`}>
       <Card className={classes.card} innerRef={oldCoversCardRef}>
         <div className={classes.header}>
-          Update Cover Photo
+          Cập nhật ảnh bìa
           <div className="small_circle" onClick={() => setShowOldCover(false)}>
             <i className="exit_icon"></i>
           </div>
@@ -22,7 +22,7 @@ function OldCovers({ setShowOldCover, setImage, photosData, showOldCover }) {
         <div className={classes.content}>
           {photosData?.profileCovers.length > 0 && (
             <>
-              <div>Choose from old cover picture</div>
+              <div>Chọn ảnh bìa cũ</div>
               <div className={classes.old_photos}>
                 {photosData?.profileCovers.map((photo) => (
                   <img
@@ -40,7 +40,7 @@ function OldCovers({ setShowOldCover, setImage, photosData, showOldCover }) {
           )}
           {photosData?.resources.length > 0 && (
             <>
-              <div>Choose from your profile photos</div>
+              <div>Chọn từ ảnh trên trang cá nhân</div>
               <div className={classes.old_photos}>
                 {photosData?.resources.map((photo) => (
                   <img

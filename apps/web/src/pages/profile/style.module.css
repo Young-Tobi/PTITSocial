@@ -85,31 +85,6 @@
   font-weight: 700;
   color: var(--color-secondary);
 }
-.profile_menu_wrap {
-  padding: 10px 10px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.profile_menu {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.profile_menu_wrap .more {
-  padding: 10px;
-}
-.profile_menu a {
-  padding: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-secondary);
-}
-.profile_menu .active {
-  color: var(--blue-color);
-  border-bottom: 4px solid var(--blue-color);
-  margin-bottom: -3px;
-}
 
 .bottom {
   display: flex;
@@ -305,9 +280,6 @@
   filter: invert(100%);
 }
 
-:global(.dark) .profile_menu_wrap .more svg {
-  fill: #fff;
-}
 
 .sk1 {
   display: flex;

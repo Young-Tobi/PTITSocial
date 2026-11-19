@@ -13,7 +13,7 @@ export default function HelpSupport({ setVisible }) {
         >
           <i className="arrow_back_icon"></i>
         </div>
-        Settings & privacy
+        Cài đặt và quyền riêng tư
       </div>
       {user_menu2.map(({ name, icon }) => (
         <div className={`${styles.mmenu_item} hover3`}>

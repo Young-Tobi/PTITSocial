@@ -30,13 +30,19 @@ module.exports = class Notification {
         type,
         click: path,
         content: body,
+        reactionType:
+          type === 'react'
+            ? ['like', 'love', 'haha', 'wow', 'sad', 'angry'].includes(this.postReact)
+              ? this.postReact
+              : 'like'
+            : undefined,
       });
     }
 
     if (process.env.FCM_SERVER_KEY && this.recipient.fcmToken) {
       fcm.send(message, function (err, response) {
         if (err) {
-          console.log('Something has gone wrong!');
+          console.log('Đã có lỗi xảy ra!');
           console.log(err);
         }
       });
@@ -50,7 +56,7 @@ module.exports = class Notification {
     const path = `/${this.recipient.username}/posts/${this.postId}`;
 
     const noti = await this.send({
-      body: `${this.sender.first_name} reacted ${this.postReact} on your post`,
+      body: `${this.sender.first_name} đã bày tỏ cảm xúc trên bài viết của bạn`,
       click: postLink,
       type: 'react',
       path: path,
@@ -63,7 +69,7 @@ module.exports = class Notification {
     const path = `/${this.recipient.username}/posts/${this.postId}`;
 
     const noti = await this.send({
-      body: `${this.sender.first_name} commented ${this.postReact} on your post`,
+      body: `${this.sender.first_name} đã bình luận "${this.postReact}" trên bài viết của bạn`,
       click: postLink,
       type: 'comment',
       path: path,
@@ -76,7 +82,7 @@ module.exports = class Notification {
     const path = `/${this.recipient.username}/posts/${this.postId}`;
 
     const noti = await this.send({
-      body: `${this.sender.first_name} reacted like to your comment`,
+      body: `${this.sender.first_name} đã thích bình luận của bạn`,
       click: postLink,
       type: 'react',
       path: path,
@@ -89,7 +95,7 @@ module.exports = class Notification {
     const path = `/${this.recipient.username}/posts/${this.postId}`;
 
     const noti = await this.send({
-      body: `${this.sender.first_name} replied ${this.postReact} on your comment`,
+      body: `${this.sender.first_name} đã trả lời "${this.postReact}" trên bình luận của bạn`,
       click: postLink,
       type: 'comment',
       path: path,
@@ -102,7 +108,7 @@ module.exports = class Notification {
     const path = `/profile/${this.sender.username}`;
 
     const noti = await this.send({
-      body: `${this.sender.first_name} Sent you a friend request`,
+      body: `${this.sender.first_name} đã gửi lời mời kết bạn cho bạn`,
       click: postLink,
       type: 'friend',
       path: path,
@@ -115,7 +121,7 @@ module.exports = class Notification {
     const path = `/profile/${this.sender.username}`;
 
     const noti = await this.send({
-      body: `${this.sender.first_name} Accept your friend request`,
+      body: `${this.sender.first_name} đã chấp nhận lời mời kết bạn`,
       click: postLink,
       type: 'friend',
       path: path,
@@ -128,7 +134,7 @@ module.exports = class Notification {
     const path = `/profile/${this.sender.username}`;
 
     const noti = await this.send({
-      body: `${this.sender.first_name} Followed you`,
+      body: `${this.sender.first_name} đã theo dõi bạn`,
       click: postLink,
       type: 'follow',
       path: path,
@@ -141,7 +147,7 @@ module.exports = class Notification {
     const path = `/messages/${this.postId}`;
 
     const noti = await this.send({
-      body: `${this.sender.first_name} sent you a message : ${this.postReact}`,
+      body: `${this.sender.first_name} đã gửi tin nhắn cho bạn: ${this.postReact}`,
       click: link,
       type: 'follow',
       path: path,

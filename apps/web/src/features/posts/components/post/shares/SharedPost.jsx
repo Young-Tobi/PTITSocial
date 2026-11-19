@@ -131,15 +131,9 @@ function SharedPost({ post }) {
               </Link>
 
               {post?.type === 'profilePhoto' ? (
-                <span className={classes.profilePhotoText}>
-                  {`updated ${post?.user.gender === 'male' ? 'his' : 'her'} profile
-                picture`}
-                </span>
+                <span className={classes.profilePhotoText}>{`đã cập nhật ảnh đại diện`}</span>
               ) : post?.type === 'cover' ? (
-                <span className={classes.profilePhotoText}>
-                  {`updated ${post?.user.gender === 'male' ? 'his' : 'her'} profile
-            cover`}
-                </span>
+                <span className={classes.profilePhotoText}>{`đã cập nhật ảnh bìa`}</span>
               ) : (
                 ``
               )}

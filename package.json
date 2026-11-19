@@ -27,7 +27,10 @@
     "check:migration": "node scripts/check-migration.cjs",
     "test:architecture": "node --test tests/architecture.test.cjs",
     "test:integration": "node tests/integration.cjs",
-    "format": "prettier --write services packages scripts tests apps/web/src"
+    "format": "prettier --write services packages scripts tests apps/web/src",
+    "start:learning": "npm run start --workspace @ptitsocial/learning",
+    "test:learning": "node --test tests/learning.test.cjs tests/roadmap-sources.test.cjs tests/gemini-key-pool.test.cjs",
+    "test:flashcards": "node --test tests/flashcards.test.cjs"
   },
   "engines": {
     "node": ">=22"

@@ -28,7 +28,7 @@ function PostMenu({ showMenu, setShowMenu, post, user, postRef }) {
 
   useEffect(() => {
     if (data?.status === 'success') {
-      toast.success('Successfully removed!');
+      toast.success('Đã xóa thành công!');
       postRef.current.remove();
     }
   }, [data, postRef]);
@@ -45,22 +45,22 @@ function PostMenu({ showMenu, setShowMenu, post, user, postRef }) {
         <CopyToClipboard
           text={full}
           onCopy={() => {
-            toast.success('Successfully Copied!');
+            toast.success('Đã sao chép!');
             setShowMenu(false);
           }}
         >
           <li className="hover1">
             <IoIosLink size={22} />
             <div className={classes.post_menu_text}>
-              <span>Copy post link</span>
-              <span className={classes.menu_post_col}>Copy post link to clipboard</span>
+              <span>Sao chép liên kết bài viết</span>
+              <span className={classes.menu_post_col}>Sao chép liên kết vào bộ nhớ tạm</span>
             </div>
           </li>
         </CopyToClipboard>
-        <MenuItem icon="save_icon" title="Save Post" subtitle="Add this to your saved items." />
+        <MenuItem icon="save_icon" title="Lưu bài viết" subtitle="Thêm vào mục đã lưu." />
         {post.images.length > 0 && (
           <div onClick={() => downloadImages()}>
-            <MenuItem icon="download_icon" title="Download" />
+            <MenuItem icon="download_icon" title="Tải xuống" />
           </div>
         )}
         {isOwner && (
@@ -69,8 +69,8 @@ function PostMenu({ showMenu, setShowMenu, post, user, postRef }) {
             <div onClick={() => deleteHandler()}>
               <MenuItem
                 icon="trash_icon"
-                title="Move to trash"
-                subtitle="items in your trash are deleted after 30 days"
+                title="Chuyển vào thùng rác"
+                subtitle="Nội dung trong thùng rác sẽ bị xóa sau 30 ngày"
               />
             </div>
           </>

@@ -1,3 +1,4 @@
+import { emojiLocale } from 'app/locale';
 import React, { useState, useRef, useEffect } from 'react';
 import classes from './CreateComment.module.css';
 import { usePopper } from 'react-popper';
@@ -112,7 +113,7 @@ function CreateComment({
 
   useEffect(() => {
     if (isError) {
-      toast.error(error?.response?.data.message || 'Something went wrong');
+      toast.error(error?.response?.data.message || 'Đã có lỗi xảy ra');
     }
   }, [isError]);
 
@@ -154,6 +155,7 @@ function CreateComment({
                 >
                   <div ref={pickerRef}>
                     <EmojiPicker
+                      {...emojiLocale}
                       width={300}
                       height={300}
                       lazyLoadEmojis={true}

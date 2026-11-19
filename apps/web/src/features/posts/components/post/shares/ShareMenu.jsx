@@ -8,7 +8,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import toast from 'react-hot-toast';
 import CreateSharePost from './CreateSharePost';
 
-function ShareMenu({ showMenu, setShowMenu, post, user, postRef, setSharesCount }) {
+function ShareMenu({ showMenu, setShowMenu, post, user, postRef }) {
   const menuRef = useRef();
 
   const [showSharePost, setShowSharePost] = useState(false);
@@ -26,22 +26,26 @@ function ShareMenu({ showMenu, setShowMenu, post, user, postRef, setSharesCount 
         <CopyToClipboard
           text={full}
           onCopy={() => {
-            toast.success('Successfully Copied!');
+            toast.success('Đã sao chép!');
             setShowMenu(false);
           }}
         >
           <li className="hover1">
             <IoIosLink size={22} />
             <div className={classes.post_menu_text}>
-              <span>Copy post link</span>
-              <span className={classes.menu_post_col}>Copy post link to clipboard</span>
+              <span>Sao chép liên kết bài viết</span>
+              <span className={classes.menu_post_col}>Sao chép liên kết vào bộ nhớ tạm</span>
             </div>
           </li>
         </CopyToClipboard>
 
         <div className="line" />
         <div onClick={() => setShowSharePost((perv) => !perv)}>
-          <MenuItem icon="share_icon" title="Share Post" subtitle="Share post to your friends" />
+          <MenuItem
+            icon="share_icon"
+            title="Chia sẻ bài viết"
+            subtitle="Chia sẻ bài viết với bạn bè"
+          />
         </div>
       </ul>
       {showSharePost && (
@@ -49,7 +53,6 @@ function ShareMenu({ showMenu, setShowMenu, post, user, postRef, setSharesCount 
           showSharePost={showSharePost}
           setShowSharePost={setShowSharePost}
           post={post}
-          setSharesCount={setSharesCount}
         />
       )}
     </Card>

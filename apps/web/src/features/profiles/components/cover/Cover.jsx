@@ -133,14 +133,14 @@ function Cover({ isVisitor, user, photosData }) {
           <div className={classes.save_cover}>
             <div className={classes.left}>
               <i className="public_icon"></i>
-              Your cover is public
+              Ảnh bìa của bạn được hiển thị công khai
             </div>
             <div className={classes.btns}>
               <button className="gray_btn opacity_btn" onClick={() => setImage(null)}>
-                Cancel
+                Hủy
               </button>
               <button className="btn_blue " onClick={() => updateCover()}>
-                Save
+                Lưu
               </button>
             </div>
           </div>
@@ -185,14 +185,14 @@ function Cover({ isVisitor, user, photosData }) {
                   onClick={() => setShowOldCover(true)}
                 >
                   <i className="photo_icon"></i>
-                  Select Photo
+                  Chọn ảnh
                 </div>
                 <div
                   className={`${classes.open_cover_menu_item} hover1`}
                   onClick={() => refInput.current.click()}
                 >
                   <i className="upload_icon"></i>
-                  Upload Photo
+                  Tải ảnh lên
                 </div>
               </Card>
             )}

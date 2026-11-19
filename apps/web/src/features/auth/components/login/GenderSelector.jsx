@@ -23,7 +23,7 @@ export default function GenderSelector({ handleSignupChange, x, disabled }) {
       onMouseLeave={() => setShow(false)}
     >
       <div className={styles.colHeader}>
-        Gender{' '}
+        Giới tính{' '}
         {genderError ? (
           <i className={`error_icon ${styles.err_icon}`}></i>
         ) : (
@@ -32,7 +32,7 @@ export default function GenderSelector({ handleSignupChange, x, disabled }) {
       </div>
       <div className={`${styles.grid} ${styles.gender}`}>
         <label htmlFor="male">
-          Male
+          Nam
           <Field
             type="radio"
             name="gender"
@@ -42,7 +42,7 @@ export default function GenderSelector({ handleSignupChange, x, disabled }) {
           />
         </label>
         <label htmlFor="female">
-          Female
+          Nữ
           <Field
             type="radio"
             name="gender"

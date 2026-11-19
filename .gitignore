@@ -8,6 +8,7 @@ node_modules/
 .local-tools/
 .local-backups/
 services/content/uploads/
+services/messaging/uploads/
 apps/web/build/
 coverage/
 infra/judge0/judge0.conf

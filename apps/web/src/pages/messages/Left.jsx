@@ -1,3 +1,4 @@
+import { messagePreview } from 'features/messaging/components/MessageContext';
 import React from 'react';
 import { useState, useRef } from 'react';
 
@@ -103,10 +104,8 @@ function Left({ soketSlice, user, chatId }) {
                   >
                     <i className="create_icon"></i>
                     <div className={styles.menu_text}>
-                      <span>Create Group</span>
-                      <span className={styles.menu_col}>
-                        Create Group to chat with your contacts
-                      </span>
+                      <span>Tạo nhóm</span>
+                      <span className={styles.menu_col}>Tạo nhóm để trò chuyện với bạn bè</span>
                     </div>
                   </li>
                 </ul>
@@ -201,11 +200,11 @@ function Left({ soketSlice, user, chatId }) {
                       {renderMessage(
                         `${
                           user._id === chat?.latestMessage.sender._id
-                            ? 'You :'
+                            ? 'Bạn:'
                             : chat?.type === 'group'
                               ? `${chat?.latestMessage.sender.first_name} : `
                               : ''
-                        } ${chat?.latestMessage.content}`
+                        } ${messagePreview(chat?.latestMessage)}`
                       )}
                       {' . '}
                       <Moment fromNow interval={30}>

@@ -17,7 +17,7 @@ const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
     cb(null, true);
   } else {
-    cb(new AppError('Please upload only images', 400), false);
+    cb(new AppError('Vui lòng chọn tệp ảnh', 400), false);
   }
 };
 
@@ -74,7 +74,7 @@ exports.getProfile = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ username }).select('-search -savedPosts -email');
 
   if (!user) {
-    return next(new AppError('No user found with that username', 404));
+    return next(new AppError('Không tìm thấy tài khoản này', 404));
   }
 
   const profileID = user.id;
@@ -114,7 +114,7 @@ exports.getProfile = catchAsync(async (req, res, next) => {
 
 exports.updatePhoto = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm)
-    return next(new AppError('You cant update the passworm from this route', 400));
+    return next(new AppError('Không thể đổi mật khẩu tại đây', 400));
 
   const userId = req.user.id;
 
@@ -146,7 +146,7 @@ exports.updatePhoto = catchAsync(async (req, res, next) => {
 
 exports.updateCover = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm)
-    return next(new AppError('You cant update the passworm from this route', 400));
+    return next(new AppError('Không thể đổi mật khẩu tại đây', 400));
 
   const userId = req.user.id;
 
@@ -205,10 +205,10 @@ exports.searchUsers = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
 
   if (typeof term !== 'string' || !term.trim())
-    return next(new AppError('Please provide a search term', 400));
+    return next(new AppError('Vui lòng nhập nội dung tìm kiếm', 400));
 
   const searchTerm = term.trim().replace(/\s+/g, ' ');
-  if (searchTerm.length > 100) return next(new AppError('Search term is too long', 400));
+  if (searchTerm.length > 100) return next(new AppError('Nội dung tìm kiếm quá dài', 400));
   const pattern = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
   const results = await User.aggregate([
@@ -256,7 +256,7 @@ exports.addToSearchHistory = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const { searchUser } = req.body;
 
-  if (!searchUser) return next(new AppError('Please provide a user id : searchUser', 400));
+  if (!searchUser) return next(new AppError('Vui lòng chọn người dùng', 400));
 
   const user = await User.findById(userId);
   const check = user.search.find((x) => x.user.toString() === searchUser);
@@ -281,7 +281,7 @@ exports.addToSearchHistory = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    message: 'User added to search history',
+    message: 'Đã thêm vào lịch sử tìm kiếm',
   });
 });
 
@@ -289,7 +289,7 @@ exports.removeFromSearch = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const { searchUser } = req.body;
 
-  if (!searchUser) return next(new AppError('Please provide a user id : searchUser', 400));
+  if (!searchUser) return next(new AppError('Vui lòng chọn người dùng', 400));
 
   const user = await User.findById(userId);
   const check = user.search.find((x) => x.user.toString() === searchUser);
@@ -305,7 +305,7 @@ exports.removeFromSearch = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    message: 'User removed from search history',
+    message: 'Đã xóa khỏi lịch sử tìm kiếm',
   });
 });
 
@@ -370,7 +370,7 @@ exports.addFCM = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const { fcmToken } = req.body;
 
-  if (!fcmToken) return next(new AppError('Please provide a fcm token', 400));
+  if (!fcmToken) return next(new AppError('Thiếu thông tin đăng ký thông báo', 400));
 
   await User.updateOne(
     {
@@ -383,7 +383,7 @@ exports.addFCM = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    message: 'FCM token added',
+    message: 'Đã bật thông báo',
     fcmToken,
   });
 });

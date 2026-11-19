@@ -42,7 +42,9 @@
     "socket.io-client": "^4.5.4",
     "styled-components": "^5.3.6",
     "web-vitals": "^2.1.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "markdown-to-jsx": "^9.10.6",
+    "prismjs": "^1.30.0"
   },
   "scripts": {
     "prestart": "node ../../scripts/copy-monaco.cjs",
@@ -72,5 +74,11 @@
   },
   "engines": {
     "node": ">=16.0.0"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^markdown-to-jsx/react$": "<rootDir>/node_modules/markdown-to-jsx/dist/react.cjs",
+      "^markdown-to-jsx/entities$": "<rootDir>/node_modules/markdown-to-jsx/dist/entities.browser.cjs"
+    }
   }
 }

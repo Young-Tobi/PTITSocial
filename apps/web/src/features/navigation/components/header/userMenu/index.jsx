@@ -24,7 +24,7 @@ export default function UserMenu({ user, setShowUserMenu }) {
       dispatch(logout());
       setShowUserMenu(false);
     } catch {
-      setError('Unable to log out. Please try again.');
+      setError('Không thể đăng xuất. Vui lòng thử lại.');
     } finally {
       setBusy(false);
     }

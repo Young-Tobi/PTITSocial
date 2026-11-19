@@ -15,7 +15,7 @@ function Stories() {
             <div className={styles.plus_story}>
               <Plus color="#fff" />
             </div>
-            <div className={styles.story_create_text}>Create Story</div>
+            <div className={styles.story_create_text}>Tạo tin</div>
           </div>
           {stories.map((story, i) => (
             <Story story={story} key={i} />

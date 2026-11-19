@@ -13,7 +13,7 @@ export default function SettingsPrivacy({ setVisible }) {
         >
           <i className="arrow_back_icon"></i>
         </div>
-        Settings & privacy
+        Cài đặt và quyền riêng tư
       </div>
       {user_menu1.map(({ name, icon }, i) => (
         <div className={`${styles.mmenu_item} hover3`} key={i}>

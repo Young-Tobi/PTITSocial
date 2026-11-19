@@ -10,11 +10,12 @@ exports.addFriend = catchAsync(async (req, res, next) => {
   const senderID = req.user.id;
   const recipientID = req.params.id;
 
-  if (senderID === recipientID) return next(new AppError("You can't add yourself", 400));
+  if (senderID === recipientID)
+    return next(new AppError('Bạn không thể tự kết bạn với chính mình', 400));
 
   const recipient = await User.findById(recipientID).select('+fcmToken');
 
-  if (!recipient) return next(new AppError('No user Found', 400));
+  if (!recipient) return next(new AppError('Không tìm thấy người dùng', 400));
 
   const existingFriendRequest = await Friend.findOne({
     sender: senderID,
@@ -73,9 +74,7 @@ exports.addFriend = catchAsync(async (req, res, next) => {
       postReact: '',
     }).sendFriendRequest();
   } else {
-    return next(
-      new AppError('You aleardy sent a request or this user alerady sent you a request', 400)
-    );
+    return next(new AppError('Lời mời kết bạn giữa hai người đã tồn tại', 400));
   }
   const friendship = await getRelationship(senderID, recipientID);
 
@@ -83,7 +82,7 @@ exports.addFriend = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      message: 'Request sent',
+      message: 'Đã gửi lời mời',
       friendship,
       newNotification: newNotification ? newNotification : null,
     },
@@ -103,7 +102,7 @@ exports.cancelRequest = catchAsync(async (req, res, next) => {
     (friendRequest.recipient.toString() !== senderID &&
       friendRequest.sender.toString() !== senderID)
   )
-    return next(new AppError('No friend request found', 400));
+    return next(new AppError('Không tìm thấy lời mời kết bạn', 400));
 
   // Update the status of the friend request to "cancelled"
   friendRequest.status = 'cancelled';
@@ -114,7 +113,7 @@ exports.cancelRequest = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      message: 'Request cancelled',
+      message: 'Đã hủy lời mời',
       friendship,
     },
   });
@@ -132,7 +131,7 @@ exports.acceptRequest = catchAsync(async (req, res, next) => {
     friendRequest.status !== 'pending' ||
     friendRequest.recipient.toString() !== recipientID
   )
-    return next(new AppError('No friend request found', 400));
+    return next(new AppError('Không tìm thấy lời mời kết bạn', 400));
 
   // Update the status of the friend request to "cancelled"
   friendRequest.status = 'accepted';
@@ -166,7 +165,7 @@ exports.acceptRequest = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      message: 'Request accepted',
+      message: 'Đã chấp nhận lời mời',
       friendship,
       newNotification: newNotification ? newNotification : null,
     },
@@ -186,7 +185,7 @@ exports.removeFriend = catchAsync(async (req, res, next) => {
     (friendRequest.recipient.toString() !== recipientID &&
       friendRequest.sender.toString() !== recipientID)
   )
-    return next(new AppError('No friend found', 400));
+    return next(new AppError('Không tìm thấy bạn bè', 400));
 
   // Update the status of the friend request to "cancelled"
 
@@ -206,7 +205,7 @@ exports.removeFriend = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      message: 'Request removed',
+      message: 'Đã hủy kết bạn',
       friendship,
     },
   });
@@ -216,14 +215,15 @@ exports.follow = catchAsync(async (req, res, next) => {
   const senderID = req.user.id;
   const recipientID = req.params.id;
 
-  if (senderID === recipientID) return next(new AppError("You can't follow yourself", 400));
+  if (senderID === recipientID)
+    return next(new AppError('Bạn không thể tự theo dõi chính mình', 400));
 
   const existingFollow = await Follow.findOne({
     sender: senderID,
     recipient: recipientID,
   });
 
-  if (existingFollow) return next(new AppError('You aleardy follow this user', 400));
+  if (existingFollow) return next(new AppError('Bạn đã theo dõi người dùng này', 400));
 
   // Find the friend request
   const follow = new Follow({
@@ -245,7 +245,7 @@ exports.follow = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      message: 'Follow successful',
+      message: 'Đã theo dõi thành công',
       friendship,
       newNotification: newNotification ? newNotification : null,
     },
@@ -256,7 +256,8 @@ exports.unfollow = catchAsync(async (req, res, next) => {
   const senderID = req.user.id;
   const recipientID = req.params.id;
 
-  if (senderID === recipientID) return next(new AppError("You can't follow yourself", 400));
+  if (senderID === recipientID)
+    return next(new AppError('Bạn không thể tự theo dõi chính mình', 400));
 
   // Find the friend request
   const follow = await Follow.findOne({
@@ -264,7 +265,7 @@ exports.unfollow = catchAsync(async (req, res, next) => {
     recipient: recipientID,
   });
 
-  if (!follow) return next(new AppError('You are not following this user', 400));
+  if (!follow) return next(new AppError('Bạn chưa theo dõi người dùng này', 400));
 
   await follow.remove();
   const friendship = await getRelationship(senderID, recipientID);
@@ -273,7 +274,7 @@ exports.unfollow = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      message: 'Unfollow successful',
+      message: 'Đã bỏ theo dõi',
       friendship,
     },
   });
@@ -288,7 +289,6 @@ exports.getFriends = catchAsync(async (req, res, next) => {
     status: 'accepted',
   })
     .sort({ createdAt: -1 })
-    .limit(100)
     .populate({
       path: 'sender recipient',
       select: 'first_name last_name photo username gender cover',

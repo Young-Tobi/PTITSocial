@@ -131,7 +131,7 @@ function SearchUser({ color, showSearchMenu, setShowSearchMenu }) {
           ) : searchTerm ? (
             <p style={{ padding: '10px' }}>Không tìm thấy người dùng</p>
           ) : (
-            <p style={{ padding: '10px' }}>Type something to search</p>
+            <p style={{ padding: '10px' }}>Nhập nội dung để tìm kiếm</p>
           )}
         </div>
       </div>

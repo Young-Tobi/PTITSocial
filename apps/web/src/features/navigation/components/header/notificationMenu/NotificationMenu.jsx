@@ -1,3 +1,4 @@
+import { notificationIcon, localizeSystemText } from 'app/locale';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import React from 'react';
@@ -63,16 +64,12 @@ function NotificationMenu({ setShowNotificationMenu }) {
                       <img src={notification?.sender?.photo} alt="" />
                       <img
                         className={styles.type}
-                        src={`../../../reacts/${
-                          notification.type === 'react'
-                            ? notification.content.split(' ')[2]
-                            : notification.type
-                        }.svg`}
+                        src={`../../../reacts/${notificationIcon(notification)}.svg`}
                         alt=""
                       />
                     </div>
                     <div className={styles.content_2}>
-                      <span>{notification.content}</span>
+                      <span>{localizeSystemText(notification.content)}</span>
                       <span className={styles.time}>
                         <Moment fromNow interval={30}>
                           {notification.createdAt}

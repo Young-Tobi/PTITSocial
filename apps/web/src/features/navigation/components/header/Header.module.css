@@ -117,6 +117,14 @@
 .active .icon {
   display: none;
 }
+.middle svg.roadmapIcon {
+  fill: none;
+  color: var(--color-secondary);
+}
+.middle .active svg.roadmapIcon {
+  fill: none;
+  color: var(--blue-color);
+}
 .profile_active {
   color: var(--blue-color);
   background: var(--light-blue-color);

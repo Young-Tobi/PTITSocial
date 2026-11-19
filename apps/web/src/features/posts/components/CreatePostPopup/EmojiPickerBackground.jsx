@@ -1,3 +1,4 @@
+import { emojiLocale } from 'app/locale';
 import React, { useState, useEffect } from 'react';
 import EmojiPicker from 'emoji-picker-react';
 import classes from './CreatePostPopup.module.css';
@@ -62,7 +63,7 @@ function EmojiPickerBackground({
         <div className={classes.background_wrap}>
           <img
             src="../../../icons/colorful.png"
-            alt="colorful"
+            alt="Màu nền"
             className={classes.open_bg}
             onClick={() => {
               setShowBgs((prev) => !prev);
@@ -106,6 +107,7 @@ function EmojiPickerBackground({
             {...attributes.popper}
           >
             <EmojiPicker
+              {...emojiLocale}
               width={300}
               height={300}
               lazyLoadEmojis={true}

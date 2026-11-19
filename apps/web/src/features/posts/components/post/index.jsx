@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import classes from './Post.module.css';
 import Moment from 'react-moment';
-import { Dots, Public } from 'shared/icons/index';
+import { Dots } from 'shared/icons/index';
+import PostAudienceIcon from 'shared/icons/PostAudienceIcon';
 import Card from 'shared/components/ui/Card/Card';
 import { postBackgrounds } from 'features/posts/data/post';
 import ImageViewer from 'react-simple-image-viewer';
@@ -48,7 +49,7 @@ function Post({ post }) {
   const [delayHandler, setDelayHandler] = useState(null);
   const [reactions, setReactions] = useState(null);
   const [commentsCount, setCommentsCount] = useState(post?.commentsCount);
-  const [sharesCount, setSharesCount] = useState(post?.sharesCount);
+  const sharesCount = post?.sharesCount || 0;
   const user = useSelector((state) => ({ ...state.user.userinfo }));
 
   const postRef = useRef();
@@ -163,17 +164,11 @@ function Post({ post }) {
             </Link>
 
             {post.type === 'profilePhoto' ? (
-              <span className={classes.profilePhotoText}>
-                {`updated ${post.user.gender === 'male' ? 'his' : 'her'} profile
-                picture`}
-              </span>
+              <span className={classes.profilePhotoText}>{`đã cập nhật ảnh đại diện`}</span>
             ) : post.type === 'cover' ? (
-              <span className={classes.profilePhotoText}>
-                {`updated ${post.user.gender === 'male' ? 'his' : 'her'} profile
-            cover`}
-              </span>
+              <span className={classes.profilePhotoText}>{`đã cập nhật ảnh bìa`}</span>
             ) : post.type === 'share' ? (
-              <span className={classes.profilePhotoText}>{`Shared post`}</span>
+              <span className={classes.profilePhotoText}>{`đã chia sẻ bài viết`}</span>
             ) : (
               ``
             )}
@@ -182,7 +177,25 @@ function Post({ post }) {
             <Moment fromNow interval={30}>
               {post.createdAt}
             </Moment>
-            <Public color="#828387" />
+            <span
+              role="img"
+              aria-label={
+                post.audience === 'friends'
+                  ? 'Bạn bè'
+                  : post.audience === 'selected'
+                    ? 'Bạn bè được chọn'
+                    : 'Công khai'
+              }
+              title={
+                post.audience === 'friends'
+                  ? 'Bạn bè'
+                  : post.audience === 'selected'
+                    ? 'Bạn bè được chọn'
+                    : 'Công khai'
+              }
+            >
+              <PostAudienceIcon audience={post.audience} />
+            </span>
           </Link>
         </div>
         <div className={classes.right}>
@@ -374,7 +387,7 @@ function Post({ post }) {
                     love: 'Yêu thích',
                     haha: 'Haha',
                     sad: 'Buồn',
-                    wow: 'Wow',
+                    wow: 'Ngạc nhiên',
                     angry: 'Phẫn nộ',
                   }[check] || check
                 : 'Thích'}
@@ -391,7 +404,7 @@ function Post({ post }) {
             <span>Bình luận</span>
           </div>
 
-          {post.type === 'share' ? (
+          {post.type === 'share' || (post.audience && post.audience !== 'public') ? (
             ''
           ) : (
             <>
@@ -409,7 +422,6 @@ function Post({ post }) {
                   setShowMenu={setShowShare}
                   post={post}
                   postRef={postRef}
-                  setSharesCount={setSharesCount}
                 />
               )}
             </>
@@ -433,7 +445,6 @@ function Post({ post }) {
         postID={post._id}
         lastCommentData={lastCommentData}
         user={user}
-        commentRef={commentRef}
       />
 
       {isViewerOpen && (

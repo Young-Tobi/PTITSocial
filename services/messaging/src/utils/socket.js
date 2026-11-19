@@ -23,12 +23,12 @@ function init(server, options) {
       const account = await authenticate(
         socket.handshake.auth?.token || (cookie && decodeURIComponent(cookie.slice(4)))
       );
-      if (!account.verified) return next(new Error('Verified account required'));
+      if (!account.verified) return next(new Error('Vui lòng xác minh tài khoản'));
       const { id, username, first_name, last_name, photo } = account;
       socket.account = { id, username, first_name, last_name, photo };
       next();
     } catch {
-      next(new Error('Authentication failed'));
+      next(new Error('Xác thực thất bại'));
     }
   });
   io.on('connection', (socket) => {

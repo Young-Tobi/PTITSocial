@@ -13,10 +13,12 @@ const postSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    audience: { type: String, enum: ['public', 'friends', 'selected'], default: 'public' },
+    allowedViewers: [{ type: ObjectId, ref: 'User' }],
     type: {
       type: String,
       enum: ['profilePhoto', 'cover', 'normal', 'image', 'background', 'share'],
-      required: [true, 'Post type is required'],
+      required: [true, 'Vui lòng chọn loại bài viết'],
     },
     sharedID: {
       type: mongoose.Schema.Types.ObjectId,
@@ -38,7 +40,7 @@ const postSchema = new mongoose.Schema(
             return true;
           return validator.isLength(val, { min: 2, max: 300 });
         },
-        message: 'Post must have a content at least 2 charcters ',
+        message: 'Bài viết phải có từ 2 đến 300 ký tự ',
       },
     },
     images: {
@@ -48,7 +50,7 @@ const postSchema = new mongoose.Schema(
           if (this.type === 'image' && val.length < 1) return false;
           return true;
         },
-        message: 'You must choose at least 1 image or switch to normal post',
+        message: 'Vui lòng chọn ít nhất một ảnh hoặc chuyển sang bài viết văn bản',
       },
       maxLength: 5,
     },
@@ -123,9 +125,12 @@ const postSchema = new mongoose.Schema(
 );
 
 postSchema.statics.calcShares = async function (postId) {
+  const originalId = postId?._id || postId;
+  if (!originalId || !mongoose.isValidObjectId(originalId)) return 0;
+  const sharedId = new mongoose.Types.ObjectId(String(originalId));
   const sharesStats = await this.aggregate([
     {
-      $match: { sharedID: postId },
+      $match: { type: 'share', sharedID: sharedId, deleted: { $ne: true } },
     },
     {
       $group: {
@@ -136,7 +141,7 @@ postSchema.statics.calcShares = async function (postId) {
   ]);
 
   await Post.findByIdAndUpdate(
-    postId,
+    sharedId,
     {
       sharesCount: sharesStats[0]?.count || 0,
     },
