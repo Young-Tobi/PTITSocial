@@ -1,0 +1,48 @@
+.toast {
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  padding: 14px;
+  background: var(--bg-primary);
+  color: var(--color-primary);
+  border: 1px solid var(--bg-third);
+  border-radius: 12px;
+  box-shadow: 0 5px 20px #0004;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.header button {
+  background: transparent;
+  color: inherit;
+  border: 0;
+  font-size: 22px;
+  cursor: pointer;
+}
+.content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  width: 100%;
+}
+.content img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+.content span {
+  overflow-wrap: anywhere;
+}
+.content small {
+  display: block;
+  margin-top: 6px;
+  opacity: 0.75;
+}

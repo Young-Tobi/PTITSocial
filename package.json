@@ -7,20 +7,14 @@
     "packages/*"
   ],
   "scripts": {
-    "start:coding": "npm run start --workspace @ptitsocial/coding",
-    "test:coding": "node --test tests/coding-rules.test.cjs",
-    "test:coding:integration": "node tests/coding.integration.cjs",
-    "test:coding:languages": "node tests/coding-languages.integration.cjs",
+    "dev": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./start-local.ps1",
+    "stop": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./stop-local.ps1",
+    "test:documents": "node --test tests/documents/*.test.cjs",
+    "test:documents:integration": "node tests/documents/integration.cjs",
     "start:accounts": "npm run start --workspace @ptitsocial/accounts",
     "start:content": "npm run start --workspace @ptitsocial/content",
     "start:messaging": "npm run start --workspace @ptitsocial/messaging",
     "start:gateway": "npm run start --workspace @ptitsocial/gateway",
-    "start:quiz": "npm run start --workspace @ptitsocial/quiz",
-    "test:quiz": "node --test tests/quiz-rules.test.cjs",
-    "test:quiz:import": "npm --prefix apps/web test -- --watchAll=false --runInBand --runTestsByPath src/features/quiz/importQuestions.test.js",
-    "test:quiz:editor": "npm --prefix apps/web test -- --watchAll=false --runInBand --runTestsByPath src/features/quiz/editorDraft.test.js",
-    "test:quiz:integration": "node tests/quiz.integration.cjs",
-    "test:quiz:load": "node tests/quiz.load.cjs",
     "start:web": "npm --prefix apps/web start",
     "build:web": "npm --prefix apps/web run build",
     "migrate:legacy": "node scripts/migrate-legacy.cjs",
@@ -28,6 +22,22 @@
     "test:architecture": "node --test tests/architecture.test.cjs",
     "test:integration": "node tests/integration.cjs",
     "format": "prettier --write services packages scripts tests apps/web/src",
+    "test:academic": "node --test tests/academic/*.test.cjs",
+    "test:academic:integration": "node tests/academic/integration.cjs",
+    "test:academic:browser": "node tests/academic/browser.cjs",
+    "test:academic:notifications": "node tests/academic/notifications.cjs",
+    "test:academic:checklist": "node tests/academic/checklist.cjs",
+    "migrate:academic": "node scripts/academic/migrate.cjs",
+    "start:coding": "npm run start --workspace @ptitsocial/coding",
+    "test:coding": "node --test tests/coding-rules.test.cjs",
+    "test:coding:integration": "node tests/coding.integration.cjs",
+    "test:coding:languages": "node tests/coding-languages.integration.cjs",
+    "start:quiz": "npm run start --workspace @ptitsocial/quiz",
+    "test:quiz": "node --test tests/quiz-rules.test.cjs",
+    "test:quiz:import": "npm --prefix apps/web test -- --watchAll=false --runInBand --runTestsByPath src/features/quiz/importQuestions.test.js",
+    "test:quiz:editor": "npm --prefix apps/web test -- --watchAll=false --runInBand --runTestsByPath src/features/quiz/editorDraft.test.js",
+    "test:quiz:integration": "node tests/quiz.integration.cjs",
+    "test:quiz:load": "node tests/quiz.load.cjs",
     "start:learning": "npm run start --workspace @ptitsocial/learning",
     "test:learning": "node --test tests/learning.test.cjs tests/roadmap-sources.test.cjs tests/gemini-key-pool.test.cjs",
     "test:flashcards": "node --test tests/flashcards.test.cjs"
@@ -60,6 +70,7 @@
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
-    "prettier": "3.6.2"
+    "prettier": "3.6.2",
+    "playwright": "^1.65.1"
   }
 }

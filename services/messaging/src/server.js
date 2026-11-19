@@ -14,6 +14,7 @@ const sync = require('@ptitsocial/service-kit/projections').projectionSync({ Use
 const app = createApp('messaging');
 
 app.use('/internal', internalOnly);
+require('./features/academic')(app, sync);
 app.get(
   '/internal/stats/:userId',
   catchAsync(async (req, res) => {

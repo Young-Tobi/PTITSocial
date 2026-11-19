@@ -76,6 +76,8 @@ app.use(
     next();
   })
 );
+require('./features/academic')(app);
+require('./features/documents')(app);
 app.use('/api/v1/posts', require('./routes/postRoutes'));
 app.get('/api/v1/users/getProfile/:username/photos', profiles.getPhotos);
 app.get('/api/v1/users/getProfile/:username/posts', profiles.getUserPosts);
