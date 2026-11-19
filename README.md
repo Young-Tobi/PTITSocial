@@ -28,24 +28,24 @@ compose.yaml               MongoDB và Mailpit trên máy local
 
 ## Chạy local
 
-Cần Node.js 22 và Docker Desktop. Trong thư mục gốc:
+Cần Node.js 22 trở lên. Với folder đã cấu hình trên máy hiện tại, mở bằng VS Code và nhấn **Ctrl + Shift + B**, hoặc chạy trong thư mục gốc:
 
 ```powershell
-npm.cmd install
-npm.cmd --prefix apps/web ci
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-local.ps1
+npm.cmd run dev
 ```
 
 - Website: http://localhost:3000
-- Gateway và trạng thái dịch vụ: http://localhost:8000/health
+- Gateway và trạng thái dịch vụ theo cấu hình hiện tại: http://localhost:8010/health
 - Hộp thư thử nghiệm: http://localhost:8025
 
-Script tự tạo cấu hình local nếu chưa có. Các file `.env`, dữ liệu upload, log và bản sao lưu không được đưa vào Git. Nếu dùng PowerShell bị chặn `npm.ps1`, gọi `npm.cmd` như các lệnh trên.
+Launcher dùng MongoDB/Mailpit có sẵn trong `.local-tools`, giữ nguyên `.env` và dữ liệu, rồi mở trình duyệt khi hệ thống sẵn sàng. Dependencies phải được cài ở root (`npm.cmd install`) và frontend (`npm.cmd --prefix apps/web ci`). Folder clone mới cần được chuẩn bị cấu hình và công cụ local trước; launcher sẽ báo lỗi nếu thiếu. Xem [hướng dẫn chạy trong VS Code](README-LOCAL.md).
+
+Các file `.env`, dữ liệu upload, log và bản sao lưu không được đưa vào Git. Nếu dùng PowerShell bị chặn `npm.ps1`, gọi `npm.cmd` như các lệnh trên.
 
 Dừng mà vẫn giữ dữ liệu:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\stop-local.ps1
+npm.cmd run stop
 ```
 
 Máy đang làm bài đã được chuyển dữ liệu từ bản cũ, bao gồm tài khoản và các nội dung bạn tạo. Khi cài mới với MongoDB trống, đăng ký tài khoản qua website và xác minh email trong Mailpit.
@@ -55,12 +55,12 @@ Máy đang làm bài đã được chuyển dữ liệu từ bản cũ, bao gồ
 | Thành phần | Cổng | Database               |
 | ---------- | ---- | ---------------------- |
 | Web        | 3000 | Gọi Gateway            |
-| Gateway    | 8000 | Không kết nối database |
+| Gateway    | 8010 | Không kết nối database |
 | Accounts   | 8001 | `ptitsocial_accounts`  |
 | Content    | 8002 | `ptitsocial_content`   |
 | Messaging  | 8003 | `ptitsocial_messaging` |
 
-Từng dịch vụ có `package.json`, `src/server.js`, `.env` và `/health` riêng. Có thể chạy riêng bằng `npm.cmd run start:accounts`, `start:content`, `start:messaging`, `start:gateway`. Khi gọi từ root bằng npm workspace, working directory được đặt vào dịch vụ tương ứng.
+Các cổng trên là cấu hình hiện tại; launcher đọc cổng từ `.env`. Từng dịch vụ có `package.json`, `src/server.js`, `.env` và `/health` riêng. Có thể chạy riêng bằng `npm.cmd run start:accounts`, `start:content`, `start:messaging`, `start:gateway`. Khi gọi từ root bằng npm workspace, working directory được đặt vào dịch vụ tương ứng.
 
 Một MongoDB local phục vụ ba database tách biệt; không có dịch vụ nào truy vấn trực tiếp database của dịch vụ khác. Các bản sao tên, avatar và quan hệ theo dõi chỉ phục vụ đọc, được đồng bộ qua API nội bộ.
 
@@ -91,6 +91,7 @@ Lệnh sao chép từ database `backbook`, giữ nguyên ObjectId và không s�
 
 - [Kiến trúc và quyền sở hữu dữ liệu](docs/ARCHITECTURE.md)
 - [Đường đi của API](docs/API.md)
+- [Module Hỏi đáp học thuật: phạm vi riêng, điểm nối và kiểm thử](docs/academic/README.md)
 - [Nên đọc và sửa file nào](docs/CODE-GUIDE.md)
 - [Làm việc nhóm: clone, chia nhánh và Pull Request](docs/TEAM-WORKFLOW.md)
 - [Ghi chú giao diện](PTITSOCIAL-DESIGN.md)

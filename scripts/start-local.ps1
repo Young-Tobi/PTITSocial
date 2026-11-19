@@ -1,45 +1,88 @@
-$ErrorActionPreference = 'Stop'
-$projectRoot = Split-Path -Parent $PSScriptRoot
-Set-Location -LiteralPath $projectRoot
-docker compose up -d
-if ($LASTEXITCODE -ne 0) { throw 'Start Docker Desktop first.' }
-node scripts/configure-local.cjs
-if ($LASTEXITCODE -ne 0) { throw 'Local configuration failed.' }
-$logDir = Join-Path $projectRoot '.local-logs'
-New-Item -ItemType Directory -Force -Path $logDir | Out-Null
-$components = @(
-  @{Name='accounts'; Port=8001; Directory='services\accounts'; Entry='src\server.js'},
-  @{Name='content'; Port=8002; Directory='services\content'; Entry='src\server.js'},
-  @{Name='messaging'; Port=8003; Directory='services\messaging'; Entry='src\server.js'},
-  @{Name='gateway'; Port=8000; Directory='services\gateway'; Entry='src\server.js'},
-  @{Name='frontend'; Port=3000; Directory='apps\web'; Entry='node_modules\react-scripts\bin\react-scripts.js'; Extra='start'}
-)
-foreach ($component in $components) {
-  $directory = Join-Path $projectRoot $component.Directory
-  $entry = Join-Path $directory $component.Entry
-  $listener = Get-NetTCPConnection -State Listen -LocalPort $component.Port -ErrorAction SilentlyContinue | Select-Object -First 1
-  if ($listener) {
-    $existingProcess = Get-CimInstance Win32_Process -Filter "ProcessId=$($listener.OwningProcess)"
-    if ($existingProcess.Name -ne 'node.exe' -or -not $existingProcess.CommandLine.Contains($directory)) { throw "Port $($component.Port) is occupied by another application." }
-    continue
+param([switch]$NoBrowser)
+. (Join-Path $PSScriptRoot 'local-common.ps1')
+$localLock = Enter-LocalLock
+$started = @()
+$previousPort = $env:PORT
+$previousBrowser = $env:BROWSER
+$previousHost = $env:HOST
+try {
+  $components = @(Get-LocalComponents)
+  New-Item -ItemType Directory -Force -Path $logDir | Out-Null
+  $listeners = @(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue)
+  # Check every port before starting anything. Never stop an unrelated process.
+  foreach ($component in $components) {
+    foreach ($requiredPath in @($component.Exe, $component.Marker)) {
+      if (-not (Test-Path -LiteralPath $requiredPath)) { throw "Missing $requiredPath. Restore local tools/data or install dependencies first." }
+    }
+    foreach ($listener in @($listeners | Where-Object { $_.LocalPort -in $component.Ports })) {
+      $candidate = Get-CimInstance Win32_Process -Filter "ProcessId=$($listener.OwningProcess)"
+      $owner = Find-LocalProcessOwner $component $candidate
+      if (-not $owner) { throw "Port $($listener.LocalPort) is occupied by another application. No process was stopped." }
+      Save-LocalProcess $component $owner
+    }
   }
-  $arguments = '"' + $entry + '"'
-  if ($component.Extra) { $arguments += ' ' + $component.Extra }
-  $ownedProcess = Start-Process -FilePath (Get-Command node.exe).Source -ArgumentList $arguments -WorkingDirectory $directory -WindowStyle Hidden -RedirectStandardOutput (Join-Path $logDir ($component.Name + '.log')) -RedirectStandardError (Join-Path $logDir ($component.Name + '-error.log')) -PassThru
-  $ownedProcess.Id | Set-Content (Join-Path $logDir ($component.Name + '.pid'))
+  foreach ($component in $components) {
+    if (Get-LocalProcess $component) {
+      Write-Host "$($component.Name) is already running."
+      continue
+    }
+    $env:PORT = "$($component.Ports[0])"
+    $env:BROWSER = 'none'
+    $env:HOST = 'localhost'
+    $arguments = ($component.Arguments | ForEach-Object { '"' + $_ + '"' }) -join ' '
+    $ownedProcess = Start-Process -FilePath $component.Exe -ArgumentList $arguments -WorkingDirectory $component.Directory -WindowStyle Hidden -RedirectStandardOutput (Join-Path $logDir ($component.Name + '.log')) -RedirectStandardError (Join-Path $logDir ($component.Name + '-error.log')) -PassThru
+    $candidate = Get-CimInstance Win32_Process -Filter "ProcessId=$($ownedProcess.Id)"
+    if (-not (Test-LocalProcess $component $candidate)) { throw "$($component.Name) exited during startup. Inspect $logDir" }
+    Save-LocalProcess $component $candidate
+    $started += $component
+    Write-Host "Started $($component.Name)."
+    if ($component.Name -eq 'mongo') {
+      $mongoDeadline = (Get-Date).AddSeconds(20)
+      do {
+        $mongoListener = Get-NetTCPConnection -LocalPort $component.Ports[0] -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.OwningProcess -eq $candidate.ProcessId }
+        if ($mongoListener) { break }
+        if (-not (Get-Process -Id $candidate.ProcessId -ErrorAction SilentlyContinue)) { throw 'MongoDB exited during startup. Check .local-logs/mongod.log.' }
+        Start-Sleep -Milliseconds 500
+      } while ((Get-Date) -lt $mongoDeadline)
+      if (-not $mongoListener) { throw 'MongoDB startup timed out. Check .local-logs/mongod.log.' }
+    }
+  }
+  Write-Host 'Waiting for the backend and frontend to be ready...'
+  $deadline = (Get-Date).AddSeconds(120)
+  $ready = $false
+  do {
+    foreach ($component in $components) {
+      if (-not (Get-LocalProcess $component)) { throw "$($component.Name) exited. Inspect $logDir" }
+    }
+    try {
+      $health = Invoke-RestMethod ($localConfig.gatewayUrl + '/health') -TimeoutSec 3
+      $web = Invoke-WebRequest $localConfig.webUrl -UseBasicParsing -TimeoutSec 3
+      $mail = Invoke-WebRequest $localConfig.mailUrl -UseBasicParsing -TimeoutSec 3
+      if ($health.status -eq 'ok' -and $web.StatusCode -eq 200 -and $mail.StatusCode -eq 200) { $ready = $true; break }
+    } catch { }
+    Start-Sleep -Seconds 1
+  } while ((Get-Date) -lt $deadline)
+  if (-not $ready) { throw "Startup timed out. Inspect $logDir" }
+  Write-Host "PTITSocial: $($localConfig.webUrl)"
+  Write-Host "Academic Q&A: $($localConfig.webUrl)/questions"
+  Write-Host "Study documents: $($localConfig.webUrl)/documents"
+  Write-Host "Gateway health: $($localConfig.gatewayUrl)/health"
+  Write-Host "Local email: $($localConfig.mailUrl)"
+  Write-Host 'To stop: npm.cmd run stop'
+  if (-not $NoBrowser) {
+    try { Start-Process $localConfig.webUrl } catch { Write-Warning "Open $($localConfig.webUrl) in your browser." }
+  }
+} catch {
+  $startupError = $_
+  [array]::Reverse($started)
+  foreach ($component in $started) {
+    try { Stop-LocalComponent $component } catch { Write-Warning $_.Exception.Message }
+  }
+  throw $startupError
+} finally {
+  $env:PORT = $previousPort
+  $env:BROWSER = $previousBrowser
+  $env:HOST = $previousHost
+  $localLock.ReleaseMutex()
+  $localLock.Dispose()
 }
-Write-Host 'Waiting for services and frontend...'
-$ready = $false
-for ($attempt = 0; $attempt -lt 45; $attempt++) {
-  try {
-    $health = Invoke-RestMethod 'http://localhost:8000/health' -TimeoutSec 4
-    $web = Invoke-WebRequest 'http://localhost:3000' -UseBasicParsing -TimeoutSec 4
-    if ($health.status -eq 'ok' -and $web.StatusCode -eq 200) { $ready = $true; break }
-  } catch { }
-  Start-Sleep -Seconds 1
-}
-if (-not $ready) { throw "Startup failed. Inspect $logDir" }
-Write-Host 'PTITSocial: http://localhost:3000'
-Write-Host 'Gateway health: http://localhost:8000/health'
-Write-Host 'Local email: http://localhost:8025'
-Write-Host "Logs: $logDir"

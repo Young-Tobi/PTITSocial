@@ -1,1 +1,2 @@
-& (Join-Path $PSScriptRoot "scripts/stop-local.ps1")
+$ErrorActionPreference = 'Stop'
+& (Join-Path $PSScriptRoot 'scripts/stop-local.ps1')

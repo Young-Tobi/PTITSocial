@@ -8,6 +8,7 @@ node_modules/
 .local-tools/
 .local-backups/
 services/content/uploads/
+services/content/private-documents/
 apps/web/build/
 coverage/
 *.log

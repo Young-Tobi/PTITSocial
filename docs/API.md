@@ -1,6 +1,10 @@
 # API qua Gateway
 
+API Kho tài liệu học tập cộng đồng: [docs/documents](documents/README.md), tiền tố `/api/v1/documents` do Content xử lý.
+
 Frontend chỉ gọi `http://localhost:8000`. Các URL giữ tương thích với giao diện hiện tại.
+
+API và cách tích hợp Hỏi đáp học thuật được mô tả riêng tại [docs/academic](academic/README.md).
 
 | Tiền tố/đường dẫn                                                                | Dịch vụ   |
 | -------------------------------------------------------------------------------- | --------- |

@@ -1,4 +1,5 @@
 import React from 'react';
+import { registerAcademicNotifications } from 'features/academic/notifications';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 import Header from 'features/navigation/components/header/Header';
@@ -48,6 +49,7 @@ export default function IsLoggedIn({ user }) {
         withCredentials: true,
         auth: { token: JSON.parse(Cookies.get('token') || 'null') },
       });
+      registerAcademicNotifications(socket, dispatch);
       socket.emit('setup', {
         userId: user.userinfo._id,
         info: {
