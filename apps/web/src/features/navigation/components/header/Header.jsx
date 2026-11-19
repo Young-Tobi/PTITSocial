@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
-import AcademicHeaderLink from 'features/academic/HeaderLink';
-import DocumentHeaderLink from 'features/documents/HeaderLink';
+import StudyMenu from './StudyMenu';
 import styles from './Header.module.css';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -129,8 +128,7 @@ function Header() {
         </NavLink>
       </div>
       <div className={styles.right}>
-        <AcademicHeaderLink className={styles.circle_icon} />
-        <DocumentHeaderLink className={styles.circle_icon} />
+        <StudyMenu buttonClass={styles.circle_icon} />
         <NavLink
           to="/profile"
           className={({ isActive }) =>

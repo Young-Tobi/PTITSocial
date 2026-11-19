@@ -10,7 +10,13 @@ function init(server, options) {
   });
   io.use(async (socket, next) => {
     try {
-      const user = await authenticate(socket.handshake.auth?.token);
+      const cookie = (socket.handshake.headers.cookie || '')
+        .split(';')
+        .map((value) => value.trim())
+        .find((value) => value.startsWith('jwt='));
+      const user = await authenticate(
+        socket.handshake.auth?.token || (cookie && decodeURIComponent(cookie.slice(4)))
+      );
       if (!user.verified) throw Error();
       socket.userId = user.id;
       next();

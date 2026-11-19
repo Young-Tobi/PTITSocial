@@ -284,6 +284,12 @@ for (const mode of ['preview', 'download'])
         'Cache-Control': 'private, no-store',
         'X-Content-Type-Options': 'nosniff',
       });
+      if (mode === 'preview') {
+        res.set({
+          'X-Frame-Options': 'SAMEORIGIN',
+          'Content-Security-Policy': "default-src 'none'; frame-ancestors 'self'",
+        });
+      }
       const filename = encodeURIComponent(doc.originalName).replace(
         /['()*]/g,
         (c) => '%' + c.charCodeAt(0).toString(16)

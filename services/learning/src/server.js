@@ -280,7 +280,7 @@ app.use(
   require('./flashcards').flashcardRouter({ reserve, generationLimit })
 );
 app.use('/api/v1/learning', router);
-start(app, { name: 'learning', port: Number(process.env.PORT || 8004) }).catch((error) => {
+start(app, { name: 'learning', port: Number(process.env.PORT || 8007) }).catch((error) => {
   console.error('Không khởi động được dịch vụ learning:', error.message);
   process.exit(1);
 });

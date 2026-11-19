@@ -15,6 +15,8 @@ $components = @(
   @{Name='messaging'; Port=8003; Directory='services\messaging'; Entry='src\server.js'},
   @{Name='quiz'; Port=8004; Directory='services\quiz'; Entry='src\server.js'},
   @{Name='coding'; Port=8005; Directory='services\coding'; Entry='src\server.js'},
+  @{Name='study'; Port=8006; Directory='services\study'; Entry='src\server.js'},
+  @{Name='learning'; Port=8007; Directory='services\learning'; Entry='src\server.js'},
   @{Name='gateway'; Port=8000; Directory='services\gateway'; Entry='src\server.js'},
   @{Name='frontend'; Port=3000; Directory='apps\web'; Entry='node_modules\react-scripts\bin\react-scripts.js'; Extra='start'}
 )
@@ -43,6 +45,8 @@ for ($attempt = 0; $attempt -lt 45; $attempt++) {
   Start-Sleep -Seconds 1
 }
 if (-not $ready) { throw "Startup failed. Inspect $logDir" }
+Push-Location (Join-Path $projectRoot 'services/study')
+try { node src/scripts/seedLocations.js --if-empty } finally { Pop-Location }
 Write-Host 'PTITSocial: http://localhost:3000'
 Write-Host 'Gateway health: http://localhost:8000/health'
 Write-Host 'Local email: http://localhost:8025'

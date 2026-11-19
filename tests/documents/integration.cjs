@@ -62,6 +62,8 @@ run(async ({ a, b, api, tag }) => {
     );
     await file('/' + main._id + '/download', null, 401);
     const range = await file('/' + main._id + '/preview', b, 206, { range: 'bytes=0-9' });
+    assert.equal(range.headers.get('x-frame-options'), 'SAMEORIGIN');
+    assert.match(range.headers.get('content-security-policy'), /frame-ancestors 'self'/);
     assert.equal((await range.arrayBuffer()).byteLength, 10);
     for (const format of ['docx', 'pptx']) {
       const doc = await upload(format);

@@ -1,0 +1,14 @@
+{
+  "name": "@ptitsocial/study",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/scripts/seedLocations.js",
+    "import:hanoi-osm": "node src/scripts/importHanoiOsmLocations.js"
+  },
+  "dependencies": {
+    "@ptitsocial/service-kit": "*"
+  }
+}

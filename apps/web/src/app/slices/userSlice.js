@@ -19,13 +19,11 @@ export const userSlice = createSlice({
   reducers: {
     login: (state, action) => {
       state.userinfo = action.payload.data.user;
+      Cookies.remove('token');
+      delete axios.defaults.headers.common.Authorization;
       Cookies.set('user', JSON.stringify(action.payload.data.user), {
         expires: 90,
       });
-      Cookies.set('token', JSON.stringify(action.payload.data.token), {
-        expires: 90,
-      });
-      axios.defaults.headers.common['Authorization'] = `Bearer ${action.payload.data.token}`;
     },
 
     updateProfilePhoto: (state, action) => {

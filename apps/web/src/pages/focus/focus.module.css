@@ -1,0 +1,1181 @@
+.shell,
+.formPage {
+  min-height: calc(100vh - 56px);
+  padding: 48px clamp(20px, 5vw, 76px);
+  background: #f4f7f4;
+  color: #18332b;
+}
+.shell *,
+.formPage *,
+.focusRoom * {
+  box-sizing: border-box;
+}
+.hero {
+  max-width: 1400px;
+  margin: auto;
+  min-height: 330px;
+  border-radius: 34px;
+  padding: 56px 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  background: linear-gradient(120deg, #183b32, #275a49 65%, #d5a65c);
+  box-shadow: 0 24px 60px #143c2a26;
+}
+.hero h1 {
+  font:
+    700 clamp(38px, 5vw, 68px) / 1.02 Georgia,
+    serif;
+  color: #fff;
+  letter-spacing: -2px;
+  margin: 14px 0 20px;
+}
+.hero p {
+  max-width: 660px;
+  color: #dcebe5;
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+.eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  color: #d9b56f;
+}
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 14px;
+  padding: 14px 22px;
+  background: #eabf71 !important;
+  color: #17332a !important;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 24px #0d251e30;
+}
+.heroOrb {
+  flex: 0 0 250px;
+  height: 250px;
+  border: 1px solid #ffffff3d;
+  border-radius: 50%;
+  background: #ffffff16;
+  backdrop-filter: blur(18px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: inset 0 0 60px #fff1;
+}
+.heroOrb svg {
+  font-size: 32px;
+  color: #eabf71;
+}
+.heroOrb strong {
+  font:
+    700 52px/1.2 Georgia,
+    serif;
+  color: white;
+}
+.heroOrb span {
+  color: #d8e8e1;
+  letter-spacing: 2px;
+}
+.toolbar {
+  max-width: 1400px;
+  margin: 36px auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.toolbar form {
+  width: min(520px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 18px;
+  background: #fff;
+  border: 1px solid #dfe7e2;
+  border-radius: 14px;
+}
+.toolbar input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 15px;
+}
+.toolbar span {
+  color: #70817b;
+}
+.roomGrid {
+  max-width: 1400px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(295px, 1fr));
+  gap: 22px;
+}
+.roomCard {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 34px #1c3c2f12;
+  border: 1px solid #e4eae7;
+  transition: 0.2s;
+}
+.roomCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px #1c3c2f24;
+}
+.themeThumb {
+  height: 140px;
+  background-size: cover;
+  background-position: center;
+  padding: 14px;
+}
+.themeThumb > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #142b25b8;
+  color: #fff;
+  padding: 7px 10px;
+  border-radius: 50px;
+  font-size: 12px;
+}
+.themeThumb i,
+.liveDot {
+  width: 8px;
+  height: 8px;
+  background: #56d88b;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #56d88b;
+  display: inline-block;
+}
+.night-library {
+  --scene: url('../../assets/study/night-library.png');
+}
+.coffee-shop {
+  --scene: url('../../assets/study/coffee-shop.png');
+}
+.rain-window {
+  --scene: url('../../assets/study/rain-window.png');
+}
+.green-nature {
+  --scene: url('../../assets/study/green-nature.png');
+}
+.themeThumb,
+.themeChoice {
+  background-image: linear-gradient(#10221b22, #10221b55), var(--scene);
+}
+.roomCardBody {
+  padding: 20px;
+}
+.roomCardBody > small {
+  color: #3a886b;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.roomCardBody h2 {
+  font:
+    700 23px Georgia,
+    serif;
+  color: #18332b;
+  margin: 8px 0;
+}
+.roomCardBody > p {
+  height: 42px;
+  color: #687771;
+  line-height: 1.45;
+  overflow: hidden;
+}
+.roomMeta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px 0;
+  border-bottom: 1px solid #edf0ee;
+}
+.roomMeta span {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: #586962;
+  font-size: 13px;
+}
+.host {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+}
+.host img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.host span {
+  font-size: 11px;
+  color: #7b8984;
+}
+.host b {
+  font-size: 13px;
+  color: #273d35;
+}
+.roomCardBody > button {
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px;
+  background: #214d40;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.roomCardBody > button:disabled {
+  opacity: 0.45;
+}
+.empty {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 60px;
+  color: #718079;
+}
+.formPage {
+  display: grid;
+  place-items: center;
+}
+.createCard {
+  width: min(820px, 100%);
+  padding: 38px;
+  background: var(--bg-primary);
+  border: 1px solid var(--divider);
+  border-radius: 24px;
+  box-shadow: 0 20px 70px #18372d17;
+}
+.createCard h1 {
+  font:
+    700 38px Georgia,
+    serif;
+  margin: 8px 0;
+  color: var(--color-primary);
+}
+.createCard > p {
+  color: var(--color-secondary);
+  margin-bottom: 25px;
+}
+.createCard label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 700;
+  margin: 14px 0;
+}
+.createCard input,
+.createCard textarea,
+.createCard select {
+  padding: 13px 14px;
+  border: 1px solid var(--divider);
+  border-radius: 11px;
+  background: var(--bg-secondary);
+  font: inherit;
+  color: var(--color-primary);
+  outline: none;
+}
+.formRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+.createCard fieldset {
+  border: 0;
+  margin: 20px 0;
+}
+.createCard legend {
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.choiceRow {
+  display: flex;
+  gap: 10px;
+}
+.choiceRow button,
+.formActions > button:first-child {
+  padding: 12px 18px;
+  border: 1px solid var(--divider);
+  border-radius: 11px;
+  background: var(--bg-secondary);
+  cursor: pointer;
+}
+.choiceRow .selected {
+  border-color: #3e896d;
+  background: #e8f4ef;
+  color: #226249;
+}
+.themeChoices {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.themeChoice {
+  height: 110px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.themeChoice span {
+  position: absolute;
+  inset: auto 6px 6px;
+  padding: 6px;
+  background: #10251fc2;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 11px;
+}
+.selectedTheme {
+  border-color: #d7a94f;
+  box-shadow: 0 0 0 3px #eabf7144;
+}
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.formActions .primaryButton {
+  font-size: 14px;
+  padding: 12px 18px;
+}
+.roomLoading {
+  min-height: calc(100vh - 56px);
+  display: grid;
+  place-items: center;
+  background: #17362d;
+  color: white;
+}
+.focusRoom {
+  position: relative;
+  min-height: calc(100vh - 56px);
+  padding: 26px 30px 32px;
+  background-color: #160307;
+  background-image: var(--scene);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  overflow: hidden;
+}
+.roomShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #0a1914b8, #10201980 45%, #07110ed6);
+  backdrop-filter: none;
+}
+.roomTop,
+.roomLayout {
+  position: relative;
+  z-index: 1;
+  max-width: 1540px;
+  margin: auto;
+}
+.roomTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.roomTop small {
+  color: #ccded6;
+  letter-spacing: 2px;
+  margin-left: 8px;
+}
+.roomTop h1 {
+  font:
+    700 28px Georgia,
+    serif;
+  color: #fff;
+  margin-top: 4px;
+}
+.roomTopActions {
+  display: flex;
+  gap: 10px;
+}
+.roomTopActions button {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid #ffffff35;
+  border-radius: 11px;
+  background: #ffffff16;
+  color: #fff;
+  backdrop-filter: blur(15px);
+  cursor: pointer;
+}
+.roomLayout {
+  display: grid;
+  grid-template-columns: 280px minmax(340px, 1fr) 330px;
+  gap: 18px;
+  min-height: calc(100vh - 160px);
+}
+.glassPanel {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: #0e211bbb;
+  border: 1px solid #ffffff20;
+  border-radius: 20px;
+  backdrop-filter: blur(22px);
+  color: #fff;
+  min-height: 0;
+}
+.glassPanel h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #ffffff18;
+}
+.glassPanel h2 span {
+  margin-left: auto;
+  color: #b8cbc3;
+  font-weight: 400;
+}
+.memberList {
+  overflow: auto;
+  max-height: 370px;
+}
+.member {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 2px;
+  border-bottom: 1px solid #ffffff12;
+}
+.avatarWrap {
+  position: relative;
+}
+.avatarWrap img,
+.chatMessage img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.avatarWrap i {
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #172a24;
+  border-radius: 50%;
+  background: #52d587;
+}
+.member > span {
+  min-width: 0;
+  flex: 1;
+}
+.member b,
+.member small {
+  display: block;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.member small {
+  color: #9eb4ab;
+  font-size: 11px;
+  margin-top: 3px;
+}
+.member svg {
+  color: #849b92;
+}
+.member .micActive {
+  color: #68e6a3;
+}
+.member > button {
+  border: 0;
+  background: transparent;
+  color: #dca4a4;
+  cursor: pointer;
+}
+.memberActions {
+  display: flex;
+  gap: 4px;
+}
+.memberActions button {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  border: 1px solid #ffffff1f;
+  border-radius: 8px;
+  background: #ffffff0d;
+  color: #ffd3da;
+  cursor: pointer;
+}
+.hostMicPanel {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #ffffff1c;
+  border-radius: 13px;
+  background: #ffffff0d;
+}
+.hostMicPanel > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.hostMicPanel b,
+.hostMicPanel small {
+  display: block;
+  color: #fff;
+}
+.hostMicPanel small {
+  margin-top: 3px;
+  color: #d5b8bd;
+  font-size: 10px;
+  line-height: 1.35;
+}
+.hostMicPanel > button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid #ffffff24;
+  border-radius: 9px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.micPolicyOpen {
+  background: #8b142b;
+}
+.micPolicyLocked {
+  background: #24744e;
+}
+.ambientBox {
+  margin-top: auto;
+  padding: 15px;
+  border-radius: 14px;
+  background: #ffffff0c;
+  border: 1px solid #ffffff12;
+}
+.ambientBox h3,
+.ambientBox h3 svg {
+  color: #fff;
+}
+.ambientBox p {
+  color: #95aaa2;
+  font-size: 11px;
+  margin: 6px 0 12px;
+  line-height: 1.4;
+}
+.ambientBox > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ambientBox button {
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: #ffffff18;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+.ambientBox button svg {
+  color: #fff;
+}
+.ambientBox input {
+  width: 100%;
+  accent-color: #d9b162;
+}
+.centerStage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+.timerCard {
+  width: min(460px, 90%);
+  aspect-ratio: 1.65;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 40px;
+  background: #0e211b9c;
+  border: 1px solid #ffffff2e;
+  box-shadow:
+    0 30px 80px #0007,
+    inset 0 0 60px #fff08;
+  backdrop-filter: blur(22px);
+}
+.timerCard > span {
+  color: #e5c583;
+  letter-spacing: 4px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.timerCard > strong {
+  font:
+    700 clamp(64px, 8vw, 100px) / 1.05 Georgia,
+    serif;
+  color: #fff;
+  text-shadow: 0 8px 30px #0008;
+}
+.timerCard > small {
+  color: #b5c7bf;
+}
+.timerControls {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.timerControls button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #ffffff28;
+  border-radius: 50%;
+  background: #fff2;
+  cursor: pointer;
+}
+.timerControls svg {
+  color: #fff;
+}
+.timerSettings {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+.timerSettings label {
+  color: #c7d6d0;
+  font-size: 11px;
+}
+.timerSettings input {
+  width: 44px;
+  padding: 4px;
+  border: 1px solid #ffffff28;
+  border-radius: 6px;
+  background: #ffffff16;
+  color: #fff;
+  text-align: center;
+}
+.roomControls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: #0b1c17bc;
+  border: 1px solid #ffffff1e;
+  backdrop-filter: blur(18px);
+}
+.roomControls > button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 12px;
+  padding: 11px 15px;
+  background: #ffffff1c;
+  color: #fff;
+  cursor: pointer;
+}
+.roomControls button svg,
+.roomControls button span {
+  color: #fff;
+}
+.roomControls .controlOn {
+  background: #3b9c72;
+}
+.themeSwitch {
+  display: flex;
+  gap: 8px;
+}
+.themeDot {
+  width: 34px;
+  height: 34px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background-image: var(--scene);
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+}
+.activeThemeDot {
+  border-color: #f0c878;
+  transform: scale(1.08);
+}
+.chatPanel {
+  padding-bottom: 14px;
+}
+.chatMessages {
+  flex: 1;
+  overflow: auto;
+  min-height: 180px;
+}
+.chatMessage {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+.chatMessage > div {
+  min-width: 0;
+}
+.chatMessage b {
+  color: #fff;
+  font-size: 12px;
+}
+.chatMessage p {
+  color: #dce8e3;
+  margin-top: 4px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+.chatMessage small {
+  color: #789086;
+  font-size: 10px;
+}
+.chatForm {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #ffffff18;
+}
+.chatForm input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px;
+  border: 0;
+  border-radius: 12px;
+  background: #ffffff14;
+  color: #fff;
+  outline: none;
+}
+.chatForm input::placeholder {
+  color: #93a69e;
+}
+.chatForm button {
+  width: 40px;
+  border: 0;
+  border-radius: 12px;
+  background: #d8b76d;
+  cursor: pointer;
+}
+.chatForm button svg {
+  color: #18352b;
+}
+.remoteAudio {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+@media (max-width: 1050px) {
+  .roomLayout {
+    grid-template-columns: 230px 1fr;
+  }
+  .chatPanel {
+    grid-column: 1/-1;
+    min-height: 360px;
+  }
+  .heroOrb {
+    display: none;
+  }
+  .hero {
+    padding: 42px;
+  }
+  .themeChoices {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .shell,
+  .formPage {
+    padding: 22px 12px;
+  }
+  .hero {
+    padding: 32px 24px;
+    border-radius: 22px;
+  }
+  .hero h1 {
+    font-size: 38px;
+  }
+  .toolbar {
+    align-items: stretch;
+    gap: 12px;
+    flex-direction: column;
+  }
+  .toolbar span {
+    display: none;
+  }
+  .roomLayout {
+    display: flex;
+    flex-direction: column;
+  }
+  .centerStage {
+    order: -1;
+    min-height: 400px;
+  }
+  .focusRoom {
+    padding: 18px 12px;
+  }
+  .roomTop {
+    align-items: flex-start;
+  }
+  .roomTopActions {
+    flex-direction: column;
+  }
+  .glassPanel {
+    min-height: 350px;
+  }
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+  .themeChoices {
+    grid-template-columns: 1fr 1fr;
+  }
+  .createCard {
+    padding: 24px 18px;
+  }
+  .timerCard {
+    width: 100%;
+  }
+  .roomControls {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+.shell,
+.formPage,
+.focusRoom,
+.roomLoading {
+  margin-top: 56px;
+}
+
+/* PTIT red visual system */
+.shell,
+.formPage {
+  background: #fff7f7;
+  color: #3b1720;
+}
+.hero {
+  background: linear-gradient(120deg, #7d1025, #b51f38 62%, #e14a52);
+  box-shadow: 0 24px 60px #7d10252e;
+}
+.eyebrow,
+.heroOrb svg {
+  color: #ffd3d6;
+}
+.primaryButton {
+  background: #fff !important;
+  color: #a71530 !important;
+}
+.roomCard,
+.toolbar form {
+  border-color: #f0d9dd;
+}
+.roomCardBody > small,
+.choiceRow .selected {
+  color: #a71530;
+}
+.roomCardBody > button,
+.choiceRow .selected {
+  background: #b51f38;
+  border-color: #b51f38;
+  color: #fff;
+}
+.selectedTheme {
+  border-color: #e13c55;
+  box-shadow: 0 0 0 3px #e13c5540;
+}
+.backgroundVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(0.94);
+  z-index: 0;
+}
+.youtubeBackground {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  width: max(100vw, 177.78vh);
+  height: max(56.25vw, 100vh);
+  border: 0;
+  transform: translate(-50%, -50%) scale(0.92);
+  pointer-events: none;
+}
+.videoBadge {
+  position: absolute;
+  z-index: 2;
+  right: 30px;
+  bottom: 14px;
+  padding: 7px 10px;
+  border: 1px solid #ffffff32;
+  border-radius: 999px;
+  background: #390911bf;
+  color: #ffd8de;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+.roomShade {
+  background: linear-gradient(180deg, #26050d70, #16080a18 45%, #1603078f);
+}
+.glassPanel,
+.timerCard,
+.roomControls {
+  background: #26070dc2;
+  border-color: #ffd9df24;
+}
+.liveDot,
+.themeThumb i {
+  background: #ff6578;
+  box-shadow: 0 0 10px #ff6578;
+}
+.timerCard > span,
+.member .micActive {
+  color: #ff9dab;
+}
+.roomControls .controlOn,
+.chatForm button {
+  background: #c52440;
+}
+.roomControls .audioUnlock {
+  background: #fff;
+  color: #8b142b;
+  font-weight: 800;
+}
+.roomControls .audioUnlock svg {
+  color: #8b142b;
+}
+.chatForm button svg {
+  color: #fff;
+}
+.ambientBox select {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ffffff24;
+  border-radius: 8px;
+  background: #ffffff12;
+  color: #fff;
+}
+.ambientBox select option {
+  color: #2a1015;
+}
+.nowPlaying {
+  display: block;
+  margin: -2px 0 10px;
+  color: #ffd4da;
+  font-size: 10px;
+  line-height: 1.35;
+}
+.ambientBox > a {
+  display: inline-block;
+  margin-top: 9px;
+  color: #ffb2bd;
+  font-size: 10px;
+}
+.ambientBox input {
+  accent-color: #df3852;
+}
+.micStatus {
+  max-width: 210px;
+  color: #ffd4da;
+  font-size: 10px;
+  line-height: 1.35;
+}
+.audioReady {
+  color: #bde9cc;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.fieldHint {
+  display: block;
+  margin-top: 9px;
+  color: #75535a;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.privatePassword {
+  margin-top: 16px !important;
+  padding: 16px;
+  border: 1px solid #efc6cd;
+  border-radius: 13px;
+  background: #fff3f5;
+}
+.privatePassword small {
+  color: #75535a;
+  font-size: 11px;
+  font-weight: 500;
+}
+.privateJoinPage {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #5e0c1c, #b51f38);
+}
+.privateJoinCard {
+  width: min(460px, 100%);
+  padding: 40px;
+  border: 1px solid #ffffff42;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 25px 80px #35040d66;
+  text-align: center;
+}
+.privateJoinCard > svg {
+  padding: 15px;
+  border-radius: 50%;
+  background: #fde5e9;
+  color: #b51f38;
+  font-size: 58px;
+}
+.privateJoinCard > span {
+  display: block;
+  margin-top: 18px;
+  color: #ad1933;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+.privateJoinCard h1 {
+  margin: 8px 0;
+  color: #4d101c;
+}
+.privateJoinCard p {
+  color: #70545a;
+  line-height: 1.5;
+}
+.privateJoinCard input {
+  width: 100%;
+  margin: 22px 0 12px;
+  padding: 13px;
+  border: 1px solid #dfbcc3;
+  border-radius: 11px;
+  color: #39131b;
+  font: inherit;
+}
+.privateJoinCard button {
+  width: 100%;
+  padding: 13px;
+  border: 0;
+  border-radius: 11px;
+  background: #b51f38;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+.focusLockBackdrop {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #1f0209d9;
+}
+.focusLockCard {
+  width: min(480px, 100%);
+  padding: 34px;
+  border: 1px solid #ffd1d8;
+  border-radius: 22px;
+  background: #fffafb;
+  box-shadow: 0 28px 90px #16010799;
+  color: #3f111a;
+}
+.focusLockCard > span {
+  color: #b51f38;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+}
+.focusLockCard h2 {
+  margin: 8px 0;
+  color: #4d101c;
+  font-size: 28px;
+}
+.focusLockCard p,
+.focusLockCard label {
+  color: #70545a;
+  line-height: 1.55;
+}
+.focusLockCard label {
+  display: block;
+  margin-top: 22px;
+  font-size: 13px;
+}
+.focusLockCard label strong {
+  color: #a71530;
+  font-size: 18px;
+  letter-spacing: 3px;
+}
+.focusLockCard input {
+  width: 100%;
+  margin: 10px 0 18px;
+  padding: 14px;
+  border: 2px solid #dfbcc3;
+  border-radius: 11px;
+  background: #fff;
+  color: #39131b;
+  font: 800 18px/1 sans-serif;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  outline: none;
+}
+.focusLockCard input:focus {
+  border-color: #b51f38;
+}
+.focusLockCard > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.focusLockCard button {
+  padding: 11px 16px;
+  border: 1px solid #ddb9c0;
+  border-radius: 10px;
+  background: #fff;
+  color: #671426;
+  font-weight: 800;
+  cursor: pointer;
+}
+.focusLockCard button[type='submit'] {
+  border-color: #b51f38;
+  background: #b51f38;
+  color: #fff;
+}
+.focusLockCard button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}

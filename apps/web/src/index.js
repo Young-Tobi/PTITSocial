@@ -6,6 +6,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 import './styles/icons/icons.css';
 import './styles/ptitsocial.css';
+import './app/locale';
 import 'moment/locale/vi';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
@@ -20,9 +21,10 @@ axios.interceptors.response.use((response) => {
   return response;
 });
 
-const token = Cookies.get('token') ? JSON.parse(Cookies.get('token')) : null;
-
-if (token) axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+// Existing JavaScript token cookies are retired; the API sets the HttpOnly session cookie.
+Cookies.remove('token');
+delete axios.defaults.headers.common.Authorization;
+axios.defaults.withCredentials = true;
 
 const root = ReactDOMClient.createRoot(document.getElementById('backbook'));
 root.render(

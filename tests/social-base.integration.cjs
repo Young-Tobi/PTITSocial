@@ -89,6 +89,9 @@ async function main() {
     content: 'ok',
     messaging: 'ok',
     learning: 'ok',
+    quiz: 'ok',
+    coding: 'ok',
+    study: 'ok',
   });
   const first = await account('One');
   const second = await account('Two');

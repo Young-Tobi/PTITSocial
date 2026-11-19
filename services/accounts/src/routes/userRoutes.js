@@ -1,16 +1,36 @@
 const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
+const { createRateLimiter } = require('@ptitsocial/service-kit/security');
 
 const router = express.Router();
 
-router.post('/signup', authController.signup);
-router.post('/login', authController.login);
+const authenticationLimiter = createRateLimiter({
+  max: 15,
+  skipSuccessfulRequests: true,
+  keyGenerator: (req) => {
+    const email = req.body?.email || req.query.email;
+    return (
+      req.ip +
+      ':' +
+      (typeof email === 'string' ? email.trim().toLowerCase().slice(0, 100) : 'unknown')
+    );
+  },
+  message: 'Too many authentication attempts. Please wait before trying again.',
+});
+
+router.post('/signup', authenticationLimiter, authController.signup);
+router.post('/login', authenticationLimiter, authController.login);
 router.post('/logout', authController.logOut);
-router.route('/forgotPassword').get(authController.findUser).post(authController.forgotPassword);
+router
+  .route('/forgotPassword')
+  .all(authenticationLimiter)
+  .get(authController.findUser)
+  .post(authController.forgotPassword);
 
 router
   .route('/resetPassword')
+  .all(authenticationLimiter)
   .post(authController.validateResetCode)
   .patch(authController.resetPassword);
 

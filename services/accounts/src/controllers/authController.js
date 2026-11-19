@@ -8,6 +8,13 @@ const AppError = require('@ptitsocial/service-kit/appError');
 const Email = require('../utils/email');
 const messagingStats = require('../clients/messagingClient');
 
+const authCookieOptions = () => ({
+  secure: process.env.NODE_ENV === 'production',
+  httpOnly: true,
+  sameSite: 'lax',
+  path: '/',
+});
+
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -17,11 +24,10 @@ const signToken = (id) => {
 const createSendToken = ({ user, statusCode, res, recivedRequestsCount }) => {
   const token = signToken(user._id);
 
+  // Luu JWT trong cookie HttpOnly de JavaScript phia client khong doc duoc token.
   res.cookie('jwt', token, {
+    ...authCookieOptions(),
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: false,
-    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
   });
 
   user.password = undefined;
@@ -120,12 +126,7 @@ exports.ping = catchAsync(async (req, res, next) => {
 });
 
 exports.logOut = catchAsync(async (req, res, next) => {
-  res.cookie('jwt', 'expired', {
-    expires: new Date(Date.now() + 10 * 1000),
-    httpOnly: false,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
-  });
+  res.clearCookie('jwt', authCookieOptions());
   res.status(200).json({ status: 'success' });
 });
 
@@ -311,9 +312,14 @@ exports.validateResetCode = catchAsync(async (req, res, next) => {
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
   const { token, email, password, passwordConfirm } = req.body;
-  if (typeof token !== 'string' || !/^[a-f0-9]{64}$/i.test(token) ||
-      typeof email !== 'string' || !email ||
-      typeof password !== 'string' || typeof passwordConfirm !== 'string')
+  if (
+    typeof token !== 'string' ||
+    !/^[a-f0-9]{64}$/i.test(token) ||
+    typeof email !== 'string' ||
+    !email ||
+    typeof password !== 'string' ||
+    typeof passwordConfirm !== 'string'
+  )
     return next(new AppError('Please provide a valid reset token, email and passwords', 400));
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 

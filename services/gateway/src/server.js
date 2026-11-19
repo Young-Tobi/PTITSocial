@@ -7,10 +7,20 @@ const targets = {
   messaging: process.env.MESSAGING_URL,
   quiz: process.env.QUIZ_URL,
   coding: process.env.CODING_URL,
+  study: process.env.STUDY_URL,
+  learning: process.env.LEARNING_URL,
 };
 function fail(res, status, message) {
   if (!res.headersSent) res.writeHead(status, { 'content-type': 'application/json' });
   res.end(JSON.stringify({ status: 'fail', message }));
+}
+function proxyHeaders(req, target) {
+  return {
+    ...req.headers,
+    host: new URL(target).host,
+    'x-forwarded-for': req.socket.remoteAddress || '',
+    'x-forwarded-proto': req.socket.encrypted ? 'https' : 'http',
+  };
 }
 const server = http.createServer(async (req, res) => {
   const pathname = new URL(req.url, 'http://localhost').pathname;
@@ -39,7 +49,7 @@ const server = http.createServer(async (req, res) => {
   if (!target) return fail(res, 404, 'Endpoint not found');
   const upstream = http.request(
     new URL(req.url, targets[target]),
-    { method: req.method, headers: { ...req.headers, host: new URL(targets[target]).host } },
+    { method: req.method, headers: proxyHeaders(req, targets[target]) },
     (response) => {
       res.writeHead(response.statusCode, response.headers);
       response.pipe(res);
@@ -53,9 +63,9 @@ const server = http.createServer(async (req, res) => {
 
 server.on('upgrade', (req, socket, head) => {
   const target = targetFor(new URL(req.url, 'http://localhost').pathname);
-  if (!['messaging', 'quiz', 'coding'].includes(target)) return socket.destroy();
+  if (!['messaging', 'quiz', 'coding', 'study'].includes(target)) return socket.destroy();
   const upstream = http.request(new URL(req.url, targets[target]), {
-    headers: { ...req.headers, host: new URL(targets[target]).host },
+    headers: proxyHeaders(req, targets[target]),
   });
   upstream.on('upgrade', (response, peer, peerHead) => {
     socket.write(
