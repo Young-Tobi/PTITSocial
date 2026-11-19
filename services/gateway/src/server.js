@@ -5,6 +5,8 @@ const targets = {
   accounts: process.env.ACCOUNTS_URL,
   content: process.env.CONTENT_URL,
   messaging: process.env.MESSAGING_URL,
+  quiz: process.env.QUIZ_URL,
+  coding: process.env.CODING_URL,
 };
 function fail(res, status, message) {
   if (!res.headersSent) res.writeHead(status, { 'content-type': 'application/json' });
@@ -50,10 +52,10 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.on('upgrade', (req, socket, head) => {
-  if (targetFor(new URL(req.url, 'http://localhost').pathname) !== 'messaging')
-    return socket.destroy();
-  const upstream = http.request(new URL(req.url, targets.messaging), {
-    headers: { ...req.headers, host: new URL(targets.messaging).host },
+  const target = targetFor(new URL(req.url, 'http://localhost').pathname);
+  if (!['messaging', 'quiz', 'coding'].includes(target)) return socket.destroy();
+  const upstream = http.request(new URL(req.url, targets[target]), {
+    headers: { ...req.headers, host: new URL(targets[target]).host },
   });
   upstream.on('upgrade', (response, peer, peerHead) => {
     socket.write(

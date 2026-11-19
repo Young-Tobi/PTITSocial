@@ -25,7 +25,18 @@
 3. `services/messaging/src/controllers/messagesController.js`: kiểm tra thành viên và lưu tin.
 4. `services/messaging/src/utils/socket.js`: xác thực và phát sự kiện tới người nhận.
 
+## Đọc phần Quiz
+
+1. `apps/web/src/pages/quiz/Editor.jsx`: state của bộ đề, thêm/sửa câu, gọi API lưu. `features/quiz/editorDraft.js` có bốn hàm nhỏ để đọc/ghi/xóa bản tạm trong trình duyệt.
+2. `services/quiz/src/server.js`: danh sách route. `controllers/quizzes.js` xử lý bộ đề; `controllers/rooms.js` xử lý tạo, vào, bắt đầu, trả lời, rời và kết thúc phòng.
+3. `services/quiz/src/domain/rules.js`: kiểm tra đầu vào và chấm điểm. `roomEngine.js` giữ các hàm chung cho trạng thái phòng, hết giờ, kết thúc khi mọi người đã xong hoặc đã rời.
+4. `apps/web/src/pages/quiz/Room.jsx` hiển thị theo vai trò/trạng thái; `Results.jsx` hiển thị điểm và bài làm. Socket chỉ báo có thay đổi, giao diện gọi API lấy trạng thái mới.
+
+Không có thư viện mới cho lưu tạm/rời phòng. Luồng chính vẫn là React state → API → controller → MongoDB; bản tạm dùng `localStorage`.
+
 ## Quy ước
+
+Phần thi đấu lập trình: đọc `services/coding/src/server.js` → `controllers.js` → `engine.js`/`rules.js` → `worker.js` → `judge.js`. Giao diện nằm trong `pages/coding`: `Create` chọn bộ đề, `Lobby` chờ người thi, `HostDashboard` điều hành, `Contest` làm từng đề và `Results` xem điểm. Monaco, bảng điểm, lịch sử bài nộp và hook phòng nằm trong `features/coding`. Xem [CODING.md](CODING.md) để chạy thử một người tổ chức và hai người thi.
 
 - `pages/` là màn hình ứng với route. Component nhỏ và hook riêng cho nghiệp vụ nằm trong `features/<tên>/`.
 - `shared/components/` chứa UI có thể dùng ở nhiều feature; `shared/icons/` chứa icon; `shared/lib/` chứa tiện ích; `shared/hooks/` chứa hook không gắn nghiệp vụ.

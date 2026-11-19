@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@monaco-editor/react": "4.7.0",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.9.1",
     "@tanstack/react-query": "^4.19.1",
@@ -11,11 +12,13 @@
     "@testing-library/user-event": "^13.2.1",
     "axios": "^1.2.1",
     "emoji-picker-react": "^4.4.7",
+    "exceljs": "4.4.0",
     "file-saver": "^2.0.5",
     "firebase": "^9.15.0",
     "formik": "^2.2.9",
     "js-cookie": "^3.0.1",
     "moment": "^2.29.4",
+    "monaco-editor": "0.52.2",
     "react": "^18.2.0",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
@@ -41,6 +44,8 @@
     "yup": "^0.32.11"
   },
   "scripts": {
+    "prestart": "node ../../scripts/copy-monaco.cjs",
+    "prebuild": "node ../../scripts/copy-monaco.cjs",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

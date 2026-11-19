@@ -7,8 +7,21 @@ const Profile = React.lazy(() => import('pages/profile/index'));
 const FriendsPage = React.lazy(() => import('pages/friends/index'));
 const PostPage = React.lazy(() => import('pages/post/PostPage'));
 const Messages = React.lazy(() => import('pages/messages/index'));
+const QuizLibrary = React.lazy(() => import('pages/quiz/index'));
+const QuizEditor = React.lazy(() => import('pages/quiz/Editor'));
+const QuizRoom = React.lazy(() => import('pages/quiz/Room'));
+const CodingLibrary = React.lazy(() => import('pages/coding/index'));
+const CodingCreate = React.lazy(() => import('pages/coding/Create'));
+const CodingRoom = React.lazy(() => import('pages/coding/Room'));
 
 const pagesData = [
+  { path: '/coding', element: <CodingLibrary />, title: 'coding', priv: true },
+  { path: '/coding/new', element: <CodingCreate />, title: 'coding', priv: true },
+  { path: '/coding/rooms/:roomId', element: <CodingRoom />, title: 'coding', priv: true },
+  { path: '/quiz', element: <QuizLibrary />, title: 'quiz', priv: true },
+  { path: '/quiz/new', element: <QuizEditor key="new" />, title: 'quiz', priv: true },
+  { path: '/quiz/:quizId/edit', element: <QuizEditor />, title: 'quiz', priv: true },
+  { path: '/quiz/rooms/:roomId', element: <QuizRoom />, title: 'quiz', priv: true },
   {
     path: '',
     element: <Home />,

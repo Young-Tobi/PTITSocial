@@ -1,5 +1,60 @@
 name: backbook-local
 services:
+  judge-api:
+    image: judge0/judge0:1.13.1
+    command: ["bash", "/ptitsocial/start-api.sh"]
+    privileged: true
+    ports:
+      - "127.0.0.1:2358:2358"
+    volumes:
+      - ./infra/judge0/judge0.conf:/judge0.conf:ro
+      - ./infra/judge0/start-api.sh:/ptitsocial/start-api.sh:ro
+      - ./infra/judge0/configure-languages.rb:/ptitsocial/configure-languages.rb:ro
+    depends_on:
+      judge-db:
+        condition: service_healthy
+      judge-redis:
+        condition: service_started
+    mem_limit: 512m
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"
+  judge-worker:
+    image: judge0/judge0:1.13.1
+    command: ["./scripts/workers"]
+    privileged: true
+    volumes:
+      - ./infra/judge0/judge0.conf:/judge0.conf:ro
+    depends_on:
+      judge-db:
+        condition: service_healthy
+      judge-redis:
+        condition: service_started
+    mem_limit: 1024m
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"
+  judge-db:
+    image: postgres:16-alpine
+    env_file: ./infra/judge0/judge0.conf
+    volumes:
+      - judge-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U judge0 -d judge0"]
+      interval: 3s
+      retries: 20
+    mem_limit: 256m
+    restart: unless-stopped
+  judge-redis:
+    image: redis:7-alpine
+    env_file: ./infra/judge0/judge0.conf
+    command: ["sh", "-c", "exec redis-server --requirepass \"$$REDIS_PASSWORD\""]
+    mem_limit: 128m
+    restart: unless-stopped
   mongo:
     image: mongo:7
     ports:
@@ -14,4 +69,5 @@ services:
       - "127.0.0.1:8025:8025"
     restart: unless-stopped
 volumes:
+  judge-data:
   mongo-data:

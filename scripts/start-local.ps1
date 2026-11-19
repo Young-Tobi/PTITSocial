@@ -1,16 +1,20 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $projectRoot
-docker compose up -d
-if ($LASTEXITCODE -ne 0) { throw 'Start Docker Desktop first.' }
 node scripts/configure-local.cjs
 if ($LASTEXITCODE -ne 0) { throw 'Local configuration failed.' }
+node scripts/copy-monaco.cjs
+if ($LASTEXITCODE -ne 0) { throw 'Monaco asset preparation failed.' }
+docker compose up -d
+if ($LASTEXITCODE -ne 0) { throw 'Start Docker Desktop first.' }
 $logDir = Join-Path $projectRoot '.local-logs'
 New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 $components = @(
   @{Name='accounts'; Port=8001; Directory='services\accounts'; Entry='src\server.js'},
   @{Name='content'; Port=8002; Directory='services\content'; Entry='src\server.js'},
   @{Name='messaging'; Port=8003; Directory='services\messaging'; Entry='src\server.js'},
+  @{Name='quiz'; Port=8004; Directory='services\quiz'; Entry='src\server.js'},
+  @{Name='coding'; Port=8005; Directory='services\coding'; Entry='src\server.js'},
   @{Name='gateway'; Port=8000; Directory='services\gateway'; Entry='src\server.js'},
   @{Name='frontend'; Port=3000; Directory='apps\web'; Entry='node_modules\react-scripts\bin\react-scripts.js'; Extra='start'}
 )

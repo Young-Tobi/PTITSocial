@@ -6,6 +6,13 @@ flowchart LR
   Gateway --> Accounts[Accounts :8001]
   Gateway --> Content[Content :8002]
   Gateway --> Messaging[Messaging + Socket.IO :8003]
+  Gateway --> Quiz[Quiz + Socket.IO :8004]
+  Gateway --> Coding[Coding + Socket.IO :8005]
+  Coding --> CodingDB[(ptitsocial_coding)]
+  Coding --> Judge0[Judge0 API + worker :2358]
+  Coding -->|Xác thực| Accounts
+  Quiz --> QuizDB[(ptitsocial_quiz)]
+  Quiz -->|Xác thực| Accounts
   Accounts --> AccountsDB[(ptitsocial_accounts)]
   Content --> ContentDB[(ptitsocial_content)]
   Messaging --> MessagingDB[(ptitsocial_messaging)]
@@ -23,6 +30,8 @@ flowchart LR
 | Accounts  | `users`, `friends`, `follows`              | Tài khoản, mật khẩu, xác minh email, hồ sơ, tìm kiếm và quan hệ kết nối |
 | Content   | `posts`, `comments`, `reactions`, file ảnh | Bảng tin, bài viết, tương tác và ảnh hồ sơ/bài viết                     |
 | Messaging | `chats`, `messages`, `notifications`       | Hội thoại, tin nhắn, thông báo và trạng thái online                     |
+| Quiz      | `quizzes`, `quizrooms`, `quizattempts`      | Bộ đề, phòng trực tiếp, tiến độ, điểm và lịch sử                       |
+| Coding | `codingproblems`, `codingrooms`, `codingsubmissions` | Phòng thi lập trình, bài nộp, test ẩn và xếp hạng |
 
 Gateway chỉ chuyển request, không có model Mongoose và không truy cập database. Dịch vụ dùng thư viện kỹ thuật chung nhưng không import controller/model thuộc dịch vụ khác.
 
@@ -41,7 +50,7 @@ Cách pull snapshot phù hợp với lượng người dùng nhỏ trên localho
 ## Xác thực và giao tiếp
 
 - Người dùng tiếp tục dùng cookie/JWT qua Gateway. Accounts là nơi xác minh token, người dùng còn tồn tại, thời điểm đổi mật khẩu và trạng thái xác minh email.
-- Content/Messaging gọi Accounts qua HTTP để xác thực. Việc sửa cookie giao diện không vượt được kiểm tra backend.
+- Content/Messaging/Quiz gọi Accounts qua HTTP để xác thực. Việc sửa cookie giao diện không vượt được kiểm tra backend.
 - Các API `/internal/*` đòi `x-service-key`; Gateway không công khai các đường dẫn này. Dịch vụ local chỉ lắng nghe `127.0.0.1`.
 - Thay ảnh đại diện: Accounts gọi Content lưu ảnh, cập nhật hồ sơ mình sở hữu, rồi yêu cầu Content tạo bài cập nhật ảnh.
 - Thích/bình luận/kết bạn: dịch vụ sở hữu thao tác gọi Messaging tạo thông báo. Messaging lưu và phát thông báo vào room người nhận.
@@ -51,7 +60,9 @@ Cách pull snapshot phù hợp với lượng người dùng nhỏ trên localho
 
 Phiên bản này dùng HTTP đồng bộ, chưa dùng RabbitMQ/Kafka hay outbox. Nếu Content/Messaging ngừng khi một thao tác đã ghi dữ liệu ở dịch vụ khác, thao tác có thể hoàn thành một phần; chưa có transaction phân tán hoặc retry bền vững. Cần xem log, kiểm tra trạng thái thật trước khi gửi lại thao tác. Đây là hạn chế cần ghi rõ khi thuyết trình, không gọi là xử lý sự kiện bảo đảm giao hàng.
 
-Gateway trả `503` khi không gọi được dịch vụ đích. `/health` của Gateway kiểm tra cả ba dịch vụ. Login vẫn có thể hoạt động khi Messaging tạm dừng; bộ đếm được trả về 0 và ghi log cảnh báo trong trường hợp đó.
+Gateway trả `503` khi không gọi được dịch vụ đích. `/health` của Gateway kiểm tra cả bốn dịch vụ. Login vẫn có thể hoạt động khi Messaging tạm dừng; bộ đếm được trả về 0 và ghi log cảnh báo trong trường hợp đó.
+
+Quiz dùng Socket.IO riêng `/quiz-socket/`, chat giữ `/socket.io/`. Quiz lưu bản chụp đề và bài làm, không đọc database Accounts. Xem [quy tắc và giới hạn Quiz](QUIZ.md).
 
 ## Chuyển dữ liệu và khôi phục
 

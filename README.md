@@ -2,7 +2,7 @@
 
 Repository nhóm (private): [Young-Tobi/PTITSocial](https://github.com/Young-Tobi/PTITSocial).
 
-Mạng xã hội dành cho sinh viên, dùng React, Express, Node.js và MongoDB. Backend được tách thành ba dịch vụ và một API Gateway; mỗi dịch vụ sở hữu database riêng.
+Mạng xã hội dành cho sinh viên, dùng React, Express, Node.js và MongoDB. Backend được tách thành năm dịch vụ và một API Gateway; mỗi dịch vụ sở hữu database riêng.
 
 ## Cấu trúc
 
@@ -18,12 +18,14 @@ services/
   accounts/                Tài khoản, hồ sơ, kết bạn, theo dõi, tìm kiếm
   content/                 Bài viết, bình luận, lượt thích, ảnh
   messaging/               Chat, tin nhắn, thông báo và trạng thái online
+  quiz/                    Bộ đề, phòng quiz trực tiếp, chấm điểm và lịch sử
+  coding/                  Phòng thi lập trình, hàng đợi chấm và xếp hạng
 packages/service-kit/      Xử lý lỗi, HTTP client, xác thực và bản sao dữ liệu công khai
 scripts/                   Khởi động, dừng, cấu hình, chuyển dữ liệu
 tests/                     Kiểm tra ranh giới dịch vụ và luồng tích hợp
 docs/                      Kiến trúc, API và hướng dẫn đọc source
 legacy/backbook-server/    Backend cũ để tham khảo/chuyển dữ liệu; không chạy cùng bản mới
-compose.yaml               MongoDB và Mailpit trên máy local
+compose.yaml               MongoDB, Mailpit và Judge0 (API/worker/PostgreSQL/Redis)
 ```
 
 ## Chạy local
@@ -59,17 +61,24 @@ Máy đang làm bài đã được chuyển dữ liệu từ bản cũ, bao gồ
 | Accounts   | 8001 | `ptitsocial_accounts`  |
 | Content    | 8002 | `ptitsocial_content`   |
 | Messaging  | 8003 | `ptitsocial_messaging` |
+| Quiz       | 8004 | `ptitsocial_quiz`      |
+| Coding | 8005 | `ptitsocial_coding` |
+| Judge0 API | 2358 | PostgreSQL riêng trong Docker |
 
-Từng dịch vụ có `package.json`, `src/server.js`, `.env` và `/health` riêng. Có thể chạy riêng bằng `npm.cmd run start:accounts`, `start:content`, `start:messaging`, `start:gateway`. Khi gọi từ root bằng npm workspace, working directory được đặt vào dịch vụ tương ứng.
+Từng dịch vụ có `package.json`, `src/server.js`, `.env` và `/health` riêng. Có thể chạy riêng bằng `npm.cmd run start:accounts`, `start:content`, `start:messaging`, `start:quiz`, `start:coding`, `start:gateway`. Khi gọi từ root bằng npm workspace, working directory được đặt vào dịch vụ tương ứng.
 
-Một MongoDB local phục vụ ba database tách biệt; không có dịch vụ nào truy vấn trực tiếp database của dịch vụ khác. Các bản sao tên, avatar và quan hệ theo dõi chỉ phục vụ đọc, được đồng bộ qua API nội bộ.
+Một MongoDB local phục vụ năm database tách biệt; không có dịch vụ nào truy vấn trực tiếp database của dịch vụ khác. Các bản sao tên, avatar và quan hệ theo dõi chỉ phục vụ đọc, được đồng bộ qua API nội bộ.
 
 ## Kiểm tra
 
 ```powershell
 npm.cmd run test:architecture
+npm.cmd run test:quiz
+npm.cmd run test:coding
 # Cần hệ thống đang chạy:
 npm.cmd run test:integration
+npm.cmd run test:quiz:integration
+npm.cmd run test:coding:integration
 npm.cmd run build:web
 ```
 
@@ -85,14 +94,20 @@ npm.cmd run check:migration
 
 Lệnh sao chép từ database `backbook`, giữ nguyên ObjectId và không sửa database nguồn. Những bản ghi đã có trong database mới không bị ghi đè. Bản sao lưu nằm ở `.local-backups/`; ảnh được sao chép vào `services/content/uploads/`.
 
-Đây là bước chuyển sang dùng hệ thống mới, không phải đồng bộ hai chiều. Sau khi chuyển, tiếp tục làm việc với ba database `ptitsocial_*`.
+Đây là bước chuyển sang dùng hệ thống mới, không phải đồng bộ hai chiều. Sau khi chuyển, tiếp tục làm việc với các database `ptitsocial_*`.
 
 ## Đọc tiếp
 
 - [Kiến trúc và quyền sở hữu dữ liệu](docs/ARCHITECTURE.md)
 - [Đường đi của API](docs/API.md)
 - [Nên đọc và sửa file nào](docs/CODE-GUIDE.md)
+- [Quiz: dùng thử, API và chấm điểm](docs/QUIZ.md)
+- [Thi đấu lập trình: dùng thử, bộ chấm và API](docs/CODING.md)
 - [Làm việc nhóm: clone, chia nhánh và Pull Request](docs/TEAM-WORKFLOW.md)
 - [Ghi chú giao diện](PTITSOCIAL-DESIGN.md)
 
 Source ban đầu được phát triển từ [Backbook frontend](https://github.com/msobkyy/backbook) và [Backbook backend](https://github.com/msobkyy/backbook-server). Giữ nguồn tham khảo này trong báo cáo môn học.
+## Thi đấu lập trình cùng bạn bè
+
+Mở `/coding` sau khi chạy localhost. Một người tổ chức tạo phòng công khai/riêng tư và chọn nhiều đề; ít nhất hai người thi tham gia (tổng cộng 3 tài khoản đã xác minh email). Người tổ chức điều hành riêng; người thi tự chọn C, C++17, Java hoặc Python 3 trên Monaco và chấm bằng Judge0 CE tự chạy. Xem [hướng dẫn tính năng và bộ chấm](docs/CODING.md).
+

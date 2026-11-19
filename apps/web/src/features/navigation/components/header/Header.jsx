@@ -15,6 +15,8 @@ import {
 } from 'shared/icons/index';
 import SearchMenu from './SearchMenu';
 import Brand from 'shared/components/brand/Brand';
+import QuizIcon from 'features/quiz/components/QuizIcon';
+import CodingIcon from 'features/coding/CodingIcon';
 
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
 import UserMenu from './userMenu/index';
@@ -102,6 +104,26 @@ function Header() {
               {user?.recivedRequestsCount}
             </div>
           )}
+        </NavLink>
+        <NavLink
+          to="/quiz"
+          aria-label="Quiz"
+          title="Quiz"
+          className={({ isActive }) =>
+            `${styles.middle_icon} ${styles.quiz_tab} ${isActive ? styles.active : ''}`
+          }
+        >
+          <QuizIcon />
+        </NavLink>
+        <NavLink
+          to="/coding"
+          aria-label="Thi đấu lập trình"
+          title="Thi đấu lập trình"
+          className={({ isActive }) =>
+            `${styles.middle_icon} ${styles.coding_tab} ${isActive ? styles.active : ''}`
+          }
+        >
+          <CodingIcon />
         </NavLink>
       </div>
       <div className={styles.right}>

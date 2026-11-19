@@ -16,6 +16,10 @@ Frontend chỉ gọi `http://localhost:8000`. Các URL giữ tương thích vớ
 | `/api/v1/chats/*`, `/api/v1/messages/*`                                          | Messaging |
 | `/api/v1/users/notifications*`                                                   | Messaging |
 | `/socket.io/*`                                                                   | Messaging |
+| `/api/v1/quiz/*`, `/quiz-socket/*`                                                | Quiz      |
+| `/api/v1/coding/*`, `/coding-socket/*` | Coding |
+
+Chi tiết phòng thi lập trình và API nộp bài: [CODING.md](CODING.md).
 
 `resendEmailVerifivation` là tên route cũ có lỗi chính tả, tạm giữ để không làm hỏng giao diện. Khi chuẩn hóa API, đổi đồng thời route và nơi gọi, hoặc giữ alias trong một giai đoạn chuyển tiếp.
 

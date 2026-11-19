@@ -77,7 +77,7 @@ async function connect(user) {
 }
 async function main() {
   const health = await api('GET', '/health');
-  assert.deepEqual(health.services, { accounts: 'ok', content: 'ok', messaging: 'ok' });
+  assert.deepEqual(health.services, { accounts: 'ok', content: 'ok', messaging: 'ok', quiz: 'ok', coding: 'ok' });
   const first = await account('One');
   const second = await account('Two');
   await api('GET', '/api/v1/posts/getAllPosts', { token: first.token, expected: 403 });
