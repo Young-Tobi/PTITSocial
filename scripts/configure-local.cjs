@@ -111,7 +111,7 @@ const webEnv = path.join(root, 'apps/web/.env.local');
 const webConfig = {
   REACT_APP_BACKEND_URL: '',
   REACT_APP_ENABLE_FIREBASE: 'false',
-  HOST: 'localhost',
+  HOST: '127.0.0.1',
   PORT: '3000',
   BROWSER: 'none',
   WDS_SOCKET_PORT: '0',
@@ -121,5 +121,7 @@ const webConfig = {
 // Upgrade the old localhost-only setting without replacing a custom API server.
 if (['http://localhost:8000', 'http://127.0.0.1:8000'].includes(webConfig.REACT_APP_BACKEND_URL))
   webConfig.REACT_APP_BACKEND_URL = '';
+// VS Code port forwarding can connect reliably to the explicit IPv4 loopback.
+if (webConfig.HOST === 'localhost') webConfig.HOST = '127.0.0.1';
 save(webEnv, webConfig);
 console.log('Local service configuration ready. Existing session secret preserved.');
