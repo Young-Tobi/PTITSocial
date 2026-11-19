@@ -2,10 +2,10 @@ extend baseEmail
 
 block content
     .headLogo 
-        img(src="https://res.cloudinary.com/dcu2kxr5x/image/upload/v1672997573/BACKBOOK/assets/backbooklogo_on8xru.svg" alt="" style="width: 30px")
-        span Action required : Activate your backbook account
-    p Hello #{firstname},
-    p You recently created an account on Backbook. To complete your registration, please confirm your account.
+        img(src='cid:ptitsocial-logo' alt='PTITSocial' width='48' height='40')
+        span PTITSocial · Xác nhận tài khoản
+    p Xin chào #{firstname},
+    p Bạn vừa đăng ký tài khoản PTITSocial. Hãy xác nhận địa chỉ email để hoàn tất đăng ký và kết nối với cộng đồng sinh viên PTIT.
     table.btn.btn-primary(role='presentation' border='0' cellpadding='0' cellspacing='0')
         tbody
             tr
@@ -14,6 +14,9 @@ block content
                         tbody
                             tr
                                 td
-                                    a(href=`${url}` target='_blank') Confirm your account
-    p Backbook allows you to stay in touch with all your friends, once refistered on backbook,you can share photos,organize events and much more.
-    p - Mohamed Elsobky, CEO
+                                    a(href=url target='_blank') Xác nhận tài khoản
+    p Nếu nút trên không hoạt động, hãy mở đường dẫn sau:
+    p
+        a(href=url)= url
+    p Nếu bạn không đăng ký tài khoản này, bạn có thể bỏ qua email.
+    p Đội ngũ PTITSocial

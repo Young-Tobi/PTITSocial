@@ -13,6 +13,7 @@ import Card from 'shared/components/ui/Card/Card';
 import FormLoader from 'shared/components/FormLoader/index';
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
 import { nameValidation } from 'shared/lib/nameValidation';
+import { passwordValidation, passwordConfirmation, birthDateError } from 'shared/lib/authValidation';
 
 function SignupForm({ setRenderSignUp, renderSignUp }) {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ function SignupForm({ setRenderSignUp, renderSignUp }) {
     passwordConfirm: '',
     birth_Year: new Date().getFullYear(),
     birth_Month: new Date().getMonth() + 1,
-    birth_Day: new Date().getDay(),
+    birth_Day: new Date().getDate(),
     gender: '',
   };
   const [genderError, setGenderError] = useState(true);
@@ -55,20 +56,8 @@ function SignupForm({ setRenderSignUp, renderSignUp }) {
       .required("You'll need this when you log in and if you ever need to reset your password.")
       .email('Must be a valid email.')
       .max(100),
-    password: Yup.string()
-      .required('Password is required')
-      .min(6)
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#_$%^&*])(?=.{6,})/,
-        'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
-      ),
-    passwordConfirm: Yup.string().test(
-      'passwords-match',
-      'Password confirm must match password !',
-      function (value) {
-        return this.parent.password === value;
-      }
-    ),
+    password: passwordValidation,
+    passwordConfirm: passwordConfirmation,
     gender: Yup.string().required('Gender is required'),
   });
 
@@ -102,7 +91,7 @@ function SignupForm({ setRenderSignUp, renderSignUp }) {
     } catch (error) {
       setLoading(false);
       setSuccess('');
-      setError(error.response.data.message);
+      setError(error.response?.data?.message || 'Không thể kết nối máy chủ. Vui lòng thử lại.');
     }
   };
 
@@ -133,26 +122,9 @@ function SignupForm({ setRenderSignUp, renderSignUp }) {
             gender,
           }}
           onSubmit={(values) => {
-            let current_date = new Date();
-
-            const picked_date = new Date(
-              values.birth_Year,
-              values.birth_Month - 1,
-              values.birth_Day
-            );
-
-            let atleast14 = new Date(1970 + 14, 0, 1);
-            let noMoreThan70 = new Date(1970 + 70, 0, 1);
-            if (current_date - picked_date < atleast14) {
-              setDateError(
-                'it looks like you(ve enetered the wrong info.Please make sure that you use your real date of birth.'
-              );
-            } else if (current_date - picked_date > noMoreThan70) {
-              setDateError(
-                "it looks like you've enetered the wrong info.Please make sure that you use your real date of birth."
-              );
-            } else {
-              setDateError(false);
+            const error = birthDateError(values);
+            setDateError(error);
+            if (!error) {
               setGenderError(false);
               submitHandler(values);
             }
@@ -203,9 +175,9 @@ function SignupForm({ setRenderSignUp, renderSignUp }) {
                     />
                   </div>
                   <DateSelector
-                    birth_Day={birth_Day}
-                    birth_Month={birth_Month}
-                    birth_Year={birth_Year}
+                    birth_Day={formik.values.birth_Day}
+                    birth_Month={formik.values.birth_Month}
+                    birth_Year={formik.values.birth_Year}
                     disabled={loading}
                     dateError={dateError}
                   />

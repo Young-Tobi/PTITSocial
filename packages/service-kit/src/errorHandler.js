@@ -6,7 +6,7 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateFieldsDB = (err) => {
-  const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
+  const value = Object.values(err.keyValue || {}).join(', ') || 'already exists';
 
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
@@ -90,17 +90,17 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
+  // Invalid client input should remain a 400 response in local development too.
+  if (err.name === 'CastError') err = handleCastErrorDB(err);
+  if (err.code === 11000) err = handleDuplicateFieldsDB(err);
+  if (err.name === 'ValidationError') err = handleValidationErrorDB(err);
+  if (err.name === 'JsonWebTokenError') err = handleJwtError();
+  if (err.name === 'TokenExpiredError') err = handleJwtExpiredError();
+  if (err.name === 'MulterError') err = handleMulterError();
+
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, req, res);
-  } else if (process.env.NODE_ENV === 'production') {
-    let error = Object.assign(err);
-
-    if (error.name === 'CastError') error = handleCastErrorDB(error);
-    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    if (error.name === 'ValidationError') error = handleValidationErrorDB(error);
-    if (error.name === 'JsonWebTokenError') error = handleJwtError();
-    if (error.name === 'TokenExpiredError') error = handleJwtExpiredError();
-    if (error.name === 'MulterError') error = handleMulterError();
-    sendErrorProd(error, req, res);
+  } else {
+    sendErrorProd(err, req, res);
   }
 };

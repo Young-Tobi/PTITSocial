@@ -15,6 +15,7 @@ import { setOnlineUsers } from 'app/slices/socketSlice';
 import { toast } from 'react-hot-toast';
 import Notification from 'shared/components/ui/Notification/Notification';
 import { reciveNoti, updateNStats } from 'app/slices/userSlice';
+import { normalizeMediaLinks } from 'shared/lib/mediaLinks';
 import {
   updateChatName,
   updateChatTheme,
@@ -48,10 +49,11 @@ export default function IsLoggedIn({ user }) {
 
   useEffect(() => {
     if (user.userinfo?.verified) {
-      socket = io(process.env.REACT_APP_BACKEND_URL, {
+      socket = io(process.env.REACT_APP_BACKEND_URL || window.location.origin, {
         withCredentials: true,
         auth: { token: JSON.parse(Cookies.get('token') || 'null') },
       });
+      socket.onAny((event, ...args) => args.forEach(normalizeMediaLinks));
       socket.emit('setup', {
         userId: user.userinfo._id,
         info: {

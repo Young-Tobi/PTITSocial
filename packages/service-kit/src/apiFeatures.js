@@ -15,7 +15,8 @@ class APIFeatures {
       JSON.stringify(queryObj).replace(/\b(gte|gt|lte|lt)\b/g, (m) => `$${m}`)
     );
 
-    this.query.find(queryAdv);
+    // User filters may narrow results, but must never replace ownership/membership filters.
+    this.query.and([queryAdv]);
 
     return this;
   }
@@ -25,7 +26,7 @@ class APIFeatures {
       const sortBy = this.queryString.sort.split(',').join(' ');
       this.query = this.query.sort(sortBy);
     } else {
-      this.query = this.query.sort('-craetedAt');
+      this.query = this.query.sort('-createdAt');
     }
 
     return this;

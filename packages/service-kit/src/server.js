@@ -6,7 +6,7 @@ const { createServer } = require('node:http');
 const errorHandler = require('./errorHandler');
 const AppError = require('./appError');
 
-const origins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+const origins = ['http://localhost:3000', 'http://127.0.0.1:3000', process.env.PUBLIC_APP_URL].filter(Boolean);
 
 function createApp(name) {
   const app = express();

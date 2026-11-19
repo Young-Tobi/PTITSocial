@@ -52,6 +52,16 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\stop-local.ps1
 
 Máy đang làm bài đã được chuyển dữ liệu từ bản cũ, bao gồm tài khoản và các nội dung bạn tạo. Khi cài mới với MongoDB trống, đăng ký tài khoản qua website và xác minh email trong Mailpit.
 
+## Chia sẻ qua VS Code Ports
+
+Chạy hệ thống, chuyển tiếp **cổng 3000** và đặt Visibility là Public. Giao diện gọi API, ảnh upload và ba kết nối realtime qua proxy cùng cổng 3000; không cần mở các cổng của microservices hoặc Judge0.
+
+Trong `.env` ở thư mục gốc, đặt `PUBLIC_APP_URL` bằng địa chỉ công khai (ví dụ `https://your-name-3000.asse.devtunnels.ms`, không có dấu `/` cuối). Dừng rồi chạy lại hệ thống để cập nhật đường dẫn xác minh tài khoản trong email. Khi đổi tunnel, cập nhật biến này và chạy lại. Để trống biến để trở về link email localhost.
+
+Giữ cổng Mailpit `8025` ở chế độ Private: hộp thư này chứa cả mã khôi phục mật khẩu. Mailpit chỉ thu email thử nghiệm trên máy chủ, không gửi đến Gmail thật. Người vận hành xem email tại `http://localhost:8025` và cung cấp link/mã của đúng tài khoản cho người đang thử ứng dụng.
+
+Máy chủ, Docker và phiên chuyển tiếp VS Code phải tiếp tục chạy. Đây là cách chia sẻ bản phát triển để dùng thử; build production cần reverse proxy tương đương cho các đường dẫn trong `apps/web/src/setupProxy.js`.
+
 ## Dịch vụ
 
 | Thành phần | Cổng | Database               |

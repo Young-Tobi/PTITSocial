@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { normalizeMediaLinks } from 'shared/lib/mediaLinks';
 
 const initialValue = {
-  userinfo: Cookies.get('user') ? JSON.parse(Cookies.get('user')) : null,
+  userinfo: Cookies.get('user') ? normalizeMediaLinks(JSON.parse(Cookies.get('user'))) : null,
   theme: Cookies.get('theme')
     ? JSON.parse(Cookies.get('theme'))
     : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -76,6 +77,7 @@ export const userSlice = createSlice({
 
     logout: (state, action) => {
       state.userinfo = null;
+      delete axios.defaults.headers.common.Authorization;
       Cookies.set('user', null);
       Cookies.set('token', null);
     },

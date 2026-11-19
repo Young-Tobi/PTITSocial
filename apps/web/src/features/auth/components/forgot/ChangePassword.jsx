@@ -9,9 +9,10 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { login } from 'app/slices/userSlice';
+import { passwordValidation, passwordConfirmation } from 'shared/lib/authValidation';
 
 function ChangePassword({ setUserInfos, userInfos }) {
-  const { email, token, password, passwordConfirm } = userInfos;
+  const { email, token, password = '', passwordConfirm = '' } = userInfos;
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -22,20 +23,8 @@ function ChangePassword({ setUserInfos, userInfos }) {
   };
 
   const changePasswordValid = Yup.object({
-    password: Yup.string()
-      .required('Password is required')
-      .min(6)
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#_$%^&*])(?=.{6,})/,
-        'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
-      ),
-    passwordConfirm: Yup.string().test(
-      'passwords-match',
-      'Password confirm must match password !',
-      function (value) {
-        return this.parent.password === value;
-      }
-    ),
+    password: passwordValidation,
+    passwordConfirm: passwordConfirmation,
   });
 
   const submitHandler = async (values) => {
@@ -57,7 +46,7 @@ function ChangePassword({ setUserInfos, userInfos }) {
       setError('');
       setLoading(false);
     } catch (error) {
-      setError(error.response?.data?.message);
+      setError(error.response?.data?.message || 'Không thể kết nối máy chủ. Vui lòng thử lại.');
       setTimeout(() => {
         setLoading(false);
       }, 1000);
@@ -66,10 +55,10 @@ function ChangePassword({ setUserInfos, userInfos }) {
 
   return (
     <Card className={styles.wrap}>
-      <div className={styles.header}>Change Your Password</div>
+      <div className={styles.header}>Đặt lại mật khẩu</div>
       {error ? (
         <div className={styles.error}>
-          <div className={styles.error_header}>Something went wrong</div>
+          <div className={styles.error_header}>Chưa thể đổi mật khẩu</div>
           <span>{error}</span>
         </div>
       ) : (
@@ -77,7 +66,7 @@ function ChangePassword({ setUserInfos, userInfos }) {
       )}
 
       <div className={styles.content}>
-        <span className={styles.text}>Please crate a new password for your account</span>
+        <span className={styles.text}>Mật khẩu cần ít nhất 8 ký tự, gồm chữ thường, chữ hoa, số và ký tự đặc biệt.</span>
         <Formik
           enableReinitialize
           initialValues={{ password, passwordConfirm }}
@@ -91,17 +80,17 @@ function ChangePassword({ setUserInfos, userInfos }) {
               <FormLoader loading={loading} className={styles.form}>
                 <LoginInput
                   className={styles.input}
-                  type="text"
+                  type="password"
                   name="password"
-                  placeholder="New Password"
+                  placeholder="Mật khẩu mới"
                   onChange={handlePasswordChange}
                   disabled={loading}
                 />
                 <LoginInput
                   className={styles.input}
-                  type="text"
+                  type="password"
                   name="passwordConfirm"
-                  placeholder="Confirm new password"
+                  placeholder="Nhập lại mật khẩu mới"
                   onChange={handlePasswordChange}
                   disabled={loading}
                 />
@@ -109,10 +98,10 @@ function ChangePassword({ setUserInfos, userInfos }) {
 
               <div className={styles.btns}>
                 <Link className="gray_btn" to="/login">
-                  Cancel
+                  Hủy
                 </Link>
-                <button type="submit" className="btn_blue">
-                  Continue
+                <button type="submit" className="btn_blue" disabled={loading}>
+                  Đổi mật khẩu
                 </button>
               </div>
             </Form>

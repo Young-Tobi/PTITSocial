@@ -25,21 +25,26 @@ module.exports = class Email {
         };
     await nodemailer.createTransport(options).sendMail({
       to: this.to,
-      from: process.env.EMAIL_ID,
+      from: { name: 'PTITSocial', address: process.env.EMAIL_ID },
       subject,
       text: htmlToText(html),
       html,
+      attachments: [{
+        filename: 'ptitsocial.png',
+        path: path.join(__dirname, '../views/emails/assets/ptitsocial.png'),
+        cid: 'ptitsocial-logo',
+      }],
     });
   }
 
   async sendVerificationEmail() {
-    await this.send('VerificationEmail', 'PTITSocial email verification');
+    await this.send('VerificationEmail', 'PTITSocial · Xác nhận tài khoản');
   }
 
   async sendPasswordReset() {
     await this.send(
       'PasswordReset',
-      this.url + ' is your PTITSocial recovery code (Valid for 10 min)'
+      'PTITSocial · Mã đặt lại mật khẩu (hiệu lực 10 phút)'
     );
   }
 };

@@ -220,6 +220,28 @@ async function regressions({ first, second, sender, recipient, image, post, mess
   assert.equal(outsider.last_name, 'Nguyễn');
   console.log('PASS Vietnamese names, including two-character names, and verification mail');
 
+  const privateChat = (await api('POST', '/api/v1/chats/create/private', {
+    token: third.token, body: { userId: outsider._id },
+  })).data.chat;
+  const privateMessage = (await api('PUT', `/api/v1/messages/${privateChat._id}/send`, {
+    token: third.token, body: { type: 'text', content: 'Must remain private to third and outsider' },
+  })).data.message;
+  const filteredChats = await api('GET', `/api/v1/chats?users=${outsider._id}`, { token: first.token });
+  assert.equal(filteredChats.data.chats.length, 0, 'Query filters cannot replace chat membership');
+  const filteredMessages = await api('GET', `/api/v1/messages/${message.chat}?page=1&chat=${privateChat._id}`, {
+    token: first.token,
+  });
+  assert.equal(filteredMessages.data.messages.length, 0, 'Query filters cannot switch message conversations');
+  await api('PUT', `/api/v1/messages/${privateMessage._id}/seen`, { token: outsider.token, body: {} });
+  console.log('PASS query parameters cannot override chat ownership or expose another conversation');
+
+  await api('GET', '/api/v1/posts/not-an-id', { token: first.token, expected: 400 });
+  await api('POST', '/api/v1/chats/create/private', {
+    token: first.token, body: { userId: 'not-an-id' }, expected: 400,
+  });
+  await api('PATCH', '/api/v1/users/resetPassword', { body: {}, expected: 400 });
+  console.log('PASS malformed IDs and missing reset credentials return client errors');
+
   const client = new MongoClient('mongodb://127.0.0.1:27017');
   await client.connect();
   try {
@@ -362,9 +384,112 @@ async function regressions({ first, second, sender, recipient, image, post, mess
     assert.equal(remaining.sharedID, null);
     assert.equal(remaining.text, 'Shared caption remains');
     console.log('PASS share stays accessible after deleting the original post');
+    await socialRegressions({ first, second, third, outsider, image });
+    await passwordResetRegression(outsider);
   } finally {
     await client.close();
   }
+}
+async function socialRegressions({ first, second, third, outsider, image }) {
+  await api('PUT', '/api/v1/users/update/profile/details', {
+    token: first.token, body: { infos: { bio: 'Student profile audit', college: 'PTIT' } },
+  });
+  let profile = (await api('GET', `/api/v1/users/getProfile/${first.username}`, { token: second.token })).data;
+  assert.equal(profile.user.details.bio, 'Student profile audit');
+  assert.equal(profile.user.details.college, 'PTIT');
+  const cover = new FormData();
+  cover.set('photo', new Blob([image], { type: 'image/png' }), 'cover.png');
+  const coverResult = await api('POST', '/api/v1/users/update/profile/cover', { token: first.token, form: cover });
+  fixtureImages.push(coverResult.data.url);
+  assert((await fetch(coverResult.data.url)).ok);
+  const found = await api('POST', '/api/v1/users/search', { token: second.token, body: { term: first.email } });
+  assert(found.data.results.some(user => user._id === first._id));
+  await api('POST', '/api/v1/users/search/add', { token: second.token, body: { searchUser: first._id } });
+  const history = await api('GET', '/api/v1/users/search', { token: second.token });
+  assert(history.data.results.some(item => item._id === first._id));
+  await api('POST', '/api/v1/users/search/remove', { token: second.token, body: { searchUser: first._id } });
+  assert(!(await api('GET', '/api/v1/users/search', { token: second.token })).data.results.some(item => item._id === first._id));
+  console.log('PASS profile details, cover upload, search and search-history add/remove');
+
+  const post = (await api('POST', '/api/v1/posts/createPost', {
+    token: first.token, body: { type: 'normal', text: 'Extended social audit' },
+  })).data;
+  const comment = (await api('POST', `/api/v1/posts/addComment/${post._id}`, {
+    token: second.token, body: { text: 'Comment for reply and likes' },
+  })).data.commendData;
+  const likes = (await api('PUT', `/api/v1/posts/comments/${comment._id}/like`, { token: first.token, body: {} })).data.likes;
+  assert(likes.includes(first._id));
+  const unliked = (await api('PUT', `/api/v1/posts/comments/${comment._id}/like`, { token: first.token, body: {} })).data.likes;
+  assert(!unliked.includes(first._id));
+  const reply = (await api('POST', `/api/v1/posts/comments/${comment._id}/reply`, {
+    token: first.token, body: { text: 'Reply audit' },
+  })).data.replies;
+  assert(reply.some(item => item.text === 'Reply audit' && item.user._id === first._id));
+  await api('PUT', `/api/v1/posts/${post._id}`, { token: second.token, body: {}, expected: 404 });
+  const notifications = (await api('GET', '/api/v1/users/notifications', { token: first.token })).data.notifications;
+  const notice = notifications.find(item => item.type === 'comment');
+  assert(notice);
+  await api('PUT', `/api/v1/users/notifications/${notice._id}/seen`, { token: second.token, body: {}, expected: 404 });
+  await api('PUT', `/api/v1/users/notifications/${notice._id}/seen`, { token: first.token, body: {} });
+  await api('PUT', `/api/v1/posts/${post._id}`, { token: first.token, body: {} });
+  await api('GET', `/api/v1/posts/${post._id}`, { token: first.token, expected: 404 });
+  console.log('PASS comment like/unlike, replies, notification ownership/read state and post delete permissions');
+
+  await api('PUT', `/api/v1/friends/add/${third._id}`, { token: first.token, body: {} });
+  profile = (await api('GET', `/api/v1/users/getProfile/${third.username}`, { token: first.token })).data;
+  const requestId = profile.friendship.requestID;
+  assert(profile.friendship.requestSent);
+  await api('PUT', `/api/v1/friends/cancel/${requestId}`, { token: first.token, body: {} });
+  profile = (await api('GET', `/api/v1/users/getProfile/${third.username}`, { token: first.token })).data;
+  assert(!profile.friendship.requestSent);
+  await api('PUT', `/api/v1/friends/add/${third._id}`, { token: first.token, body: {} });
+  await api('PUT', `/api/v1/friends/acceptRequest/${requestId}`, { token: first.token, body: {}, expected: 400 });
+  await api('PUT', `/api/v1/friends/acceptRequest/${requestId}`, { token: third.token, body: {} });
+  await api('PUT', `/api/v1/friends/remove/${requestId}`, { token: outsider.token, body: {}, expected: 400 });
+  await api('PUT', `/api/v1/friends/remove/${requestId}`, { token: first.token, body: {} });
+  profile = (await api('GET', `/api/v1/users/getProfile/${third.username}`, { token: first.token })).data;
+  assert(!profile.friendship.friends && !profile.friendship.following);
+  await api('PUT', `/api/v1/friends/follow/${third._id}`, { token: first.token, body: {} });
+  profile = (await api('GET', `/api/v1/users/getProfile/${third.username}`, { token: first.token })).data;
+  assert(profile.friendship.following);
+  await api('PUT', `/api/v1/friends/unfollow/${third._id}`, { token: first.token, body: {} });
+  profile = (await api('GET', `/api/v1/users/getProfile/${third.username}`, { token: first.token })).data;
+  assert(!profile.friendship.following);
+  console.log('PASS friend request cancel/resend/accept/remove, permission checks and follow/unfollow');
+}
+async function passwordResetRegression(user) {
+  await api('POST', '/api/v1/users/signup', {
+    body: { first_name: 'Test', last_name: 'Student', email: user.email,
+      password: 'Backbook@123', passwordConfirm: 'Backbook@123', gender: 'male',
+      birth_Year: 2003, birth_Month: 1, birth_Day: 15 }, expected: 400,
+  });
+  await api('POST', '/api/v1/users/forgotPassword', { body: { email: user.email } });
+  const inbox = await (await fetch('http://localhost:8025/api/v1/messages?limit=100')).json();
+  const mail = inbox.messages.find(m => m.To.some(to => to.Address === user.email));
+  mailIds.push(mail.ID);
+  const detail = await (await fetch('http://localhost:8025/api/v1/message/' + mail.ID)).json();
+  const code = detail.Text.match(/\b\d{6}\b/)[0];
+  const wrongCode = code === '000000' ? '111111' : '000000';
+  await api('POST', '/api/v1/users/resetPassword', { body: { email: user.email, code: wrongCode }, expected: 401 });
+  const reset = await api('POST', '/api/v1/users/resetPassword', { body: { email: user.email, code } });
+  const body = { email: user.email, token: reset.data.token, password: 'Changed?123', passwordConfirm: 'Changed?123' };
+  await api('PATCH', '/api/v1/users/resetPassword', { body: { ...body, passwordConfirm: 'Different!123' }, expected: 400 });
+  await api('PATCH', '/api/v1/users/resetPassword', { body: { ...body, password: 'Aa1!bc', passwordConfirm: 'Aa1!bc' }, expected: 400 });
+  const changed = await api('PATCH', '/api/v1/users/resetPassword', { body });
+  assert.equal(changed.data.user._id, user._id);
+  await api('POST', '/api/v1/users/login', { body: { email: user.email, password: 'Backbook@123' }, expected: 401 });
+  await api('POST', '/api/v1/users/login', { body: { email: user.email, password: body.password } });
+  await api('PATCH', '/api/v1/users/resetPassword', { body, expected: 400 });
+  await api('POST', '/api/v1/users/resetPassword', { body: { email: user.email, code }, expected: 401 });
+  const client = await MongoClient.connect('mongodb://127.0.0.1:27017');
+  try {
+    await client.db('ptitsocial_accounts').collection('users').updateOne({ _id: new ObjectId(user._id) }, {
+      $set: { passwordResetToken: require('node:crypto').createHash('sha256').update('123456').digest('hex'),
+        passwordResetExpires: new Date(Date.now() - 1000) },
+    });
+  } finally { await client.close(); }
+  await api('POST', '/api/v1/users/resetPassword', { body: { email: user.email, code: '123456' }, expected: 401 });
+  console.log('PASS duplicate email; password recovery rejects wrong/expired/reused codes, enforces passwords and allows login');
 }
 async function cleanup() {
   sockets.forEach((socket) => socket.close());

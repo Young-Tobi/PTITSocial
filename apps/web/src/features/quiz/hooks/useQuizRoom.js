@@ -15,7 +15,7 @@ export default function useQuizRoom(roomId) {
     refetchInterval: (data) => (data?.room.status === 'finished' ? false : 2000),
   });
   useEffect(() => {
-    const socket = io(process.env.REACT_APP_BACKEND_URL, {
+    const socket = io(process.env.REACT_APP_BACKEND_URL || window.location.origin, {
       path: '/quiz-socket',
       withCredentials: true,
       auth: { token: JSON.parse(Cookies.get('token') || 'null') },

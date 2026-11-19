@@ -66,7 +66,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const verificationEmailToken = newUser.createVerificationEmailToken();
   await newUser.save({ validateBeforeSave: false });
-  const url = `${process.env.FRONTEND_URL}/activate/${verificationEmailToken}`;
+  const url = `${process.env.PUBLIC_APP_URL || process.env.FRONTEND_URL}/activate/${verificationEmailToken}`;
   await new Email(newUser, url).sendVerificationEmail();
 
   createSendToken({ user: newUser, statusCode: 200, res: res });
@@ -155,7 +155,7 @@ exports.resendEmailVerification = catchAsync(async (req, res, next) => {
 
   const verificationEmailToken = user.createVerificationEmailToken();
   await user.save({ validateBeforeSave: false });
-  const url = `${process.env.FRONTEND_URL}/activate/${verificationEmailToken}`;
+  const url = `${process.env.PUBLIC_APP_URL || process.env.FRONTEND_URL}/activate/${verificationEmailToken}`;
 
   await new Email(user, url).sendVerificationEmail();
   res.status(200).json({ status: 'success' });
@@ -190,7 +190,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 exports.requireVerified = (req, res, next) => {
   if (!req.user.verified) {
-    return next(new AppError('Please verify your email before using Backbook', 403));
+    return next(new AppError('Please verify your email before using PTITSocial', 403));
   }
   next();
 };
@@ -311,6 +311,10 @@ exports.validateResetCode = catchAsync(async (req, res, next) => {
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
   const { token, email, password, passwordConfirm } = req.body;
+  if (typeof token !== 'string' || !/^[a-f0-9]{64}$/i.test(token) ||
+      typeof email !== 'string' || !email ||
+      typeof password !== 'string' || typeof passwordConfirm !== 'string')
+    return next(new AppError('Please provide a valid reset token, email and passwords', 400));
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
   const user = await User.findOne({

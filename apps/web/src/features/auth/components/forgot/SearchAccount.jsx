@@ -25,8 +25,8 @@ function SearchAccount({ setVisible, setUserInfos }) {
 
   const forgotValidation = Yup.object({
     email: Yup.string()
-      .required('Email address is required.')
-      .email('Must be a valid email.')
+      .required('Vui lòng nhập email')
+      .email('Địa chỉ email không hợp lệ')
       .max(100),
   });
 
@@ -47,7 +47,7 @@ function SearchAccount({ setVisible, setUserInfos }) {
       setError('');
       setLoading(false);
     } catch (error) {
-      setError(error.response?.data?.message);
+      setError(error.response?.data?.message || 'Không thể kết nối máy chủ. Vui lòng thử lại.');
       setTimeout(() => {
         setForgotInfo(initialforgotInfos);
         setLoading(false);
@@ -57,13 +57,11 @@ function SearchAccount({ setVisible, setUserInfos }) {
 
   return (
     <Card className={styles.wrap}>
-      <div className={styles.header}>Find Your Account</div>
+      <div className={styles.header}>Tìm tài khoản</div>
       {error ? (
         <div className={styles.error}>
-          <div className={styles.error_header}>No search results</div>
-          <span>
-            Your search did not return any results. Please try again with other information.
-          </span>
+          <div className={styles.error_header}>Chưa thể tìm tài khoản</div>
+          <span>{error}</span>
         </div>
       ) : (
         ''
@@ -71,7 +69,7 @@ function SearchAccount({ setVisible, setUserInfos }) {
 
       <div className={styles.content}>
         <span className={styles.text}>
-          Please enter your email address or mobile number to search for your account.
+          Nhập địa chỉ email bạn đã dùng để đăng ký PTITSocial.
         </span>
         <Formik
           enableReinitialize
@@ -88,7 +86,7 @@ function SearchAccount({ setVisible, setUserInfos }) {
                   className={styles.input}
                   type="email"
                   name="email"
-                  placeholder="Email address"
+                  placeholder="Địa chỉ email"
                   onChange={handleForgotChange}
                   disabled={loading}
                 />
@@ -96,10 +94,10 @@ function SearchAccount({ setVisible, setUserInfos }) {
 
               <div className={styles.btns}>
                 <Link className="gray_btn" to="/login">
-                  Cancel
+                  Hủy
                 </Link>
-                <button type="submit" className="btn_blue">
-                  Search
+                <button type="submit" className="btn_blue" disabled={loading}>
+                  Tìm kiếm
                 </button>
               </div>
             </Form>
