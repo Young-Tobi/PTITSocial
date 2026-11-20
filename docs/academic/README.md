@@ -1,6 +1,6 @@
 # Hỏi đáp học thuật
 
-Module này phụ trách các chức năng hỏi đáp và thông báo phản hồi. Mở `/questions` bằng biểu tượng **?** trên thanh điều hướng. Dùng đăng nhập, xác minh email, hồ sơ công khai và chuông thông báo của base qua các API có sẵn.
+Module này phụ trách các chức năng hỏi đáp và thông báo phản hồi. Chọn **Chức năng học tập → Hỏi đáp học tập** để mở `/questions`. Dùng đăng nhập, xác minh email, hồ sơ công khai và chuông thông báo của base qua các API có sẵn.
 
 ## Phạm vi mã nguồn
 
@@ -89,7 +89,7 @@ Script sao lưu dữ liệu liên quan vào `.local-backups/academic-data-*`, ch
 npm.cmd run test:academic
 npm.cmd run test:architecture
 # Cần hệ thống local, MongoDB và Mailpit:
-$env:TEST_API_URL='http://localhost:8010' # Đổi theo cổng Gateway thực tế, mặc định test là 8000
+# Nếu Gateway dùng cổng khác 8000, đặt TEST_API_URL theo địa chỉ thực tế.
 npm.cmd run test:academic:browser
 npm.cmd run test:academic:notifications
 npm.cmd run test:academic:checklist

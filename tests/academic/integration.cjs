@@ -257,7 +257,7 @@ async function run(browserCheck) {
     console.log(
       'PASS malformed input, missing records and rejected attachments without partial questions'
     );
-    if (browserCheck) await browserCheck({ a, b, c, q, answer, api, tag });
+    if (browserCheck) await browserCheck({ a, b, c, q, answer, api, apiBase: base, tag });
   } finally {
     const created = await client
       .db('ptitsocial_accounts')

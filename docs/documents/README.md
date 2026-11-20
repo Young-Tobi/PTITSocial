@@ -1,6 +1,6 @@
 # Kho tài liệu học tập cộng đồng
 
-Module độc lập với Hỏi đáp học thuật. Mở `/documents` hoặc biểu tượng sách trên thanh điều hướng. Chỉ tài khoản đã đăng nhập và xác minh email được sử dụng, bao gồm xem trước và tải tệp.
+Module độc lập với Hỏi đáp học thuật. Chọn **Chức năng học tập → Kho tài liệu** để mở `/documents`. Chỉ tài khoản đã đăng nhập và xác minh email được sử dụng, bao gồm xem trước và tải tệp.
 
 ## Các chức năng
 
@@ -63,7 +63,7 @@ Trước ghi tệp, lưu bản ghi dọn dẹp để có thể khôi phục sau 
 ```powershell
 npm.cmd run test:documents
 npm.cmd run test:architecture
-$env:TEST_API_URL='http://localhost:8010'
+# Nếu Gateway dùng cổng khác 8000, đặt TEST_API_URL theo địa chỉ thực tế.
 # Điền mật khẩu tài khoản admin@gmail.com đã được cấu hình quản lý kho trên máy thử.
 $env:TEST_DOCUMENT_ADMIN_PASSWORD='...'
 npm.cmd run test:documents:integration

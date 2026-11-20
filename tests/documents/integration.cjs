@@ -5,9 +5,8 @@ const { chromium } = require('playwright');
 const { run } = require('../academic/integration.cjs');
 const { pdf, office } = require('./fixtures.cjs');
 const { types } = require('../../services/content/src/features/documents/storage');
-const apiBase = process.env.TEST_API_URL || 'http://localhost:8010';
 const site = process.env.TEST_WEB_URL || 'http://localhost:3000';
-run(async ({ a, b, api, tag }) => {
+run(async ({ a, b, api, apiBase, tag }) => {
   const folder = path.resolve('.local-tools/qa/documents');
   await fs.mkdir(folder, { recursive: true });
   const adminPassword = process.env.TEST_DOCUMENT_ADMIN_PASSWORD;

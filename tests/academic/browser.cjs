@@ -27,7 +27,11 @@ run(async ({ a, b, tag }) => {
   try {
     const first = await login(a),
       second = await login(b);
-    await first.getByRole('link', { name: 'Hỏi đáp học thuật', exact: true }).first().click();
+    await first.getByRole('button', { name: 'Chức năng học tập', exact: true }).click();
+    await first
+      .getByRole('navigation', { name: 'Chức năng học tập', exact: true })
+      .getByRole('link', { name: 'Hỏi đáp học tập', exact: true })
+      .click();
     await first.getByRole('heading', { name: 'Hỏi đáp học thuật', exact: true }).waitFor();
     await first.getByRole('link', { name: 'Đặt câu hỏi', exact: true }).click();
     await first.getByLabel('Tiêu đề', { exact: true }).fill('Lỗi MongoDB cần hỗ trợ ' + tag);
