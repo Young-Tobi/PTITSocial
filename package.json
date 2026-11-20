@@ -25,6 +25,7 @@
     "seed:study": "npm run seed --workspace @ptitsocial/study",
     "seed:demo-accounts": "node scripts/seed-demo-accounts.cjs",
     "test:study": "node tests/study.integration.cjs",
+    "test:study:permissions": "node tests/study-permissions.integration.cjs",
     "dev": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./start-local.ps1",
     "stop": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./stop-local.ps1",
     "test:documents": "node --test tests/documents/*.test.cjs",

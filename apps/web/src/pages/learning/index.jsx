@@ -235,8 +235,8 @@ export default function LearningPage() {
                 </button>
               </div>
               {create.isLoading && (
-                <span className={styles.srOnly} role="status">
-                  Đang tạo nội dung…
+                <span className={styles.promptStatus} role="status">
+                  Đang tạo nội dung… Lần đầu có thể mất 1–2 phút để chuẩn bị.
                 </span>
               )}
               {create.isError && (

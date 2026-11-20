@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { FiArrowLeft, FiCalendar, FiClock, FiMapPin, FiUsers, FiWifi, FiZap } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { studyApi, errorMessage } from 'features/study/api';
@@ -7,6 +8,8 @@ import styles from './studySpot.module.css';
 
 export default function StudySpotDetail() {
   const { locationId } = useParams();
+  const me = useSelector((state) => state.user.userinfo);
+  const [deletingReview, setDeletingReview] = useState(null);
   const [data, setData] = useState(null);
   const [review, setReview] = useState({ rating: 5, comment: '' });
   const [meetup, setMeetup] = useState({
@@ -58,6 +61,19 @@ export default function StudySpotDetail() {
       load();
     } catch (error) {
       toast.error(errorMessage(error));
+    }
+  };
+  const deleteReview = async (id) => {
+    if (!window.confirm('Xóa đánh giá của bạn?')) return;
+    setDeletingReview(id);
+    try {
+      await studyApi.delete(`/reviews/${id}`);
+      toast.success('Đã xóa đánh giá');
+      await load();
+    } catch (error) {
+      toast.error(errorMessage(error));
+    } finally {
+      setDeletingReview(null);
     }
   };
   const request = async (id) => {
@@ -253,6 +269,16 @@ export default function StudySpotDetail() {
                   <span>{'★'.repeat(item.rating)}</span>
                   <p>{item.comment}</p>
                   <small>{new Date(item.createdAt).toLocaleDateString('vi-VN')}</small>
+                  {String(item.user?._id) === String(me?._id) && (
+                    <button
+                      type="button"
+                      className={styles.deleteReview}
+                      disabled={deletingReview === item._id}
+                      onClick={() => deleteReview(item._id)}
+                    >
+                      {deletingReview === item._id ? 'Đang xóa…' : 'Xóa đánh giá'}
+                    </button>
+                  )}
                 </div>
               </article>
             ))}

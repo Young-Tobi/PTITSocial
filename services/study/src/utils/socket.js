@@ -4,6 +4,8 @@ const FocusRoom = require('../models/focusRoomModel');
 const Participant = require('../models/focusRoomParticipantModel');
 const Message = require('../models/focusRoomMessageModel');
 const { currentPomodoro } = require('../controllers/focusRoomController');
+const { resetRoomAudio } = require('./roomAudio');
+const { onlineUserIds, withPresence } = require('./roomPresence');
 
 let io;
 const publicUser = 'first_name last_name username photo';
@@ -17,8 +19,14 @@ function socketToken(socket) {
 }
 const activeMember = (roomId, userId) =>
   Participant.findOne({ room: roomId, user: userId, active: true });
-const roomState = (roomId) =>
-  Participant.find({ room: roomId, active: true }).populate('user', publicUser).sort('joinedAt');
+const roomState = async (roomId) =>
+  withPresence(
+    await Participant.find({ room: roomId, active: true })
+      .populate('user', publicUser)
+      .sort('joinedAt'),
+    io,
+    roomId
+  );
 const requireHost = (roomId, userId) =>
   Participant.findOne({
     room: roomId,
@@ -116,6 +124,7 @@ function init(server, options) {
         });
       }
       const state = { enabled: room.allowMicrophones };
+      await resetRoomAudio(roomId);
       io.to(`focus:${roomId}`).emit('focus_mic_policy', state);
       return state;
     });
@@ -189,7 +198,7 @@ function init(server, options) {
         throw new Error('Host cannot kick themselves');
       const participant = await Participant.findOneAndUpdate(
         { room: roomId, user: userId, active: true },
-        { active: false, micEnabled: false, leftAt: new Date() },
+        { active: false, micEnabled: false, leftAt: new Date(), kickedAt: new Date() },
         { new: true }
       );
       if (!participant) throw new Error('Participant not found');
@@ -198,6 +207,9 @@ function init(server, options) {
         { $inc: { memberCount: -1 } }
       );
       io.to(`focus:${roomId}`).emit('focus_kicked', { userId });
+      io.in(`account:${userId}`).socketsLeave(`focus:${roomId}`);
+      await resetRoomAudio(roomId);
+      io.to(`focus:${roomId}`).emit('focus_audio_reset');
       return { userId };
     });
 
@@ -215,15 +227,20 @@ function init(server, options) {
         { active: false, micEnabled: false, leftAt: new Date() }
       );
       io.to(`focus:${roomId}`).emit('focus_ended');
+      io.in(`focus:${roomId}`).socketsLeave(`focus:${roomId}`);
+      await resetRoomAudio(roomId);
       return { roomId };
     });
 
     socket.on('disconnect', async () => {
       for (const roomId of joined) {
+        // Another tab of the same account can still be connected to this room.
+        if (onlineUserIds(io, roomId).has(String(socket.account.id))) continue;
         await Participant.updateOne(
           { room: roomId, user: socket.account.id },
           { micEnabled: false }
         ).catch(() => {});
+        if (onlineUserIds(io, roomId).has(String(socket.account.id))) continue;
         socket
           .to(`focus:${roomId}`)
           .emit('focus_presence', { type: 'offline', user: socket.account });

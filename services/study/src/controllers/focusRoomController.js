@@ -7,6 +7,8 @@ const catchAsync = require('@ptitsocial/service-kit/catchAsync');
 const FocusRoom = require('../models/focusRoomModel');
 const Participant = require('../models/focusRoomParticipantModel');
 const Message = require('../models/focusRoomMessageModel');
+const { audioRoomName, resetRoomAudio } = require('../utils/roomAudio');
+const { withPresence } = require('../utils/roomPresence');
 
 const publicUser = 'first_name last_name username photo';
 
@@ -80,6 +82,7 @@ exports.joinRoom = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect room password', 403));
 
   const existing = await Participant.findOne({ room: room.id, user: req.user.id });
+  if (existing?.kickedAt) return next(new AppError('You have been removed from this room', 403));
   if (existing?.active) return res.json({ status: 'success', data: { roomId: room.id } });
 
   const reserved = await FocusRoom.findOneAndUpdate(
@@ -131,7 +134,7 @@ exports.getRoom = catchAsync(async (req, res, next) => {
     status: 'success',
     data: {
       room: body,
-      participants,
+      participants: withPresence(participants, req.studyIO, room.id),
       messages: messages.reverse(),
       isHost: membership.role === 'host',
     },
@@ -156,6 +159,9 @@ exports.leaveRoom = catchAsync(async (req, res, next) => {
     { $inc: { memberCount: -1 } }
   );
   req.studyIO?.to(`focus:${req.params.roomId}`).emit('participant_left', { userId: req.user.id });
+  req.studyIO?.in(`account:${req.user.id}`).socketsLeave(`focus:${req.params.roomId}`);
+  await resetRoomAudio(req.params.roomId);
+  req.studyIO?.to(`focus:${req.params.roomId}`).emit('focus_audio_reset');
   res.status(204).end();
 });
 
@@ -168,16 +174,18 @@ exports.createLiveKitToken = catchAsync(async (req, res, next) => {
     active: true,
   });
   if (!membership) return next(new AppError('Only active room members can use audio', 403));
-  const room = await FocusRoom.findOne({ _id: req.params.roomId, active: true });
+  const room = await FocusRoom.findOne({ _id: req.params.roomId, active: true }).select(
+    '+audioVersion'
+  );
   if (!room) return next(new AppError('Focus room is not available', 404));
   const token = new AccessToken(process.env.LIVEKIT_API_KEY, process.env.LIVEKIT_API_SECRET, {
     identity: String(req.user.id),
     name: `${req.user.first_name} ${req.user.last_name}`.trim(),
-    ttl: '2h',
+    ttl: '1m',
   });
   token.addGrant({
     roomJoin: true,
-    room: `focus-${req.params.roomId}`,
+    room: audioRoomName(room),
     canPublish: room.allowMicrophones !== false,
     canSubscribe: true,
     canPublishData: false,

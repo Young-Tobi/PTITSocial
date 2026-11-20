@@ -5,6 +5,37 @@ const provider = require('./provider');
 const AppError = require('@ptitsocial/service-kit/appError');
 const indexing = new Map();
 
+async function buildIndex(key, texts, settings, stored) {
+  // Save completed batches so a retry or restart never embeds them again.
+  const vectors =
+    stored?.vectors?.length > 0 &&
+    provider.validVectors(stored.vectors, stored.vectors.length) &&
+    stored.vectors[0].length === 768 &&
+    stored.vectors.length <= texts.length
+      ? [...stored.vectors]
+      : [];
+  const deadline = Date.now() + 125000;
+  while (vectors.length < texts.length) {
+    const batch = texts.slice(vectors.length, vectors.length + 40);
+    try {
+      vectors.push(...(await provider.embed(batch, settings, 'RETRIEVAL_DOCUMENT')));
+    } catch (error) {
+      const wait = (error.retryAfterMs || 60000) + 100;
+      // Minute quotas can recover within the request budget. Daily quotas cannot.
+      if (error.statusCode !== 429 || wait > 75000 || Date.now() + wait >= deadline) throw error;
+      for (let remaining = wait; remaining > 0; remaining -= 60000)
+        await new Promise((resolve) => setTimeout(resolve, Math.min(remaining, 60000)));
+      continue;
+    }
+    stored = await EmbeddingIndex.findOneAndUpdate(
+      { key },
+      { $set: { vectors } },
+      { upsert: true, new: true }
+    ).lean();
+  }
+  return stored;
+}
+
 function cosine(a, b) {
   if (!a?.length || a.length !== b?.length) return 0;
   let dot = 0,
@@ -33,18 +64,11 @@ async function retrieve(query, settings) {
     .update('gemini:768:RETRIEVAL_DOCUMENT:' + settings.embeddingModel + JSON.stringify(texts))
     .digest('hex');
   let stored = await EmbeddingIndex.findOne({ key }).lean();
-  if (!stored) {
+  if (!provider.validVectors(stored?.vectors, catalog.length) || stored.vectors[0].length !== 768) {
     if (!indexing.has(key)) {
       indexing.set(
         key,
-        (async () => {
-          const vectors = await provider.embed(texts, settings, 'RETRIEVAL_DOCUMENT');
-          return EmbeddingIndex.findOneAndUpdate(
-            { key },
-            { $setOnInsert: { key, vectors } },
-            { upsert: true, new: true }
-          ).lean();
-        })().finally(() => indexing.delete(key))
+        buildIndex(key, texts, settings, stored).finally(() => indexing.delete(key))
       );
     }
     stored = await indexing.get(key);

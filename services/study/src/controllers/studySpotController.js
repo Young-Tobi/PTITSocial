@@ -21,6 +21,13 @@ exports.listLocations = catchAsync(async (req, res) => {
 });
 
 exports.nearbyFromPoint = catchAsync(async (req, res, next) => {
+  if (
+    typeof req.query.lat !== 'string' ||
+    !req.query.lat.trim() ||
+    typeof req.query.lng !== 'string' ||
+    !req.query.lng.trim()
+  )
+    return next(new AppError('Valid lat and lng coordinates are required', 400));
   const latitude = Number(req.query.lat);
   const longitude = Number(req.query.lng);
   if (

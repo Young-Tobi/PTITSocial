@@ -180,7 +180,13 @@ export default function FocusRoom() {
     });
     studySocket.onAny((event, ...args) => args.forEach(normalizeMediaLinks));
     setSocket(studySocket);
-    studySocket.emit('focus_join', { roomId });
+    studySocket.on('connect', () => {
+      studySocket.emit('focus_join', { roomId }, (result) => {
+        if (!result?.ok) return toast.error(result?.message || 'Không thể kết nối phòng học');
+        setParticipants(result.data.participants);
+        setPomodoro(result.data.pomodoro);
+      });
+    });
     studySocket.on('focus_message', (message) =>
       setMessages((old) => [...old, message].slice(-100))
     );
@@ -195,19 +201,32 @@ export default function FocusRoom() {
       liveRoom.current?.disconnect();
       liveRoom.current = null;
       setAudioConnected(false);
+      setMicOn(false);
+      setParticipants((old) => old.map((p) => ({ ...p, micEnabled: false })));
       setAudioSessionVersion((version) => version + 1);
     });
     studySocket.on('focus_force_mute', ({ roomId: targetRoomId }) => {
       if (String(targetRoomId) === String(roomId))
         forceMuteMicrophone('Micro của bạn đã được chủ phòng tắt.');
     });
+    studySocket.on('focus_audio_reset', () => {
+      setMicOn(false);
+      setParticipants((old) => old.map((p) => ({ ...p, micEnabled: false })));
+      setMicStatus('Phiên âm thanh đã thay đổi. Đang kết nối lại…');
+      liveRoom.current?.disconnect();
+      liveRoom.current = null;
+      setAudioConnected(false);
+      setAudioSessionVersion((version) => version + 1);
+    });
     studySocket.on('focus_presence', ({ type, user }) => {
-      if (type === 'online')
-        setParticipants((old) =>
-          old.some((p) => userId(p) === String(user.id))
-            ? old
-            : [...old, { user, active: true, micEnabled: false }]
+      setParticipants((old) => {
+        const exists = old.some((p) => userId(p) === String(user.id));
+        if (!exists && type === 'online')
+          return [...old, { user, active: true, online: true, micEnabled: false }];
+        return old.map((p) =>
+          userId(p) === String(user.id) ? { ...p, online: type === 'online' } : p
         );
+      });
     });
     studySocket.on('participant_left', ({ userId: id }) =>
       setParticipants((old) => old.filter((p) => userId(p) !== String(id)))
@@ -323,6 +342,7 @@ export default function FocusRoom() {
       await voiceRoom.connect(data.data.url, data.data.token);
       liveRoom.current = voiceRoom;
       setAudioConnected(true);
+      setMicStatus('');
       try {
         await voiceRoom.startAudio();
         setAudioPlaybackBlocked(false);
@@ -559,8 +579,10 @@ export default function FocusRoom() {
           </h2>
           <div className={styles.memberList}>
             {participants.map((p) => (
-              <div className={styles.member} key={userId(p)}>
-                <div className={styles.avatarWrap}>
+              <div className={styles.member} key={userId(p)} data-user-id={userId(p)}>
+                <div
+                  className={`${styles.avatarWrap} ${p.online === false ? styles.avatarOffline : ''}`}
+                >
                   <img src={p.user?.photo} alt="" />
                   <i />
                 </div>
@@ -568,7 +590,13 @@ export default function FocusRoom() {
                   <b>
                     {p.user?.first_name} {p.user?.last_name}
                   </b>
-                  <small>{p.role === 'host' ? 'Chủ phòng' : 'Đang học'}</small>
+                  <small>
+                    {p.online === false
+                      ? 'Ngoại tuyến'
+                      : p.role === 'host'
+                        ? 'Chủ phòng'
+                        : 'Đang học'}
+                  </small>
                 </span>
                 {p.micEnabled ? <FiMic className={styles.micActive} /> : <FiMicOff />}
                 {isHost && p.role !== 'host' && (

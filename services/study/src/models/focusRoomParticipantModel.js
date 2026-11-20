@@ -9,6 +9,7 @@ const schema = new mongoose.Schema(
     micEnabled: { type: Boolean, default: false },
     joinedAt: { type: Date, default: Date.now },
     leftAt: Date,
+    kickedAt: Date,
   },
   { timestamps: true }
 );

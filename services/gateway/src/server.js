@@ -55,7 +55,8 @@ const server = http.createServer(async (req, res) => {
       response.pipe(res);
     }
   );
-  upstream.setTimeout(30000, () => upstream.destroy());
+  // Initial semantic indexing may wait for Gemini's next quota window.
+  upstream.setTimeout(target === 'learning' ? 240000 : 30000, () => upstream.destroy());
   upstream.on('error', () => fail(res, 503, `${target} service is unavailable`));
   req.on('aborted', () => upstream.destroy());
   req.pipe(upstream);

@@ -25,12 +25,14 @@ async function request(path, body, settings = config(), timeoutMs = 60000) {
     candidates = pool.candidates(scope);
   if (!candidates.length) {
     const code = pool.errorCode(scope);
-    throw new AppError(
+    const error = new AppError(
       code === 429
         ? 'Các khóa Gemini đều đang chạm hạn mức. Vui lòng thử lại sau khi hạn mức cho phép.'
         : 'Các khóa Gemini hiện chưa khả dụng. Vui lòng kiểm tra cấu hình.',
       code
     );
+    if (code === 429) error.retryAfterMs = pool.retryAfter(scope);
+    throw error;
   }
   const deadline = Date.now() + timeoutMs;
   let lastError;
@@ -107,7 +109,9 @@ async function request(path, body, settings = config(), timeoutMs = 60000) {
       );
     }
   }
-  throw lastError || new AppError('Gemini hiện chưa khả dụng. Vui lòng thử lại sau.', 503);
+  const error = lastError || new AppError('Gemini hiện chưa khả dụng. Vui lòng thử lại sau.', 503);
+  if (error.statusCode === 429) error.retryAfterMs = pool.retryAfter(scope);
+  throw error;
 }
 
 function validVectors(vectors, count) {

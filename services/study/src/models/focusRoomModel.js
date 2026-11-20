@@ -24,6 +24,7 @@ const focusRoomSchema = new mongoose.Schema(
     maxMembers: { type: Number, min: 2, max: 20, default: 8 },
     memberCount: { type: Number, min: 0, default: 0 },
     allowMicrophones: { type: Boolean, default: true },
+    audioVersion: { type: Number, default: 0, select: false },
     theme: {
       type: String,
       enum: ['night-library', 'coffee-shop', 'rain-window', 'green-nature'],

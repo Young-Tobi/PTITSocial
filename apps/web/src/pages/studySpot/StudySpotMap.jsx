@@ -62,6 +62,7 @@ export default function StudySpotMap() {
   const [nearbyLoading, setNearbyLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [searching, setSearching] = useState(false);
+  const [tileError, setTileError] = useState(false);
   const [suitableFor, setSuitableFor] = useState('group');
   const [filters, setFilters] = useState({ type: '', wifi: false, power: false });
 
@@ -214,6 +215,11 @@ export default function StudySpotMap() {
         <span className={styles.dataCount}>{locations.length} điểm trên bản đồ</span>
       </section>
 
+      {tileError && (
+        <p role="status" className={styles.mapWarning}>
+          Không tải được nền bản đồ. Bạn vẫn có thể chọn điểm và xem thông tin địa điểm.
+        </p>
+      )}
       <section className={styles.mapLayout}>
         <aside className={styles.locationList}>
           <div className={styles.anchorSummary}>
@@ -291,7 +297,8 @@ export default function StudySpotMap() {
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+              eventHandlers={{ tileerror: () => setTileError(true) }}
             />
             <MapClickPicker
               onPick={(point) => {

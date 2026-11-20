@@ -465,6 +465,10 @@
 .avatarWrap {
   position: relative;
 }
+
+.avatarWrap.avatarOffline i {
+  background: #9ca3af;
+}
 .avatarWrap img,
 .chatMessage img {
   width: 36px;

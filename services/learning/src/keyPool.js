@@ -96,6 +96,13 @@ class KeyPool {
     const blocked = Array.from({ length: this.size }, (_, i) => this.unavailable(i, scope));
     return blocked.some((item) => item?.code === 429) ? 429 : 503;
   }
+  retryAfter(scope) {
+    const blocked = Array.from({ length: this.size }, (_, i) => this.unavailable(i, scope));
+    const quotas = blocked.filter((item) => item?.code === 429);
+    return quotas.length
+      ? Math.max(0, Math.min(...quotas.map((item) => item.until)) - this.now())
+      : 0;
+  }
 }
 const pools = new Map();
 function poolFor(keys) {
