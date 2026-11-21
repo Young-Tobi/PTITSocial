@@ -29,7 +29,7 @@ export default function FriendCard({ user, type, requestId, refetch }) {
       <Link to={`/profile/${user.username}`} className={classes.photo}>
         <img src={user.photo} alt="" />
         <div className={classes.req_name}>
-          {user.first_name} {user.last_name}
+          {user.last_name} {user.first_name}
         </div>
       </Link>
       {type === 'sent' ? (

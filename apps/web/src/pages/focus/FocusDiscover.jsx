@@ -108,7 +108,7 @@ export default function FocusDiscover() {
                     Chủ phòng
                     <br />
                     <b>
-                      {room.owner?.first_name} {room.owner?.last_name}
+                      {room.owner?.last_name} {room.owner?.first_name}
                     </b>
                   </span>
                 </div>

@@ -37,7 +37,7 @@ function EditDetails({ showEdit, setShowEdit, infos, handleChange, updateDetails
                 updateDetails={updateDetails}
                 infos={infos}
                 details={details}
-                max={20}
+                max={100}
               />
               <div className={classes.details_header}>Công việc</div>
               <Detail
@@ -50,7 +50,7 @@ function EditDetails({ showEdit, setShowEdit, infos, handleChange, updateDetails
                 updateDetails={updateDetails}
                 infos={infos}
                 details={details}
-                max={20}
+                max={100}
               />
               <Detail
                 value={details?.workplace}
@@ -62,21 +62,9 @@ function EditDetails({ showEdit, setShowEdit, infos, handleChange, updateDetails
                 updateDetails={updateDetails}
                 infos={infos}
                 details={details}
-                max={20}
+                max={150}
               />
               <div className={classes.details_header}>Học vấn</div>
-              <Detail
-                value={details?.highSchool}
-                img="studies"
-                placeholder="Thêm trường trung học"
-                name="highSchool"
-                text="trường trung học"
-                handleChange={handleChange}
-                updateDetails={updateDetails}
-                infos={infos}
-                details={details}
-                max={20}
-              />
               <Detail
                 value={details?.college}
                 img="studies"
@@ -87,7 +75,7 @@ function EditDetails({ showEdit, setShowEdit, infos, handleChange, updateDetails
                 updateDetails={updateDetails}
                 infos={infos}
                 details={details}
-                max={20}
+                max={150}
               />
               <div className={classes.details_header}>Nơi sống hiện tại</div>
               <Detail
@@ -100,7 +88,7 @@ function EditDetails({ showEdit, setShowEdit, infos, handleChange, updateDetails
                 updateDetails={updateDetails}
                 infos={infos}
                 details={details}
-                max={20}
+                max={150}
               />
               <div className={classes.details_header}>Quê quán</div>
               <Detail
@@ -113,7 +101,7 @@ function EditDetails({ showEdit, setShowEdit, infos, handleChange, updateDetails
                 updateDetails={updateDetails}
                 infos={infos}
                 details={details}
-                max={20}
+                max={150}
               />
               <div className={classes.details_header}>Tình trạng quan hệ</div>
               <Detail
@@ -128,19 +116,6 @@ function EditDetails({ showEdit, setShowEdit, infos, handleChange, updateDetails
                 details={details}
                 max={20}
                 rel={true}
-              />
-              <div className={classes.details_header}>Instagram</div>
-              <Detail
-                value={details?.instagram}
-                img="instagram"
-                placeholder="Thêm tài khoản Instagram"
-                name="instagram"
-                text="tài khoản Instagram"
-                handleChange={handleChange}
-                updateDetails={updateDetails}
-                infos={infos}
-                details={details}
-                max={20}
               />
             </div>
           </div>

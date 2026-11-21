@@ -8,7 +8,7 @@ const judge = require('./judge');
 const { getLanguage } = require('./languages');
 const person = (user) => ({
   userId: user.id,
-  name: `${user.first_name} ${user.last_name}`,
+  name: `${user.last_name} ${user.first_name}`,
   photo: user.photo,
 });
 exports.status = async (req, res) => {

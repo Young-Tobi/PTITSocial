@@ -35,7 +35,7 @@ export default function HomeLeft({ user }) {
       <Link to="/profile" className={styles.left_link + ' hover2'} title="Trang cá nhân của tôi">
         <img src={user?.photo} alt="" />
         <span>
-          {user?.first_name} {user?.last_name}
+          {user?.last_name} {user?.first_name}
         </span>
       </Link>
       {navigation.map(({ to, text, Icon }) => (

@@ -2,8 +2,8 @@ import { mediaLink, normalizeMediaLinks } from './mediaLinks';
 
 test('old local media loads through the website without rewriting external images', () => {
   const prefix = process.env.REACT_APP_BACKEND_URL || '';
-  expect(mediaLink('http://localhost:8000/uploads/BACKBOOK/test.webp')).toBe(
-    prefix + '/uploads/BACKBOOK/test.webp'
+  expect(mediaLink('http://localhost:8000/uploads/PTITSocial/test.webp')).toBe(
+    prefix + '/uploads/PTITSocial/test.webp'
   );
   expect(mediaLink('http://localhost:8000/api/v1/messages/files/example')).toBe(
     prefix + '/api/v1/messages/files/example'

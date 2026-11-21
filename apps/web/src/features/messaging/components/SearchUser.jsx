@@ -123,7 +123,7 @@ function SearchUser({ color, showSearchMenu, setShowSearchMenu }) {
                     <img className={classes.search_result_img} src={user.photo} alt="" />
                   </div>
                   <span>
-                    {user.first_name} {user.last_name}
+                    {user.last_name} {user.first_name}
                   </span>
                 </div>
               </div>

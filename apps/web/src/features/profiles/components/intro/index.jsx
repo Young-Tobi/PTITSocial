@@ -152,12 +152,6 @@ function Intro({ userData, isVisitor, showEdit, setShowEdit, profileSkelton }) {
               Đã học tại {details?.college}
             </div>
           )}
-          {details?.highSchool && (
-            <div className={classes.info_profile}>
-              <img src="../../../icons/studies.png" alt="" />
-              Đã học tại {details?.highSchool}
-            </div>
-          )}
           {details?.currentCity && (
             <div className={classes.info_profile}>
               <img src="../../../icons/home.png" alt="" />
@@ -168,18 +162,6 @@ function Intro({ userData, isVisitor, showEdit, setShowEdit, profileSkelton }) {
             <div className={classes.info_profile}>
               <img src="../../../icons/from.png" alt="" />
               Đến từ {details?.homeTown}
-            </div>
-          )}
-          {details?.instagram && (
-            <div className={classes.info_profile}>
-              <img src="../../../icons/instagram.png" alt="" />
-              <a
-                href={`https://www.instagram.com/${details?.instagram}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {details?.instagram}
-              </a>
             </div>
           )}
           {userData?.createdAt && (

@@ -39,7 +39,7 @@ export default function UserMenu({ user, setShowUserMenu }) {
         <img src={user?.photo} alt="" />
         <div className={styles.mmenu_col}>
           <span>
-            {user?.first_name} {user?.last_name}
+            {user?.last_name} {user?.first_name}
           </span>
           <span>Xem trang cá nhân</span>
         </div>

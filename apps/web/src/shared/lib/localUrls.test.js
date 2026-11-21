@@ -4,7 +4,7 @@ test('legacy media uses LAN origins while text and external links remain intact'
   const data = {
     photo: 'http://localhost:3000/images/default_pic.png',
     messages: [{ content: 'http://localhost:8000/api/v1/messages/files/123' }],
-    images: ['http://127.0.0.1:8000/uploads/BACKBOOK/photo.webp'],
+    images: ['http://127.0.0.1:8000/uploads/PTITSocial/photo.webp'],
     external: 'https://res.cloudinary.com/example/a.jpg',
     text: 'Read http://localhost:8000/uploads/notes',
     resource: 'https://docs.python.org/3/tutorial/',
@@ -12,7 +12,7 @@ test('legacy media uses LAN origins while text and external links remain intact'
   const result = normalizeLocalUrls(data, 'http://192.168.1.172:8000', 'http://192.168.1.172:3000');
   expect(result.photo).toBe('http://192.168.1.172:3000/images/default_pic.png');
   expect(result.messages[0].content).toBe('http://192.168.1.172:8000/api/v1/messages/files/123');
-  expect(result.images[0]).toBe('http://192.168.1.172:8000/uploads/BACKBOOK/photo.webp');
+  expect(result.images[0]).toBe('http://192.168.1.172:8000/uploads/PTITSocial/photo.webp');
   expect(result.external).toBe(data.external);
   expect(result.text).toBe('Read http://localhost:8000/uploads/notes');
   expect(result.resource).toBe('https://docs.python.org/3/tutorial/');

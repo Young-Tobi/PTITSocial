@@ -188,7 +188,7 @@ function CreateGroup({ setShowCreateGroup, showCreateGroup, type, chat }) {
                       {members.map((member) => (
                         <div className={styles.member} key={member._id}>
                           <img src={member.photo} alt="" />
-                          {`${member.first_name} ${member.last_name}`}
+                          {`${member.last_name} ${member.first_name}`}
                           <i
                             style={{
                               transform: 'scale(.8)',
@@ -244,7 +244,7 @@ function CreateGroup({ setShowCreateGroup, showCreateGroup, type, chat }) {
                                     />
                                   </div>
                                   <span>
-                                    {user.first_name} {user.last_name}
+                                    {user.last_name} {user.first_name}
                                   </span>
                                 </div>
                               </div>

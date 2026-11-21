@@ -116,7 +116,7 @@ function CreatePostPopup({ user }) {
                 <img src={user.photo} alt={user.name} className={classes.photo} />
                 <div className={classes.profile_1}>
                   <span className={classes.user_name}>
-                    {`${user.first_name} ${user.last_name}`}{' '}
+                    {`${user.last_name} ${user.first_name}`}{' '}
                   </span>
                   <button
                     type="button"

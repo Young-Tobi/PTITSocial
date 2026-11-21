@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import classes from './style.module.css';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import Post from 'features/posts/components/post/index';
@@ -36,6 +36,9 @@ function PostPage() {
   return (
     <div className={classes.post}>
       <div className={classes.container}>
+        <Link to="/" className={classes.back_link}>
+          <span aria-hidden="true">←</span> Quay lại bảng tin
+        </Link>
         {postsSkelton && <PostSkeleton />}
         {isSuccess && !isLoading && <Post post={data?.data.post} />}
       </div>

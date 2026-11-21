@@ -20,7 +20,6 @@ export default function LoginFooter() {
         <Link to="/">Thanh toán</Link>
         <Link to="/">Oculus</Link>
         <Link to="/">Portal</Link>
-        <Link to="/">Instagram</Link>
         <Link to="/">Bản tin</Link>
         <Link to="/">Địa phương</Link>
         <Link to="/">Gây quỹ</Link>

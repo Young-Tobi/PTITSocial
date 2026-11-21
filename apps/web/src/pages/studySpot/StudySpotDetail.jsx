@@ -157,7 +157,7 @@ export default function StudySpotDetail() {
                       <FiUsers /> Còn {item.maxParticipants - item.acceptedCount} suất đăng ký
                     </span>
                     <span>
-                      Tổ chức bởi {item.organizer?.first_name} {item.organizer?.last_name}
+                      Tổ chức bởi {item.organizer?.last_name} {item.organizer?.first_name}
                     </span>
                   </div>
                   <button onClick={() => request(item._id)}>Xin tham gia</button>
@@ -264,7 +264,7 @@ export default function StudySpotDetail() {
                 <img src={item.user?.photo} alt="" />
                 <div>
                   <b>
-                    {item.user?.first_name} {item.user?.last_name}
+                    {item.user?.last_name} {item.user?.first_name}
                   </b>
                   <span>{'★'.repeat(item.rating)}</span>
                   <p>{item.comment}</p>

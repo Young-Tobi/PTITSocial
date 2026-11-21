@@ -123,7 +123,7 @@ function PostLikes({ showLikes, setShowLikes, postID }) {
                     />
                   </div>
                   <span>
-                    {react.user.first_name} {react.user.last_name}
+                    {react.user.last_name} {react.user.first_name}
                     {react.user?.confirmed && (
                       <i
                         style={{

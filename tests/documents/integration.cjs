@@ -157,8 +157,8 @@ run(async ({ a, b, api, tag }) => {
       await page.waitForURL(site + '/');
       return page;
     }
-    const first = await pageFor(a.email, 'Backbook@123'),
-      second = await pageFor(b.email, 'Backbook@123'),
+    const first = await pageFor(a.email, 'PtitDemo@2026'),
+      second = await pageFor(b.email, 'PtitDemo@2026'),
       manager = await pageFor('admin@gmail.com', adminPassword);
     const errors = [];
     for (const p of [first, second, manager]) p.on('pageerror', (e) => errors.push(e.message));

@@ -51,7 +51,7 @@ export default function ForwardMessageModal({ message, currentChatId, onClose })
             .map((friend) => ({
               key: friend._id,
               userId: friend._id,
-              name: `${friend.first_name} ${friend.last_name}`,
+              name: `${friend.last_name} ${friend.first_name}`,
               photo: friend.photo,
             })),
         ]);

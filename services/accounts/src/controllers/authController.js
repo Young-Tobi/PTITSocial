@@ -6,6 +6,7 @@ const Friend = require('../models/friendsModel');
 const catchAsync = require('@ptitsocial/service-kit/catchAsync');
 const AppError = require('@ptitsocial/service-kit/appError');
 const Email = require('../utils/email');
+const verificationUrl = require('../utils/verificationUrl');
 const messagingStats = require('../clients/messagingClient');
 
 const authCookieOptions = () => ({
@@ -72,7 +73,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const verificationEmailToken = newUser.createVerificationEmailToken();
   await newUser.save({ validateBeforeSave: false });
-  const url = `${process.env.PUBLIC_APP_URL || process.env.FRONTEND_URL}/activate/${verificationEmailToken}`;
+  const url = verificationUrl(req, verificationEmailToken);
   await new Email(newUser, url).sendVerificationEmail();
 
   createSendToken({ user: newUser, statusCode: 200, res: res });
@@ -156,7 +157,7 @@ exports.resendEmailVerification = catchAsync(async (req, res, next) => {
 
   const verificationEmailToken = user.createVerificationEmailToken();
   await user.save({ validateBeforeSave: false });
-  const url = `${process.env.PUBLIC_APP_URL || process.env.FRONTEND_URL}/activate/${verificationEmailToken}`;
+  const url = verificationUrl(req, verificationEmailToken);
 
   await new Email(user, url).sendVerificationEmail();
   res.status(200).json({ status: 'success' });

@@ -160,7 +160,7 @@ run(async ({ a, b, c, api, tag }) => {
       page.on('pageerror', (error) => errors.push(error.message));
       await page.goto(site + '/login');
       await page.locator('[name=email]').fill(user.email);
-      await page.locator('[name=password]').fill('Backbook@123');
+      await page.locator('[name=password]').fill('PtitDemo@2026');
       await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
       await page.waitForURL(site + '/');
       await page.goto(site + target);

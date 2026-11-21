@@ -29,13 +29,9 @@ function EditArea({
           ref={editAreaRef}
           className={classes.select_rel}
           name={name}
-          value={infos.relationship}
+          value={infos?.relationship ?? ''}
           onChange={handleChange}
         >
-          <option value="" disabled defaultValue>
-            Chọn tình trạng
-          </option>
-
           <option value="Single">Độc thân</option>
           <option value="In a realationship">Đang hẹn hò</option>
           <option value="Married">Đã kết hôn</option>
@@ -50,7 +46,7 @@ function EditArea({
             direction: `${isRTL(infos?.[name]) ? 'rtl' : 'ltr'}`,
           }}
           placeholder={placeholder}
-          value={infos?.[name]}
+          value={infos?.[name] ?? ''}
           onChange={handleChange}
           className={classes.textarea_blue}
           maxLength={max}

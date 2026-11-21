@@ -79,6 +79,22 @@ function Left({ soketSlice, user, chatId }) {
     getChat({ user: id });
   };
 
+  const { data: friendsData, isLoading: isFriendsLoading } = useQuery({
+    queryKey: ['getFriendsPage'],
+    queryFn: async () =>
+      (
+        await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/friends/friendsPage`, {
+          withCredentials: true,
+        })
+      ).data,
+  });
+  const friendIds = new Set(
+    (friendsData?.data.friendLists || []).filter(Boolean).map((friend) => friend._id)
+  );
+  const onlineFriends = soketSlice.onlineUsers.filter(
+    (onlineUser) => onlineUser.id !== user._id && friendIds.has(onlineUser.id)
+  );
+
   return (
     <div className={styles.left}>
       <div className={styles.left_header}>
@@ -149,13 +165,10 @@ function Left({ soketSlice, user, chatId }) {
           setShowSearchMenu={setShowSearchMenu}
         />
       )}
-      <div className={styles.online_users_wrap}>
+      <section className={styles.online_users_wrap} aria-label="Bạn bè đang hoạt động">
         <ScrollContainer>
           <div className={styles.online_users}>
-            {soketSlice.onlineUsers.length > 0 &&
-              soketSlice.onlineUsers
-                .filter((onlineUser) => onlineUser.id !== user._id)
-                .map((user) => (
+            {onlineFriends.map((user) => (
                   <div
                     key={user.id}
                     className={styles.online_user}
@@ -172,7 +185,12 @@ function Left({ soketSlice, user, chatId }) {
                 ))}
           </div>
         </ScrollContainer>
-      </div>
+        {!isFriendsLoading && !onlineFriends.length && (
+          <p style={{ padding: '0 16px', color: 'var(--color-secondary)', fontSize: 13 }}>
+            Chưa có bạn bè đang hoạt động.
+          </p>
+        )}
+      </section>
       <div className="scrollbar" style={{ maxHeight: '90%' }}>
         <div className={styles.chats}>
           {!isChatLoading && isChatSuccess && chatsData ? (

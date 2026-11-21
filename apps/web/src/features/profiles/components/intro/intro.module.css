@@ -27,7 +27,8 @@
   text-align: center;
   margin-bottom: 10px;
   width: 100%;
-  word-break: break-all;
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 .edit_btn {
   width: 100%;

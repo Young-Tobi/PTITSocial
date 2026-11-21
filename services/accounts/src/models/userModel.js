@@ -180,7 +180,7 @@ const userSchema = new mongoose.Schema(
       },
       otherName: {
         type: String,
-        maxlength: 25,
+        maxlength: 100,
         trim: true,
       },
       job: {
@@ -189,10 +189,6 @@ const userSchema = new mongoose.Schema(
       },
       workplace: {
         type: String,
-      },
-      highSchool: {
-        type: String,
-        trim: true,
       },
       college: {
         type: String,
@@ -209,10 +205,6 @@ const userSchema = new mongoose.Schema(
       relationship: {
         type: String,
         enum: ['Single', 'In a realationship', 'Married', 'Divorced', ''],
-      },
-      instagram: {
-        type: String,
-        trim: true,
       },
     },
   },

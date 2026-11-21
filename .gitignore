@@ -2,6 +2,9 @@ node_modules/
 **/node_modules/
 .env
 .env.local
+.env.*
+**/.env.*
+!**/.env.example
 **/.env
 **/.env.local
 .local-logs/
@@ -17,3 +20,5 @@ apps/web/public/monaco/
 *.log
 
 services/content/private-documents/
+/BaoCao/
+/legacy/

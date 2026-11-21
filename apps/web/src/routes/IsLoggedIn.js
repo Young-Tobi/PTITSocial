@@ -100,7 +100,7 @@ export default function IsLoggedIn({ user }) {
                 sender: newMessage.sender,
                 type: 'message',
                 click: `/messages/${newMessage.chat}`,
-                content: `${newMessage.sender.first_name} ${newMessage.sender.last_name} sent you a message`,
+                content: `${newMessage.sender.last_name} ${newMessage.sender.first_name} sent you a message`,
                 createdAt: newMessage.createdAt,
               }}
             />

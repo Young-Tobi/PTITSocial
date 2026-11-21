@@ -27,11 +27,15 @@ function Header() {
   const input = useRef();
   const [showIcon, setShowIcon] = useState(true);
   const [showSearchMenu, setShowSearchMenu] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const searchArea = useRef(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotificationMenu, setShowNotificationMenu] = useState(false);
   const usermenu = useRef(null);
   const notificationmenu = useRef(null);
   const location = useLocation();
+
+  useOnClickOutside(searchArea, showSearchMenu, () => setShowSearchMenu(false));
 
   useOnClickOutside(usermenu, showUserMenu, () => {
     setShowUserMenu(false);
@@ -49,34 +53,48 @@ function Header() {
           <Brand compact />
         </Link>
         <div
-          className={styles.search}
-          onClick={() => {
-            input.current.focus();
-            setShowSearchMenu(true);
+          className={styles.search_anchor}
+          ref={searchArea}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') setShowSearchMenu(false);
           }}
         >
-          {showIcon && <Search color={color} />}
-          <input
-            ref={input}
-            type="text"
-            name="search"
-            placeholder="Tìm kiếm trên PTITSocial"
-            className={styles.input}
-            onFocus={() => {
-              setShowIcon(false);
+          <div
+            className={styles.search}
+            onClick={() => {
+              input.current.focus();
               setShowSearchMenu(true);
             }}
-            onBlur={() => setShowIcon(true)}
-          />
+          >
+            {showIcon && <Search color={color} />}
+            <input
+              ref={input}
+              type="text"
+              name="search"
+              placeholder="Tìm kiếm trên PTITSocial"
+              aria-label="Tìm kiếm người dùng"
+              aria-expanded={showSearchMenu}
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              className={styles.input}
+              onFocus={() => {
+                setShowIcon(false);
+                setShowSearchMenu(true);
+              }}
+              onBlur={() => setShowIcon(true)}
+            />
+          </div>
+          {showSearchMenu && (
+            <SearchMenu
+              color={color}
+              showSearchMenu={showSearchMenu}
+              setShowSearchMenu={setShowSearchMenu}
+              term={searchTerm}
+              setTerm={setSearchTerm}
+            />
+          )}
         </div>
       </div>
-      {showSearchMenu && (
-        <SearchMenu
-          color={color}
-          showSearchMenu={showSearchMenu}
-          setShowSearchMenu={setShowSearchMenu}
-        />
-      )}
       <div className={styles.middle}>
         <NavLink
           to="/"

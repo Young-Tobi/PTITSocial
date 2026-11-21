@@ -178,7 +178,7 @@ function SendMessage({
           <FiCornerUpLeft />
           <div>
             <strong>
-              Đang trả lời {replyTo.sender?.first_name} {replyTo.sender?.last_name}
+              Đang trả lời {replyTo.sender?.last_name} {replyTo.sender?.first_name}
             </strong>
             <span>{messagePreview(replyTo)}</span>
           </div>

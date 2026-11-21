@@ -12,3 +12,17 @@
   width: 100%;
   max-width: 590px;
 }
+.back_link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+.back_link:hover {
+  background: var(--bg-third);
+}

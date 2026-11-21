@@ -33,8 +33,8 @@ async function account(index, names = {}) {
       last_name: 'Student' + index,
       ...names,
       email,
-      password: 'Backbook@123',
-      passwordConfirm: 'Backbook@123',
+      password: 'PtitDemo@2026',
+      passwordConfirm: 'PtitDemo@2026',
       gender: 'male',
       birth_Year: 2003,
       birth_Month: 1,
@@ -551,8 +551,8 @@ async function passwordResetRegression(user) {
       first_name: 'Test',
       last_name: 'Student',
       email: user.email,
-      password: 'Backbook@123',
-      passwordConfirm: 'Backbook@123',
+      password: 'PtitDemo@2026',
+      passwordConfirm: 'PtitDemo@2026',
       gender: 'male',
       birth_Year: 2003,
       birth_Month: 1,
@@ -591,7 +591,7 @@ async function passwordResetRegression(user) {
   const changed = await api('PATCH', '/api/v1/users/resetPassword', { body });
   assert.equal(changed.data.user._id, user._id);
   await api('POST', '/api/v1/users/login', {
-    body: { email: user.email, password: 'Backbook@123' },
+    body: { email: user.email, password: 'PtitDemo@2026' },
     expected: 401,
   });
   await api('POST', '/api/v1/users/login', {

@@ -12,7 +12,7 @@ test('gateway routes each public capability to its data owner', () => {
     ['/api/v1/users/getProfile/minhanh/posts', 'content'],
     ['/api/v1/users/getProfile/minhanh/photos', 'content'],
     ['/api/v1/posts/createPost', 'content'],
-    ['/uploads/BACKBOOK/example.webp', 'content'],
+    ['/uploads/PTITSocial/example.webp', 'content'],
     ['/api/v1/users/notifications', 'messaging'],
     ['/api/v1/users/notifications/123/seen', 'messaging'],
     ['/api/v1/chats', 'messaging'],

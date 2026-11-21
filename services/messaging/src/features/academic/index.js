@@ -26,7 +26,7 @@ module.exports = function registerAcademicNotifications(app, sync) {
       await sync.sync();
       const sender = await User.findById(payload.sender._id);
       if (!sender) throw new AppError('Sender not found', 404);
-      const name = [sender.first_name, sender.last_name].filter(Boolean).join(' ');
+      const name = [sender.last_name, sender.first_name].filter(Boolean).join(' ');
       await Notification.init();
       let notification;
       try {

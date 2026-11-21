@@ -31,7 +31,7 @@ export default function CommunityPanel() {
           <Link key={_id} to={`/profile/${sender.username}`} className={styles.person}>
             <img src={sender.photo} alt="" />
             <span>
-              {sender.first_name} {sender.last_name}
+              {sender.last_name} {sender.first_name}
               <small>Muốn kết bạn với bạn</small>
             </span>
           </Link>
@@ -58,7 +58,7 @@ export default function CommunityPanel() {
               <i />
             </div>
             <span>
-              {friend.first_name} {friend.last_name}
+              {friend.last_name} {friend.first_name}
             </span>
           </Link>
         ))}

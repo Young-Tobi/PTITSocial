@@ -26,7 +26,7 @@ Cookies.remove('token');
 delete axios.defaults.headers.common.Authorization;
 axios.defaults.withCredentials = true;
 
-const root = ReactDOMClient.createRoot(document.getElementById('backbook'));
+const root = ReactDOMClient.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
     <BrowserRouter>

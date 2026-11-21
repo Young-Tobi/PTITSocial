@@ -17,7 +17,7 @@ Tạo hai đề mẫu công khai:
 node scripts/seed-quiz.cjs
 ```
 
-Script dùng tài khoản demo có sẵn `an@example.com` / `Backbook@123`, không tạo tài khoản và không ghi đè đề cùng tên. Máy mới: đăng ký, xác minh qua Mailpit rồi đặt `QUIZ_SEED_EMAIL` và `QUIZ_SEED_PASSWORD`. Người chơi thử trên máy hiện tại có thể dùng `binh@example.com` / `Backbook@123`.
+Script dùng tài khoản đã đăng ký và xác minh, không tạo tài khoản và không ghi đè đề cùng tên. Đặt `QUIZ_SEED_EMAIL` và `QUIZ_SEED_PASSWORD` bằng thông tin tài khoản thử của chính bạn trước khi chạy. Người chơi cần các tài khoản riêng, đã xác minh email.
 
 ## Tạo bộ đề nhanh
 
@@ -80,21 +80,21 @@ npm.cmd run test:quiz:import
 
 Tiền tố `/api/v1/quiz`, cần tài khoản đã xác minh. Response `{ status: 'success', data: ... }`.
 
-| Method | Đường dẫn | Chức năng |
-| --- | --- | --- |
-| GET / POST | `/quizzes` | Liệt kê/tạo; GET có `view=mine/discover`, `status=draft/ready`, `search` |
-| GET / PUT / DELETE | `/quizzes/:quizId` | Đọc để sửa/cập nhật/xóa mềm đề của mình |
-| POST | `/rooms` | `{ quizId, maxPlayers, shuffleOptions, speedBonus }` |
-| POST | `/rooms/join` | `{ code }` |
-| GET | `/rooms/:roomId` | Trạng thái theo quyền host/player |
-| POST | `/rooms/:roomId/start` | Host bắt đầu |
-| POST | `/rooms/:roomId/answer` | `{ questionId, selectedIndices: [0,1] }`; ID theo `options[].id`; vẫn hỗ trợ `selectedIndex` cũ |
-| POST | `/rooms/:roomId/next` | `{ questionId }` |
-| POST | `/rooms/:roomId/end` | Host hủy/dừng |
-| POST | `/rooms/:roomId/leave` | Người chơi chủ động rời; host dùng `/end` |
-| DELETE | `/rooms/:roomId/players/:userId` | Loại người khi chờ |
-| GET | `/rooms/:roomId/results` | Kết quả của mình; host chọn `?userId=...` |
-| GET | `/history` | Phòng mình tạo/tham gia |
+| Method             | Đường dẫn                        | Chức năng                                                                                       |
+| ------------------ | -------------------------------- | ----------------------------------------------------------------------------------------------- |
+| GET / POST         | `/quizzes`                       | Liệt kê/tạo; GET có `view=mine/discover`, `status=draft/ready`, `search`                        |
+| GET / PUT / DELETE | `/quizzes/:quizId`               | Đọc để sửa/cập nhật/xóa mềm đề của mình                                                         |
+| POST               | `/rooms`                         | `{ quizId, maxPlayers, shuffleOptions, speedBonus }`                                            |
+| POST               | `/rooms/join`                    | `{ code }`                                                                                      |
+| GET                | `/rooms/:roomId`                 | Trạng thái theo quyền host/player                                                               |
+| POST               | `/rooms/:roomId/start`           | Host bắt đầu                                                                                    |
+| POST               | `/rooms/:roomId/answer`          | `{ questionId, selectedIndices: [0,1] }`; ID theo `options[].id`; vẫn hỗ trợ `selectedIndex` cũ |
+| POST               | `/rooms/:roomId/next`            | `{ questionId }`                                                                                |
+| POST               | `/rooms/:roomId/end`             | Host hủy/dừng                                                                                   |
+| POST               | `/rooms/:roomId/leave`           | Người chơi chủ động rời; host dùng `/end`                                                       |
+| DELETE             | `/rooms/:roomId/players/:userId` | Loại người khi chờ                                                                              |
+| GET                | `/rooms/:roomId/results`         | Kết quả của mình; host chọn `?userId=...`                                                       |
+| GET                | `/history`                       | Phòng mình tạo/tham gia                                                                         |
 
 Gateway chuyển `/quiz-socket/` tới Quiz :8004. Client phát `room:subscribe` với `{roomId}`, nhận `room:updated` rồi tải lại dữ liệu theo quyền. Có polling dự phòng mỗi 2 giây. Chat tiếp tục dùng `/socket.io/`.
 

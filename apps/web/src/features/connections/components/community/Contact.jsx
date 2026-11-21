@@ -7,7 +7,7 @@ export default function Contact({ user }) {
         <img src={user.photo} alt="" />
       </div>
       <span>
-        {user.first_name} {user.last_name}
+        {user.last_name} {user.first_name}
       </span>
     </div>
   );

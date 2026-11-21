@@ -17,7 +17,7 @@ module.exports = class Notification {
         title: 'PTITSocial',
         body: body,
         click_action: click,
-        icon: 'https://res.cloudinary.com/dcu2kxr5x/image/upload/v1672997573/BACKBOOK/assets/backbooklogo_on8xru.svg',
+        icon: `${process.env.PUBLIC_APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000'}/icons/ptitsocial.svg`,
       },
     };
 

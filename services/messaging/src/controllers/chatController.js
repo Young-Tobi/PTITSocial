@@ -47,6 +47,8 @@ exports.getChats = catchAsync(async (req, res, next) => {
 
   let filter = {
     users: { $elemMatch: { $eq: req.user._id } },
+    // Opening someone's profile/chat should not add an empty private conversation to history.
+    $or: [{ type: 'group' }, { latestMessage: { $ne: null } }],
   };
   const features = new APIFeatures(
     Chat.find(filter).populate({
@@ -68,10 +70,10 @@ exports.getChats = catchAsync(async (req, res, next) => {
     });
     if (obj.type === 'private') {
       obj.photo = obj.users[0].photo;
-      obj.chatName = `${obj.users[0].first_name} ${obj.users[0].last_name}`;
+      obj.chatName = `${obj.users[0].last_name} ${obj.users[0].first_name}`;
     } else if (obj.type === 'group' && !obj.photo) {
       obj.photo =
-        'https://res.cloudinary.com/dcu2kxr5x/image/upload/v1675105115/BACKBOOK/assets/group_fu7eoo.png';
+        '/images/group-avatar.svg';
     }
     return obj;
   });
@@ -100,7 +102,7 @@ exports.createGroupChat = catchAsync(async (req, res, next) => {
     users,
     groupAdmin: user,
     photo:
-      'https://res.cloudinary.com/dcu2kxr5x/image/upload/v1675105115/BACKBOOK/assets/group_fu7eoo.png',
+      '/images/group-avatar.svg',
   });
 
   await newGroupChat.save();
@@ -230,7 +232,7 @@ exports.changeTheme = catchAsync(async (req, res, next) => {
     status: 'success',
     data: {
       theme: existingChat.theme,
-      name: `${req.user.first_name} ${req.user.last_name}`,
+      name: `${req.user.last_name} ${req.user.first_name}`,
       user: req.user.id,
     },
   });

@@ -49,7 +49,7 @@ export function Person({ author, time }) {
     <p className={styles.person}>
       {author ? (
         <Link to={'/profile/' + author.username}>
-          {author.first_name} {author.last_name}
+          {author.last_name} {author.first_name}
         </Link>
       ) : (
         'Tài khoản không còn khả dụng'

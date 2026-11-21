@@ -53,7 +53,7 @@ exports.create = async (req, res) => {
   const quiz = await Quiz.create({
     ...normalizeQuiz(req.body),
     ownerId: req.user.id,
-    ownerName: `${req.user.first_name} ${req.user.last_name}`,
+    ownerName: `${req.user.last_name} ${req.user.first_name}`,
   });
   res.status(201).json({ status: 'success', data: { quiz } });
 };

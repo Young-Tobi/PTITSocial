@@ -110,7 +110,7 @@ function Right({
                       </Link>
 
                       <div className={styles.group_member_info} style={{ flex: '1' }}>
-                        <span>{`${member.first_name} ${member.last_name}`}</span>
+                        <span>{`${member.last_name} ${member.first_name}`}</span>
                         <span className={styles.group_member_info2}>
                           {chat?.groupAdmin?._id === member._id ? 'Quản trị viên nhóm' : 'Member'}
                         </span>

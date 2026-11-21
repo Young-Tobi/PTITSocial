@@ -1,12 +1,14 @@
 // Optional local fixtures. Uses the existing demo account; never creates or edits accounts.
 const base = process.env.API_URL || 'http://localhost:8000';
 async function main() {
+  if (!process.env.QUIZ_SEED_EMAIL || !process.env.QUIZ_SEED_PASSWORD)
+    throw Error('Đặt QUIZ_SEED_EMAIL và QUIZ_SEED_PASSWORD bằng tài khoản đã đăng ký và xác minh.');
   const login = await fetch(base + '/api/v1/users/login', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
-      email: process.env.QUIZ_SEED_EMAIL || 'an@example.com',
-      password: process.env.QUIZ_SEED_PASSWORD || 'Backbook@123',
+      email: process.env.QUIZ_SEED_EMAIL,
+      password: process.env.QUIZ_SEED_PASSWORD,
     }),
   });
   const session = await login.json();

@@ -35,7 +35,7 @@ export const useAddMember = (chat) => {
       });
 
       sendMessage({
-        content: `${user.first_name} ${user.last_name} đã được thêm vào nhóm`,
+        content: `${user.last_name} ${user.first_name} đã được thêm vào nhóm`,
         type: 'info',
         chatId: chat._id,
       });

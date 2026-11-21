@@ -4,7 +4,7 @@
 
 Đưa toàn bộ thư mục gốc lên một repository GitHub. Không tạo repository riêng cho mỗi service. Monorepo giữ cùng phiên bản frontend, Gateway và các dịch vụ, giúp mọi người clone rồi chạy cả hệ thống.
 
-Repository nhóm là [Young-Tobi/PTITSocial](https://github.com/Young-Tobi/PTITSocial), chế độ private. Base được lưu trên nhánh `main`; chủ repo cần mời ba thành viên còn lại để họ có quyền truy cập.
+Repository nhóm là [Young-Tobi/PTITSocial](https://github.com/Young-Tobi/PTITSocial). Nhánh `main` là bản dùng chung; thành viên phát triển trên nhánh riêng và trao đổi qua Pull Request. Chủ repo cấp quyền cộng tác cho các thành viên cần push.
 
 Các lệnh sau chỉ để tham khảo khi khởi tạo một repo khác; không chạy lại bước tạo commit/remote ban đầu cho repo này:
 

@@ -25,13 +25,13 @@ flowchart LR
 
 ## Quyền sở hữu
 
-| Dịch vụ   | Dữ liệu được ghi                           | Nhiệm vụ                                                                |
-| --------- | ------------------------------------------ | ----------------------------------------------------------------------- |
-| Accounts  | `users`, `friends`, `follows`              | Tài khoản, mật khẩu, xác minh email, hồ sơ, tìm kiếm và quan hệ kết nối |
-| Content   | `posts`, `comments`, `reactions`, file ảnh | Bảng tin, bài viết, tương tác và ảnh hồ sơ/bài viết                     |
-| Messaging | `chats`, `messages`, `notifications`       | Hội thoại, tin nhắn, thông báo và trạng thái online                     |
-| Quiz      | `quizzes`, `quizrooms`, `quizattempts`      | Bộ đề, phòng trực tiếp, tiến độ, điểm và lịch sử                       |
-| Coding | `codingproblems`, `codingrooms`, `codingsubmissions` | Phòng thi lập trình, bài nộp, test ẩn và xếp hạng |
+| Dịch vụ   | Dữ liệu được ghi                                     | Nhiệm vụ                                                                |
+| --------- | ---------------------------------------------------- | ----------------------------------------------------------------------- |
+| Accounts  | `users`, `friends`, `follows`                        | Tài khoản, mật khẩu, xác minh email, hồ sơ, tìm kiếm và quan hệ kết nối |
+| Content   | `posts`, `comments`, `reactions`, file ảnh           | Bảng tin, bài viết, tương tác và ảnh hồ sơ/bài viết                     |
+| Messaging | `chats`, `messages`, `notifications`                 | Hội thoại, tin nhắn, thông báo và trạng thái online                     |
+| Quiz      | `quizzes`, `quizrooms`, `quizattempts`               | Bộ đề, phòng trực tiếp, tiến độ, điểm và lịch sử                        |
+| Coding    | `codingproblems`, `codingrooms`, `codingsubmissions` | Phòng thi lập trình, bài nộp, test ẩn và xếp hạng                       |
 
 Gateway chỉ chuyển request, không có model Mongoose và không truy cập database. Dịch vụ dùng thư viện kỹ thuật chung nhưng không import controller/model thuộc dịch vụ khác.
 
@@ -64,10 +64,8 @@ Gateway trả `503` khi không gọi được dịch vụ đích. `/health` củ
 
 Quiz dùng Socket.IO riêng `/quiz-socket/`, chat giữ `/socket.io/`. Quiz lưu bản chụp đề và bài làm, không đọc database Accounts. Xem [quy tắc và giới hạn Quiz](QUIZ.md).
 
-## Chuyển dữ liệu và khôi phục
+## Dữ liệu khi cài mới
 
-`scripts/migrate-legacy.cjs` giữ nguyên các ID để liên kết cũ vẫn đúng, không ghi đè bản ghi mới đã tồn tại và không sửa database `backbook`. JWT secret local cũ được giữ khi tạo cấu hình lần đầu để phiên đăng nhập hiện có không bị mất chỉ vì đổi kiến trúc.
+Mỗi máy chạy MongoDB local với các database `ptitsocial_*` theo từng dịch vụ. Tài khoản được tạo qua giao diện và xác minh email trong Mailpit. Dữ liệu nằm trong Docker volume, ảnh và tệp nằm trong các thư mục upload/private-documents đã được loại khỏi Git.
 
-Các file backend cũ nằm trong `legacy/backbook-server`. Không chạy bản cũ cùng Gateway vì trùng cổng 8000. Database cũ là mốc sao lưu tại thời điểm chuyển; các thao tác mới không tự ghi ngược về đó.
-
-Metadata Git của hai checkout gốc được giữ trong `.local-backups/repositories/`. Thư mục gốc dùng một repository Git cho monorepo trên nhánh `main`; các thư mục con không còn là repository lồng nhau.
+`stop-local.ps1` dừng hệ thống mà vẫn giữ dữ liệu. Khi chuyển máy, cần sao lưu và khôi phục cả MongoDB lẫn tệp đính kèm; clone repository chỉ mang mã nguồn và cấu hình mẫu.

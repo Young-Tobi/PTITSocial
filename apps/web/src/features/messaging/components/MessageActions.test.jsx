@@ -109,8 +109,8 @@ test('forward picker lists conversations, creates a conversation for a friend, a
     render(<ForwardMessageModal message={original} currentChatId="current" onClose={() => {}} />);
   });
   expect(screen.getByText('Nhóm học tập')).toBeInTheDocument();
-  expect(screen.getByText('An Trần')).toBeInTheDocument();
-  fireEvent.change(screen.getByRole('textbox'), { target: { value: 'An Tran' } });
+  expect(screen.getByText('Trần An')).toBeInTheDocument();
+  fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Tran An' } });
   expect(screen.queryByText('Nhóm học tập')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Gửi' }));
   await waitFor(() =>

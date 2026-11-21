@@ -213,7 +213,7 @@ function Profile() {
                   </div>
                 ) : (
                   <h1 className={classes.name}>
-                    {`${userData?.first_name} ${userData?.last_name}`}
+                    {`${userData?.last_name} ${userData?.first_name}`}
                     {userData?.confirmed && (
                       <i style={{ marginLeft: '10px' }} className="confirmed_icon" />
                     )}

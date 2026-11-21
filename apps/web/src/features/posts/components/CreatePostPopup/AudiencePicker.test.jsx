@@ -39,17 +39,17 @@ test('offers three audiences and immediately lists accepted friends when selecte
   });
   expect(screen.getAllByRole('radio')).toHaveLength(3);
   fireEvent.click(screen.getByRole('radio', { name: /Bạn bè được chọn/ }));
-  expect(await screen.findByRole('checkbox', { name: /Bình Nguyễn/ })).toBeInTheDocument();
+  expect(await screen.findByRole('checkbox', { name: /Nguyễn Bình/ })).toBeInTheDocument();
   expect(axios.get).toHaveBeenCalledWith(
     expect.stringContaining('/friends/friendsPage'),
     expect.any(Object)
   );
   expect(screen.getByRole('button', { name: 'Xong' })).toBeDisabled();
-  fireEvent.click(screen.getByRole('checkbox', { name: /Bình Nguyễn/ }));
+  fireEvent.click(screen.getByRole('checkbox', { name: /Nguyễn Bình/ }));
   expect(screen.getByRole('button', { name: 'Xong' })).toBeEnabled();
   expect(screen.getByText('Đã chọn 1/100')).toBeInTheDocument();
   fireEvent.change(screen.getByRole('textbox'), { target: { value: 'binh' } });
-  expect(screen.getByRole('checkbox', { name: /Bình Nguyễn/ })).toBeChecked();
+  expect(screen.getByRole('checkbox', { name: /Nguyễn Bình/ })).toBeChecked();
   expect(axios.get).toHaveBeenCalledTimes(1);
 });
 

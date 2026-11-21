@@ -79,7 +79,7 @@ export default function MyMeetups() {
                     <div key={request._id}>
                       <img src={request.user?.photo} alt="" />
                       <span>
-                        {request.user?.first_name} {request.user?.last_name}{' '}
+                        {request.user?.last_name} {request.user?.first_name}{' '}
                         {request.status === 'accepted' ? '· Đã duyệt' : ''}
                       </span>
                       {request.status === 'pending' && (

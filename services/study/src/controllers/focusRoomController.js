@@ -180,7 +180,7 @@ exports.createLiveKitToken = catchAsync(async (req, res, next) => {
   if (!room) return next(new AppError('Focus room is not available', 404));
   const token = new AccessToken(process.env.LIVEKIT_API_KEY, process.env.LIVEKIT_API_SECRET, {
     identity: String(req.user.id),
-    name: `${req.user.first_name} ${req.user.last_name}`.trim(),
+    name: `${req.user.last_name} ${req.user.first_name}`.trim(),
     ttl: '1m',
   });
   token.addGrant({

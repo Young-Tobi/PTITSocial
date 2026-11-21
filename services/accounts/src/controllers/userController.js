@@ -226,7 +226,7 @@ exports.searchUsers = catchAsync(async (req, res, next) => {
           {
             $expr: {
               $regexMatch: {
-                input: { $concat: ['$first_name', ' ', '$last_name'] },
+                input: { $concat: ['$last_name', ' ', '$first_name'] },
                 regex: pattern,
                 options: 'i',
               },

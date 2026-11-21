@@ -22,7 +22,7 @@ test('a share can become unavailable after a refresh without breaking hooks', ()
     </MemoryRouter>
   );
   expect(screen.getByText('Nội dung bài gốc')).toBeTruthy();
-  expect(screen.getByText('An Nguyễn').getAttribute('href')).toBe('/profile/annguyen');
+  expect(screen.getByText('Nguyễn An').getAttribute('href')).toBe('/profile/annguyen');
   rerender(
     <MemoryRouter>
       <SharedPost post={null} />

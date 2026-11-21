@@ -8,22 +8,22 @@ Tài liệu này dựa trên code hiện tại và README tại tag `BASE`. Hai 
 >
 > Trên phần nền đó, em tích hợp góc học tập gồm hai chức năng. Roadmap thường cung cấp sáu lộ trình dựa trên các nguồn roadmap.sh đã chọn, cho phép xem sơ đồ và lưu tiến độ cá nhân. Learn with AI dùng Gemini để tạo lộ trình hoặc hướng dẫn theo mục tiêu người dùng và hỗ trợ hỏi tiếp theo ngữ cảnh.
 
-Nói rõ phần nền được kế thừa từ code nhóm và nguồn tham khảo Backbook ghi trong README. Khi giới thiệu phần đóng góp, chỉ vào các file và hành vi mình thực sự hiểu, đã chỉnh sửa hoặc tích hợp. `BASE` là tên mốc Git đã lưu trước khi thêm phần học tập, không phải tên một framework.
+Khi giới thiệu đóng góp cá nhân, chỉ vào các file và hành vi mình thực sự hiểu, đã chỉnh sửa hoặc tích hợp; phân biệt phần việc cá nhân với phần việc chung của nhóm. `BASE` là tên mốc Git đã lưu trước khi thêm phần học tập, không phải tên một framework.
 
 ## 2. Những kiến thức cần học trước
 
-| Thứ tự | Kiến thức | Cần tự giải thích được | Đọc trong project |
-|---|---|---|---|
-| 1 | HTML, CSS, JavaScript | Thẻ giao diện, bố cục, sự kiện click, mảng/object, hàm, import/export, Promise và async/await | Một component đơn giản trong `apps/web/src/pages/` |
-| 2 | React | Component nhận props, state làm giao diện thay đổi, useEffect làm việc với hệ thống bên ngoài, render danh sách cần key | `apps/web/src/pages/learning/Roadmaps.jsx` |
-| 3 | HTTP, API và JSON | Trình duyệt gửi request tới URL; method, body, status và response là gì | `services/gateway/src/routes.js` |
-| 4 | Node.js, Express | Node chạy JavaScript ở server; Express định nghĩa route và middleware | `services/learning/src/server.js` |
-| 5 | MongoDB, Mongoose | Document, collection, ObjectId; schema và truy vấn find/findOneAndUpdate | `services/learning/src/models.js` |
-| 6 | Xác thực và phân quyền | Đăng nhập xác định ai đang gọi; phân quyền kiểm tra người đó được làm gì | `packages/service-kit/src/auth.js` |
-| 7 | Lưu và tải state | Phân biệt state giao diện, dữ liệu server và dữ liệu bền vững trong DB | React Query trong trang Learning; Redux trong `apps/web/src/app/` |
-| 8 | Realtime | Socket.IO chuyển sự kiện đến các client đang kết nối; DB vẫn lưu tin nhắn | `services/messaging/src/utils/socket.js` |
-| 9 | AI qua API | Backend gửi ngữ cảnh tới dịch vụ mô hình, nhận kết quả và kiểm tra dữ liệu | `services/learning/src/provider.js` |
-| 10 | Embedding và RAG | Vector biểu diễn nội dung, tìm các mục gần nghĩa rồi bổ sung vào yêu cầu cho Gemini | `services/learning/src/retrieval.js` |
+| Thứ tự | Kiến thức              | Cần tự giải thích được                                                                                                  | Đọc trong project                                                 |
+| ------ | ---------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 1      | HTML, CSS, JavaScript  | Thẻ giao diện, bố cục, sự kiện click, mảng/object, hàm, import/export, Promise và async/await                           | Một component đơn giản trong `apps/web/src/pages/`                |
+| 2      | React                  | Component nhận props, state làm giao diện thay đổi, useEffect làm việc với hệ thống bên ngoài, render danh sách cần key | `apps/web/src/pages/learning/Roadmaps.jsx`                        |
+| 3      | HTTP, API và JSON      | Trình duyệt gửi request tới URL; method, body, status và response là gì                                                 | `services/gateway/src/routes.js`                                  |
+| 4      | Node.js, Express       | Node chạy JavaScript ở server; Express định nghĩa route và middleware                                                   | `services/learning/src/server.js`                                 |
+| 5      | MongoDB, Mongoose      | Document, collection, ObjectId; schema và truy vấn find/findOneAndUpdate                                                | `services/learning/src/models.js`                                 |
+| 6      | Xác thực và phân quyền | Đăng nhập xác định ai đang gọi; phân quyền kiểm tra người đó được làm gì                                                | `packages/service-kit/src/auth.js`                                |
+| 7      | Lưu và tải state       | Phân biệt state giao diện, dữ liệu server và dữ liệu bền vững trong DB                                                  | React Query trong trang Learning; Redux trong `apps/web/src/app/` |
+| 8      | Realtime               | Socket.IO chuyển sự kiện đến các client đang kết nối; DB vẫn lưu tin nhắn                                               | `services/messaging/src/utils/socket.js`                          |
+| 9      | AI qua API             | Backend gửi ngữ cảnh tới dịch vụ mô hình, nhận kết quả và kiểm tra dữ liệu                                              | `services/learning/src/provider.js`                               |
+| 10     | Embedding và RAG       | Vector biểu diễn nội dung, tìm các mục gần nghĩa rồi bổ sung vào yêu cầu cho Gemini                                     | `services/learning/src/retrieval.js`                              |
 
 Với `async/await`, hãy hiểu ví dụ: `await axios.get(...)` đợi kết quả của lời gọi đó trước khi chạy các dòng tiếp theo trong hàm. Trong lúc chờ mạng, giao diện có thể hiển thị trạng thái đang tải. Đừng giải thích rằng `await` làm toàn bộ website ngừng xử lý mọi người dùng.
 
@@ -159,10 +159,10 @@ Danh mục không đổi thì không cần nhúng lại mỗi lần. Code tạo 
 
 ### Roadmap và Guide khác nhau ở dữ liệu nào?
 
-| Chế độ | Kết quả chính | Cách hiển thị |
-|---|---|---|
-| Roadmap | `roadmap.title`, `summary`, `milestones`, `tasks` và `answer` | Sơ đồ và danh sách nhiệm vụ; lưu trạng thái hoàn thành |
-| Guide | Toàn bộ bài trong `answer`; `roadmap` là `null` | Bài đọc Markdown, tiêu đề, danh sách, ví dụ code và nút copy |
+| Chế độ  | Kết quả chính                                                 | Cách hiển thị                                                |
+| ------- | ------------------------------------------------------------- | ------------------------------------------------------------ |
+| Roadmap | `roadmap.title`, `summary`, `milestones`, `tasks` và `answer` | Sơ đồ và danh sách nhiệm vụ; lưu trạng thái hoàn thành       |
+| Guide   | Toàn bộ bài trong `answer`; `roadmap` là `null`               | Bài đọc Markdown, tiêu đề, danh sách, ví dụ code và nút copy |
 
 Roadmap tạo mới đang có hồ sơ mặc định beginner, 8 tuần, 6 giờ/tuần trong request. Giao diện hiện không có form riêng để chỉnh ba trường này. Guide yêu cầu trả lời phù hợp câu hỏi, không ép một số mục cố định. Phần hiển thị không tự cắt câu trả lời để chỉ còn lời mở đầu.
 
@@ -192,26 +192,26 @@ Hạn mức mặc định của ứng dụng là 5 yêu cầu tạo/hỏi mỗi 
 
 ## 6. Câu hỏi thầy có thể hỏi
 
-| Câu hỏi | Cách trả lời ngắn, đúng code |
-|---|---|
-| Frontend với backend khác nhau thế nào? | React chạy giao diện; backend xác thực, xử lý nghiệp vụ và truy cập dữ liệu. |
-| Tại sao dùng API Gateway? | Frontend gọi một địa chỉ API; Gateway chuyển theo đường dẫn tới dịch vụ sở hữu nghiệp vụ. |
-| BASE có mấy dịch vụ? | Ba dịch vụ nghiệp vụ và Gateway. Hiện tại thêm Learning thành bốn dịch vụ nghiệp vụ. |
-| Roadmap có phải AI tạo không? | Roadmap thường là snapshot theo nguồn đã chọn; Roadmap trong Learn with AI được Gemini tạo theo mục tiêu. |
-| Dữ liệu roadmap lấy từ đâu? | Sáu URL roadmap.sh cụ thể; snapshot ghi nguồn, thời điểm và commit kho nội dung. |
-| Tại sao lưu roadmap thành JSON? | Cho phép mở dữ liệu ổn định mà không phải gọi nguồn mỗi lượt; có thể kiểm tra phiên bản. Cần chủ động cập nhật khi nguồn thay đổi. |
-| Tại sao MongoDB cần Mongoose? | Mongoose cung cấp schema, validation và cách truy vấn thuận tiện trong Node. Nó không phải database thứ hai. |
-| Làm sao bảo vệ tiến độ cá nhân? | Backend lấy user từ phiên xác thực và luôn lọc dữ liệu theo user đó. |
-| Tìm kiếm ngữ nghĩa khác tìm từ khóa ở đâu? | So sánh vector nội dung, thay vì chỉ kiểm tra có trùng chuỗi hay không. |
-| Có tự huấn luyện AI không? | Không. Ứng dụng tích hợp Gemini và tạo embedding, truy xuất, quản lý ngữ cảnh cùng dữ liệu người dùng. |
-| Tại sao dùng RAG khi Gemini đã biết nhiều thứ? | Bổ sung nguồn thuộc danh mục ứng dụng và tăng độ liên quan. Nó không loại bỏ mọi sai sót. |
-| Có tìm Google trực tiếp khi hỏi không? | Không. Truy xuất trong catalog cục bộ; mô hình trả lời qua Gemini API. |
-| Nếu thiếu API key hoặc hết quota? | API AI trả lỗi phù hợp; roadmap thường và tiến độ đã lưu vẫn dùng được khi backend/DB hoạt động. |
-| AI có thể đánh dấu học xong thay người dùng không? | Hiện tại AI trả lời hướng dẫn. Việc lưu hoàn thành được thực hiện qua nút và API cập nhật tiến độ riêng. |
-| Tại sao dùng JSON Schema? | Để yêu cầu cấu trúc có thể đọc bằng code; backend vẫn kiểm tra trước khi lưu/hiển thị. |
-| Nếu hai người cùng học Python? | Cùng dữ liệu roadmap, khác bản ghi tiến độ và hội thoại theo user. |
-| Khế khác ô hỏi tiếp thế nào? | Khác giao diện và lịch sử, cùng dùng ngữ cảnh bài đang mở và dịch vụ Gemini. |
-| Có những giới hạn gì? | Chất lượng AI, quota, catalog chưa phải toàn văn, đồng bộ nguồn thủ công, thuật toán tìm kiếm/đồng bộ dịch vụ phù hợp quy mô local. |
+| Câu hỏi                                            | Cách trả lời ngắn, đúng code                                                                                                        |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Frontend với backend khác nhau thế nào?            | React chạy giao diện; backend xác thực, xử lý nghiệp vụ và truy cập dữ liệu.                                                        |
+| Tại sao dùng API Gateway?                          | Frontend gọi một địa chỉ API; Gateway chuyển theo đường dẫn tới dịch vụ sở hữu nghiệp vụ.                                           |
+| BASE có mấy dịch vụ?                               | Ba dịch vụ nghiệp vụ và Gateway. Hiện tại thêm Learning thành bốn dịch vụ nghiệp vụ.                                                |
+| Roadmap có phải AI tạo không?                      | Roadmap thường là snapshot theo nguồn đã chọn; Roadmap trong Learn with AI được Gemini tạo theo mục tiêu.                           |
+| Dữ liệu roadmap lấy từ đâu?                        | Sáu URL roadmap.sh cụ thể; snapshot ghi nguồn, thời điểm và commit kho nội dung.                                                    |
+| Tại sao lưu roadmap thành JSON?                    | Cho phép mở dữ liệu ổn định mà không phải gọi nguồn mỗi lượt; có thể kiểm tra phiên bản. Cần chủ động cập nhật khi nguồn thay đổi.  |
+| Tại sao MongoDB cần Mongoose?                      | Mongoose cung cấp schema, validation và cách truy vấn thuận tiện trong Node. Nó không phải database thứ hai.                        |
+| Làm sao bảo vệ tiến độ cá nhân?                    | Backend lấy user từ phiên xác thực và luôn lọc dữ liệu theo user đó.                                                                |
+| Tìm kiếm ngữ nghĩa khác tìm từ khóa ở đâu?         | So sánh vector nội dung, thay vì chỉ kiểm tra có trùng chuỗi hay không.                                                             |
+| Có tự huấn luyện AI không?                         | Không. Ứng dụng tích hợp Gemini và tạo embedding, truy xuất, quản lý ngữ cảnh cùng dữ liệu người dùng.                              |
+| Tại sao dùng RAG khi Gemini đã biết nhiều thứ?     | Bổ sung nguồn thuộc danh mục ứng dụng và tăng độ liên quan. Nó không loại bỏ mọi sai sót.                                           |
+| Có tìm Google trực tiếp khi hỏi không?             | Không. Truy xuất trong catalog cục bộ; mô hình trả lời qua Gemini API.                                                              |
+| Nếu thiếu API key hoặc hết quota?                  | API AI trả lỗi phù hợp; roadmap thường và tiến độ đã lưu vẫn dùng được khi backend/DB hoạt động.                                    |
+| AI có thể đánh dấu học xong thay người dùng không? | Hiện tại AI trả lời hướng dẫn. Việc lưu hoàn thành được thực hiện qua nút và API cập nhật tiến độ riêng.                            |
+| Tại sao dùng JSON Schema?                          | Để yêu cầu cấu trúc có thể đọc bằng code; backend vẫn kiểm tra trước khi lưu/hiển thị.                                              |
+| Nếu hai người cùng học Python?                     | Cùng dữ liệu roadmap, khác bản ghi tiến độ và hội thoại theo user.                                                                  |
+| Khế khác ô hỏi tiếp thế nào?                       | Khác giao diện và lịch sử, cùng dùng ngữ cảnh bài đang mở và dịch vụ Gemini.                                                        |
+| Có những giới hạn gì?                              | Chất lượng AI, quota, catalog chưa phải toàn văn, đồng bộ nguồn thủ công, thuật toán tìm kiếm/đồng bộ dịch vụ phù hợp quy mô local. |
 
 ## 7. Học theo sáu buổi
 
@@ -245,28 +245,27 @@ Trước buổi trình bày, chạy thử hệ thống và kiểm tra quota Gemi
 
 ## 9. Những file nên mở sẵn
 
-| Nội dung | File |
-|---|---|
-| Mốc nền tảng | `git show BASE:README.md` |
-| Điều hướng frontend | `apps/web/src/routes/pagesData.jsx` |
-| Chia request cho dịch vụ | `services/gateway/src/routes.js` |
-| Xác thực dùng chung | `packages/service-kit/src/auth.js` |
-| Đăng nhập | `services/accounts/src/controllers/authController.js` |
-| Phân quyền bài viết | `services/content/src/utils/postAccess.js` |
-| Realtime chat | `services/messaging/src/utils/socket.js` |
-| Sơ đồ và tiến độ thường | `apps/web/src/pages/learning/Roadmaps.jsx` |
-| Giao diện AI | `apps/web/src/pages/learning/index.jsx` |
-| Đọc dữ liệu nguồn | `services/learning/src/roadmaps.js`, `roadmap-data/` |
-| API học tập và kiểm tra chủ sở hữu | `services/learning/src/server.js` |
-| Schema dữ liệu học tập | `services/learning/src/models.js` |
-| Danh mục ngữ nghĩa | `services/learning/src/catalog.js` |
-| Xếp hạng vector và cache | `services/learning/src/retrieval.js` |
-| Gọi Gemini, schema kết quả | `services/learning/src/provider.js` |
-| Khế | `apps/web/src/pages/learning/KheChat.jsx` |
-| Markdown và code | `apps/web/src/pages/learning/GuideContent.jsx` |
+| Nội dung                           | File                                                  |
+| ---------------------------------- | ----------------------------------------------------- |
+| Mốc nền tảng                       | `git show BASE:README.md`                             |
+| Điều hướng frontend                | `apps/web/src/routes/pagesData.jsx`                   |
+| Chia request cho dịch vụ           | `services/gateway/src/routes.js`                      |
+| Xác thực dùng chung                | `packages/service-kit/src/auth.js`                    |
+| Đăng nhập                          | `services/accounts/src/controllers/authController.js` |
+| Phân quyền bài viết                | `services/content/src/utils/postAccess.js`            |
+| Realtime chat                      | `services/messaging/src/utils/socket.js`              |
+| Sơ đồ và tiến độ thường            | `apps/web/src/pages/learning/Roadmaps.jsx`            |
+| Giao diện AI                       | `apps/web/src/pages/learning/index.jsx`               |
+| Đọc dữ liệu nguồn                  | `services/learning/src/roadmaps.js`, `roadmap-data/`  |
+| API học tập và kiểm tra chủ sở hữu | `services/learning/src/server.js`                     |
+| Schema dữ liệu học tập             | `services/learning/src/models.js`                     |
+| Danh mục ngữ nghĩa                 | `services/learning/src/catalog.js`                    |
+| Xếp hạng vector và cache           | `services/learning/src/retrieval.js`                  |
+| Gọi Gemini, schema kết quả         | `services/learning/src/provider.js`                   |
+| Khế                                | `apps/web/src/pages/learning/KheChat.jsx`             |
+| Markdown và code                   | `apps/web/src/pages/learning/GuideContent.jsx`        |
 
 Các kiểm tra có sẵn: `npm run test:architecture`, `npm run test:learning`, `node tests/learning-integration.cjs` khi các dịch vụ đang chạy, kiểm thử frontend và `npm run build:web`. Unit test kiểm tra hàm/luật cụ thể; integration test kiểm tra nhiều phần làm việc cùng nhau. Test dùng provider giả lập để chạy ổn định không chứng minh mọi câu trả lời Gemini thật đều đúng.
-
 
 ## 10. Giải thích khóa API dự phòng
 

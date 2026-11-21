@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Return, Search } from 'shared/icons/index';
+import { Search } from 'shared/icons/index';
 import { Link } from 'react-router-dom';
-import useOnClickOutside from 'shared/hooks/useOnClickOutside';
 import classes from './SearchMenu.module.css';
 import { useSearch } from 'features/connections/hooks/useSearch';
 import { useAddToSearch } from 'features/connections/hooks/useAddToSearch';
@@ -9,13 +8,10 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useRemoveFromSearch } from 'features/connections/hooks/useRemoveFromSearch';
 
-function SearchMenu({ color, showSearchMenu, setShowSearchMenu }) {
-  const [iconVisible, setIconVisible] = useState(true);
+function SearchMenu({ color, setShowSearchMenu, term, setTerm }) {
   const [showHistory, setShowHistory] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedTerm, setDebouncedTerm] = useState(searchTerm);
 
-  const menu = useRef(null);
   const input = useRef(null);
 
   const {
@@ -43,18 +39,14 @@ function SearchMenu({ color, showSearchMenu, setShowSearchMenu }) {
     refetchOnWindowFocus: false,
   });
 
-  useOnClickOutside(menu, showSearchMenu, () => {
-    setShowSearchMenu(false);
-  });
-
   useEffect(() => {
-    input.current.focus();
+    if (window.matchMedia('(max-width: 1100px)').matches) input.current?.focus();
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => setSearchTerm(debouncedTerm), 1000);
+    const timer = setTimeout(() => setSearchTerm(term), 350);
     return () => clearTimeout(timer);
-  }, [debouncedTerm]);
+  }, [term]);
 
   // submit a new search
   useEffect(() => {
@@ -73,49 +65,31 @@ function SearchMenu({ color, showSearchMenu, setShowSearchMenu }) {
   }, [isAddedSuccess, isRemovedSuccess]);
 
   return (
-    <div className={`${classes.header_left} ${classes.search_area}`} ref={menu}>
-      <div className={classes.search_wrap}>
-        <div
-          className="circle hover1"
-          onClick={() => {
-            setShowSearchMenu(false);
-          }}
+    <section className={classes.search_area} aria-label="Kết quả tìm kiếm người dùng">
+      <div className={classes.search_history_header}>
+        <span>{showHistory ? 'Tìm kiếm gần đây' : 'Kết quả tìm kiếm'}</span>
+        <button
+          type="button"
+          className={classes.close}
+          aria-label="Đóng tìm kiếm"
+          onClick={() => setShowSearchMenu(false)}
         >
-          <Return color={color} />
-        </div>
-        <div
-          className={classes.search}
-          onClick={() => {
-            input.current.focus();
-          }}
-        >
-          {iconVisible && (
-            <div>
-              <Search color={color} />
-            </div>
-          )}
-          <input
-            className={classes.input}
-            type="text"
-            placeholder="Tìm kiếm trên PTITSocial"
-            ref={input}
-            onChange={(e) => setDebouncedTerm(e.target.value)}
-            value={debouncedTerm}
-            onFocus={() => {
-              setIconVisible(false);
-            }}
-            onBlur={() => {
-              setIconVisible(true);
-            }}
-          />
-        </div>
+          ×
+        </button>
       </div>
-      {showHistory && (
-        <div className={classes.search_history_header}>
-          <span>Tìm kiếm gần đây</span>
-        </div>
-      )}
-      <div className="scrollbar" style={{ height: '100%' }}>
+      <div className={classes.mobile_search}>
+        <Search color={color} />
+        <input
+          className={classes.input}
+          type="text"
+          placeholder="Tìm kiếm trên PTITSocial"
+          aria-label="Tìm kiếm người dùng"
+          ref={input}
+          onChange={(e) => setTerm(e.target.value)}
+          value={term}
+        />
+      </div>
+      <div className={`scrollbar ${classes.results_scroll}`}>
         <div className={`${classes.search_results} `}>
           {!isSearchHistoryLoading &&
             isSearchHistorySuccess &&
@@ -131,7 +105,8 @@ function SearchMenu({ color, showSearchMenu, setShowSearchMenu }) {
                   className={`${classes.search_item}`}
                   onClick={() => {
                     addToSearch({ user: user._id });
-                    setDebouncedTerm('');
+                    setTerm('');
+                    setShowSearchMenu(false);
                   }}
                 >
                   <div className={`${classes.search_result}`}>
@@ -139,7 +114,7 @@ function SearchMenu({ color, showSearchMenu, setShowSearchMenu }) {
                       <img className={classes.search_result_img} src={user.user.photo} alt="" />
                     </div>
                     <span>
-                      {user.user.first_name} {user.user.last_name}
+                      {user.user.last_name} {user.user.first_name}
                     </span>
                   </div>
                 </Link>
@@ -165,7 +140,7 @@ function SearchMenu({ color, showSearchMenu, setShowSearchMenu }) {
                 className={`${classes.search_item} hover2`}
                 onClick={() => {
                   addToSearch({ user: user._id });
-                  setDebouncedTerm('');
+                  setTerm('');
                   setShowSearchMenu(false);
                 }}
                 key={user._id}
@@ -175,7 +150,7 @@ function SearchMenu({ color, showSearchMenu, setShowSearchMenu }) {
                     <img className={classes.search_result_img} src={user.photo} alt="" />
                   </div>
                   <span>
-                    {user.first_name} {user.last_name}
+                    {user.last_name} {user.first_name}
                   </span>
                 </div>
               </Link>
@@ -187,7 +162,7 @@ function SearchMenu({ color, showSearchMenu, setShowSearchMenu }) {
           )}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 

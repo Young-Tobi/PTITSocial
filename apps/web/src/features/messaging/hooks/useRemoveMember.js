@@ -38,7 +38,7 @@ export const useRemoveMember = (chat) => {
       });
 
       sendMessage({
-        content: `${deletedUser.first_name} ${deletedUser.last_name} đã được xóa khỏi nhóm`,
+        content: `${deletedUser.last_name} ${deletedUser.first_name} đã được xóa khỏi nhóm`,
         type: 'info',
         chatId: chat._id,
       });

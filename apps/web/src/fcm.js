@@ -1,16 +1,15 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging } from 'firebase/messaging';
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyD8bk57MfPgPmzRQU6fA2x89AZ4ldQlS80',
-  authDomain: 'backbook-370316.firebaseapp.com',
-  projectId: 'backbook-370316',
-  storageBucket: 'backbook-370316.appspot.com',
-  messagingSenderId: '398150721140',
-  appId: '1:398150721140:web:d93f0193496929a5037b21',
-  measurementId: 'G-VVEDB7NXXQ',
-};
-
+// Optional browser push uses the project's own public Firebase configuration.
+let firebaseConfig = null;
+try {
+  firebaseConfig = JSON.parse(process.env.REACT_APP_FIREBASE_CONFIG || 'null');
+} catch {
+  console.warn('Cấu hình Firebase không hợp lệ; sử dụng thông báo trong ứng dụng.');
+}
 export const app =
-  process.env.REACT_APP_ENABLE_FIREBASE === 'true' ? initializeApp(firebaseConfig) : null;
+  process.env.REACT_APP_ENABLE_FIREBASE === 'true' && firebaseConfig?.projectId
+    ? initializeApp(firebaseConfig)
+    : null;
 export const messaging = app ? getMessaging(app) : null;

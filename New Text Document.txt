@@ -1,2 +1,0 @@
-cd D:\School\LTW\PTITSocial
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-local.ps1

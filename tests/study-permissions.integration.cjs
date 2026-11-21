@@ -65,7 +65,7 @@ run(async ({ a, b, c, api, tag }) => {
   async function login(page, user) {
     await page.goto(site);
     await page.locator('input[name=email]').fill(user.email);
-    await page.locator('input[name=password]').fill('Backbook@123');
+    await page.locator('input[name=password]').fill('PtitDemo@2026');
     await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
     await page.getByRole('navigation', { name: 'Main navigation' }).waitFor();
   }

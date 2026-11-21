@@ -5,11 +5,7 @@ import { normalizeMediaLinks } from 'shared/lib/mediaLinks';
 
 const initialValue = {
   userinfo: Cookies.get('user') ? normalizeMediaLinks(JSON.parse(Cookies.get('user'))) : null,
-  theme: Cookies.get('theme')
-    ? JSON.parse(Cookies.get('theme'))
-    : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light',
+  theme: 'light',
   fcm: Cookies.get('fcm') ? JSON.parse(Cookies.get('fcm')) : null,
 };
 export const userSlice = createSlice({
@@ -19,6 +15,8 @@ export const userSlice = createSlice({
   reducers: {
     login: (state, action) => {
       state.userinfo = action.payload.data.user;
+      state.theme = 'light';
+      Cookies.remove('theme');
       Cookies.remove('token');
       delete axios.defaults.headers.common.Authorization;
       Cookies.set('user', JSON.stringify(action.payload.data.user), {
@@ -82,7 +80,6 @@ export const userSlice = createSlice({
 
     changeTheme: (state, action) => {
       state.theme = action.payload;
-      Cookies.set('theme', JSON.stringify(action.payload));
     },
   },
 });

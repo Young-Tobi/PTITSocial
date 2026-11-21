@@ -55,7 +55,7 @@ function Comment({ comment }) {
       <div className={classes.right}>
         <div className={classes.comment_info}>
           <Link to={`/profile/${comment.user.username}`} className={classes.user}>
-            {`${comment.user.first_name} ${comment.user.last_name}`}
+            {`${comment.user.last_name} ${comment.user.first_name}`}
             {comment.user?.confirmed && (
               <i style={{ marginLeft: '5px' }} className="confirmed_comment_icon" />
             )}
@@ -101,7 +101,7 @@ function Comment({ comment }) {
               <div className={classes.right}>
                 <div className={classes.comment_info}>
                   <Link to={`/profile/${comment.user.username}`} className={classes.user}>
-                    {`${comment.user.first_name} ${comment.user.last_name}`}{' '}
+                    {`${comment.user.last_name} ${comment.user.first_name}`}{' '}
                     {comment.user?.confirmed && (
                       <i style={{ marginLeft: '5px' }} className="confirmed_comment_icon" />
                     )}
@@ -164,7 +164,7 @@ function Comment({ comment }) {
         </div>
         {showReply && (
           <CreateComment
-            placholdertxt={`@${comment.user.first_name} ${comment.user.last_name} trả lời…`}
+            placholdertxt={`@${comment.user.last_name} ${comment.user.first_name} trả lời…`}
             commentRef={replyCommentRef}
             type="reply"
             setReplies={setReplies}

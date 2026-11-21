@@ -51,7 +51,7 @@ export function Person({ author, createdAt }) {
       {author?.photo && <img src={author.photo} alt="" />}
       {author ? (
         <Link to={'/profile/' + author.username}>
-          {author.first_name} {author.last_name}
+          {author.last_name} {author.first_name}
         </Link>
       ) : (
         <span>Tài khoản không còn khả dụng</span>

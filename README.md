@@ -1,142 +1,145 @@
-# PTITSocial
+﻿# PTITSocial
 
-Repository nhóm (private): [Young-Tobi/PTITSocial](https://github.com/Young-Tobi/PTITSocial).
+**Xây dựng mạng xã hội hỗ trợ học tập và kết nối sinh viên.**
 
-Mạng xã hội dành cho sinh viên, dùng React, Express, Node.js và MongoDB. Backend được tách thành bảy dịch vụ và một API Gateway; mỗi dịch vụ sở hữu database riêng.
+Bài tập lớn học phần **Lập trình Web — INT1434-20261-CT01**, nhóm **06**, Học viện Công nghệ Bưu chính Viễn thông. Giảng viên hướng dẫn: **ThS. Nguyễn Quang Huy**.
 
-## Cấu trúc
+Dự án sử dụng **MERN Stack** (MongoDB, Express, React, Node.js), tổ chức theo **microservices** trong một monorepo.
 
-```text
-apps/web/                  React: giao diện đang sử dụng
-  src/pages/               Các trang gắn với URL
-  src/features/            Component và hook theo chức năng
-  src/shared/              UI, icon, tiện ích dùng chung
-  src/app/                 Redux store và state
-  src/routes/              Điều hướng và kiểm tra phiên đăng nhập
-services/
-  gateway/                 Định tuyến HTTP và WebSocket
-  accounts/                Tài khoản, hồ sơ, kết bạn, theo dõi, tìm kiếm
-  content/                 Bài viết, bình luận, lượt thích, ảnh
-  messaging/               Chat, tin nhắn, thông báo và trạng thái online
-  quiz/                    Bộ đề, phòng quiz trực tiếp, chấm điểm và lịch sử
-  coding/                  Phòng thi lập trình, hàng đợi chấm và xếp hạng
-  study/                   Phòng tập trung, Pomodoro, micro và hẹn học
-  learning/                Trợ lý AI, lộ trình học tập và flashcard
-packages/service-kit/      Xử lý lỗi, HTTP client, xác thực và bản sao dữ liệu công khai
-scripts/                   Khởi động, dừng, cấu hình, chuyển dữ liệu
-tests/                     Kiểm tra ranh giới dịch vụ và luồng tích hợp
-docs/                      Kiến trúc, API và hướng dẫn đọc source
-legacy/backbook-server/    Backend cũ để tham khảo/chuyển dữ liệu; không chạy cùng bản mới
-compose.yaml               MongoDB, Mailpit, LiveKit và Judge0 (API/worker/PostgreSQL/Redis)
-```
+## Chức năng chính
 
-## Chạy local
+| Nhóm chức năng        | Nội dung                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Tài khoản và hồ sơ    | Đăng ký, xác minh email, đăng nhập, khôi phục mật khẩu, sửa hồ sơ và ảnh                                           |
+| Kết nối và bảng tin   | Tìm người dùng, kết bạn, đăng bài có ảnh, chọn người xem, cảm xúc, bình luận và chia sẻ                            |
+| Tin nhắn và thông báo | Hội thoại cá nhân/nhóm, ảnh và tệp, trả lời/chuyển tiếp, trạng thái đã đọc, online và thông báo                    |
+| Quiz                  | Soạn đề, dán nhiều câu hoặc nhập Excel; phòng bằng mã, nhiều đáp án đúng, chấm điểm và lịch sử                     |
+| Thi đấu lập trình     | Chủ phòng chọn nhiều đề và điều hành riêng; người thi chọn C, C++, Java hoặc Python; chạy thử, nộp bài và xếp hạng |
+| Hỏi đáp và tài liệu   | Đặt câu hỏi, trả lời, tương tác, chia sẻ và tìm kiếm tài liệu học tập                                              |
+| Phòng học và hẹn học  | Phòng tập trung, Pomodoro, chat, micro qua LiveKit, địa điểm và buổi hẹn học                                       |
+| Hỗ trợ học tập        | Trợ lý AI, lộ trình học tập và flashcard                                                                           |
 
-Cần Node.js 22 và Docker Desktop. Trong thư mục gốc:
+## Cài và chạy trên Windows
+
+Chuẩn bị **Node.js 22 trở lên**, npm và **Docker Desktop** đang chạy Linux containers. Cần Internet ở lần đầu để tải dependencies và Docker images. Judge0 biên dịch/chấm bài trong container, không cần cài trình biên dịch lên Windows.
+
+Tại thư mục gốc dự án, chạy PowerShell:
 
 ```powershell
-npm.cmd install
+npm.cmd ci
 npm.cmd --prefix apps/web ci
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-local.ps1
 ```
 
-- Website: http://localhost:3000
-- Gateway và trạng thái dịch vụ: http://localhost:8000/health
-- Hộp thư thử nghiệm: http://localhost:8025
+| Địa chỉ                      | Mục đích                                                   |
+| ---------------------------- | ---------------------------------------------------------- |
+| http://localhost:3000        | Website                                                    |
+| http://localhost:8000/health | Trạng thái Gateway và các dịch vụ                          |
+| http://localhost:8025        | Mailpit: thư xác minh và khôi phục mật khẩu trên localhost |
 
-Script tự tạo cấu hình local nếu chưa có. Các file `.env`, dữ liệu upload, log và bản sao lưu không được đưa vào Git. Nếu dùng PowerShell bị chặn `npm.ps1`, gọi `npm.cmd` như các lệnh trên.
+Script tạo cấu hình còn thiếu và secret ngẫu nhiên cho máy mới. `.env` và dữ liệu người dùng không nằm trong Git. Máy cài mới bắt đầu với database trống: đăng ký trên website, mở thư trong Mailpit và xác minh bằng cùng profile trình duyệt đã đăng ký.
 
-Dừng mà vẫn giữ dữ liệu:
+Từ lần tiếp theo, dùng `npm.cmd run dev`. Dừng hệ thống, giữ dữ liệu bằng `npm.cmd run stop`.
 
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\stop-local.ps1
+Nếu PowerShell chặn `npm.ps1`, dùng `npm.cmd` như các lệnh trên.
+
+## Cấu trúc mã nguồn
+
+```text
+apps/web/                  React frontend
+  src/app/                 Redux store và state
+  src/features/            Component/hook theo chức năng
+  src/pages/               Trang giao diện
+  src/routes/              Điều hướng, kiểm tra phiên và socket
+  src/shared/              UI, icon và tiện ích dùng chung
+services/
+  gateway/                 API Gateway và WebSocket proxy
+  accounts/                Tài khoản, hồ sơ và quan hệ bạn bè
+  content/                 Bài viết, hỏi đáp, tài liệu và tương tác
+  messaging/               Hội thoại, tin nhắn, thông báo, online
+  quiz/                    Bộ đề, phòng Quiz và kết quả
+  coding/                  Phòng thi, bài nộp và chấm lập trình
+  study/                   Phòng học, địa điểm và hẹn học
+  learning/                AI, lộ trình và flashcard
+packages/service-kit/      HTTP nội bộ, xác thực, xử lý lỗi và dữ liệu công khai
+infra/                     Cấu hình hạ tầng Docker
+scripts/                   Cấu hình, khởi động/dừng và công cụ dữ liệu
+tests/                     Kiểm thử backend và luồng tích hợp
+docs/                      Kiến trúc, API và hướng dẫn từng chức năng
+compose.yaml               MongoDB, Mailpit, LiveKit và Judge0
 ```
 
-Máy đang làm bài đã được chuyển dữ liệu từ bản cũ, bao gồm tài khoản và các nội dung bạn tạo. Khi cài mới với MongoDB trống, đăng ký tài khoản qua website và xác minh email trong Mailpit.
+## Dịch vụ và cơ sở dữ liệu
 
-## Chia sẻ qua VS Code Ports
+| Thành phần | Cổng local       | Database                               |
+| ---------- | ---------------- | -------------------------------------- |
+| Web        | 3000             | Gọi Gateway                            |
+| Gateway    | 8000             | Không sở hữu database                  |
+| Accounts   | 8001             | `ptitsocial_accounts`                  |
+| Content    | 8002             | `ptitsocial_content`                   |
+| Messaging  | 8003             | `ptitsocial_messaging`                 |
+| Quiz       | 8004             | `ptitsocial_quiz`                      |
+| Coding     | 8005             | `ptitsocial_coding`                    |
+| Study      | 8006             | `ptitsocial_study`                     |
+| Learning   | 8007             | `ptitsocial_learning`                  |
+| Mailpit    | 8025 / SMTP 1025 | Hộp thư kiểm thử                       |
+| LiveKit    | 7880             | Âm thanh thời gian thực                |
+| Judge0 API | 2358             | PostgreSQL và Redis riêng trong Docker |
 
-Chạy hệ thống, chuyển tiếp **cổng 3000** và đặt Visibility là Public. Giao diện gọi API, ảnh upload và ba kết nối realtime qua proxy cùng cổng 3000; không cần mở các cổng của microservices hoặc Judge0.
+Mỗi dịch vụ có `package.json`, `src/server.js`, cấu hình và `/health` riêng. Dịch vụ giao tiếp qua HTTP nội bộ; frontend gọi API và socket qua Gateway. Một MongoDB local phục vụ bảy database tách biệt.
 
-Trong `.env` ở thư mục gốc, đặt `PUBLIC_APP_URL` bằng địa chỉ công khai (ví dụ `https://your-name-3000.asse.devtunnels.ms`, không có dấu `/` cuối). Dừng rồi chạy lại hệ thống để cập nhật đường dẫn xác minh tài khoản trong email. Khi đổi tunnel, cập nhật biến này và chạy lại. Để trống biến để trở về link email localhost.
+## Cấu hình tùy chọn và phạm vi demo
 
-Giữ cổng Mailpit `8025` ở chế độ Private: hộp thư này chứa cả mã khôi phục mật khẩu. Mailpit chỉ thu email thử nghiệm trên máy chủ, không gửi đến Gmail thật. Người vận hành xem email tại `http://localhost:8025` và cung cấp link/mã của đúng tài khoản cho người đang thử ứng dụng.
+- **Gemini:** đặt `GEMINI_API_KEYS` trong `services/learning/.env`. Chưa có key thì AI báo chưa sẵn sàng; flashcard thủ công và lộ trình tĩnh vẫn dùng được. Không đưa key thật lên GitHub.
+- **Quản lý tài liệu:** đặt `DOCUMENT_MODERATOR_IDS` trong `services/content/.env` bằng danh sách `_id` được phân quyền, cách nhau bằng dấu phẩy.
+- **Thông báo:** thông báo trong ứng dụng dùng Socket.IO. Firebase push mặc định tắt; nếu cần thì cấu hình Firebase của chính dự án bằng các biến trong `apps/web/.env.example` và `FCM_SERVER_KEY` phía Messaging.
+- **Nhiều tài khoản:** dùng các profile trình duyệt độc lập. Thi lập trình cần một chủ phòng và ít nhất hai người thi; chủ phòng không thi cùng người chơi.
+- **Triển khai:** cấu hình mặc định dành cho localhost; triển khai production cần cấu hình hạ tầng, HTTPS và secret phù hợp.
 
-Máy chủ, Docker và phiên chuyển tiếp VS Code phải tiếp tục chạy. Đây là cách chia sẻ bản phát triển để dùng thử; build production cần reverse proxy tương đương cho các đường dẫn trong `apps/web/src/setupProxy.js`.
+## Chia sẻ phiên dùng thử
 
-## Dịch vụ
+Trong VS Code Ports, chuyển tiếp cổng **3000** và đặt Public. Đặt `PUBLIC_APP_URL` trong `.env` gốc bằng địa chỉ tunnel hiện tại rồi khởi động lại. API, ảnh và socket đi qua cùng cổng web.
 
-| Thành phần | Cổng | Database               |
-| ---------- | ---- | ---------------------- |
-| Web        | 3000 | Gọi Gateway            |
-| Gateway    | 8000 | Không kết nối database |
-| Accounts   | 8001 | `ptitsocial_accounts`  |
-| Content    | 8002 | `ptitsocial_content`   |
-| Messaging  | 8003 | `ptitsocial_messaging` |
-| Quiz       | 8004 | `ptitsocial_quiz`      |
-| Coding | 8005 | `ptitsocial_coding` |
-| Study | 8006 | `ptitsocial_study` |
-| Learning | 8007 | `ptitsocial_learning` |
-| LiveKit | 7880 | Không kết nối MongoDB |
-| Judge0 API | 2358 | PostgreSQL riêng trong Docker |
+Giữ Mailpit ở Private vì chứa thư xác minh và mã khôi phục. Máy chủ và Docker phải tiếp tục chạy trong lúc dùng thử. Micro cần LiveKit công khai có TLS/WebRTC phù hợp khi truy cập qua Internet; chuyển tiếp riêng cổng web không cung cấp đường truyền âm thanh.
 
-Từng dịch vụ có `package.json`, `src/server.js`, `.env` và `/health` riêng. Có thể chạy riêng bằng `npm.cmd run start:accounts`, `start:content`, `start:messaging`, `start:quiz`, `start:coding`, `start:gateway`. Khi gọi từ root bằng npm workspace, working directory được đặt vào dịch vụ tương ứng.
+## Kiểm thử
 
-Một MongoDB local phục vụ bảy database tách biệt; không có dịch vụ nào truy vấn trực tiếp database của dịch vụ khác. Các bản sao tên, avatar và quan hệ theo dõi chỉ phục vụ đọc, được đồng bộ qua API nội bộ.
-
-Các chức năng học tập nằm trong menu **Chức năng học tập** trên header (cả desktop/mobile) và sidebar bảng tin. Đường dẫn chính: `/questions`, `/documents`, `/focus`, `/study-spots`, `/study-meetups`, `/learning`, `/learning/ai`, `/learning/flashcards`, `/quiz`, `/coding`.
-
-Trình duyệt sử dụng cookie HttpOnly cho phiên đăng nhập; API vẫn trả token để tương thích với các API client và bộ kiểm thử. Không lưu token vào cookie JavaScript. Cả bốn kết nối realtime (chat, Quiz, Coding, Study) hỗ trợ phiên cookie.
-
-AI cần `GEMINI_API_KEYS` trong `services/learning/.env` (hoặc cấu hình chung ở root trước lần chạy đầu). Không đưa key thật lên Git. Khi chưa cấu hình, trang AI thông báo chưa sẵn sàng; lộ trình tĩnh và flashcard thủ công vẫn dùng được. Test AI sử dụng provider giả lập, không tiêu thụ API thật.
-
-Quyền quản lý tài liệu được cấu hình bằng `DOCUMENT_MODERATOR_IDS`, là danh sách MongoDB `_id` của tài khoản, cách nhau bằng dấu phẩy, trong `services/content/.env`. Mặc định không tự cấp quyền quản lý cho người đăng ký.
-
-LiveKit mặc định phục vụ micro trên máy local qua `ws://localhost:7880`. Nếu người dùng ở máy khác truy cập qua Dev Tunnels, phần micro cần một LiveKit endpoint công khai có TLS và kết nối WebRTC phù hợp; chỉ chuyển tiếp cổng web 3000 không cung cấp đường truyền âm thanh. Cấu hình `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` trong `.env` root và khởi động lại. Chat chữ/Pomodoro/phòng học không phụ thuộc việc cấp quyền micro.
-
-## Kiểm tra
+Các kiểm thử không cần khởi động toàn bộ hệ thống:
 
 ```powershell
-npm.cmd run test:architecture
-npm.cmd run test:quiz
-npm.cmd run test:coding
-npm.cmd --prefix apps/web test -- --watchAll=false --runInBand
-# Cần hệ thống đang chạy:
+npm.cmd run test:unit
+npm.cmd run test:web
+npm.cmd run build:web
+```
+
+Các luồng tích hợp cần ứng dụng và Docker đang chạy:
+
+```powershell
 npm.cmd run test:integration
 npm.cmd run test:quiz:integration
 npm.cmd run test:coding:integration
 npm.cmd run test:coding:languages
-npm.cmd run build:web
 ```
 
-Nếu Gateway chạy ở cổng khác, đặt `$env:TEST_API_URL='http://localhost:8010'` trước khi chạy kiểm tra tích hợp.
+Một số bộ kiểm thử trình duyệt dùng Chrome đã cài trên máy. Kiểm thử AI có mô phỏng provider; kiểm tra Gemini thật cần key và quota riêng. Các lệnh khác nằm trong `package.json`.
 
-Kiểm tra tích hợp bao gồm xác minh email, kết bạn, ảnh, bình luận, WebSocket, quyền đọc tin nhắn và trạng thái đã đọc riêng cho từng thành viên nhóm. Các kiểm thử giao diện kiểm tra tên tiếng Việt, bài chia sẻ đã mất bài gốc và cập nhật trạng thái đọc. Bộ kiểm tra tích hợp tạo tài khoản thử riêng rồi dọn dữ liệu, email trong Mailpit và ảnh local của lần chạy đó; không xóa dữ liệu người dùng hiện có.
+## Thành viên nhóm 06
 
-## Chuyển dữ liệu cũ
+| Sinh viên        | Mã sinh viên |
+| ---------------- | ------------ |
+| Nguyễn Mạnh Công | B23DCAT032   |
+| Nguyễn Đăng Khoa | B23DCAT152   |
+| Nguyễn Đức Mạnh  | B23DCAT182   |
+| Lê Duy Trường    | B23DCAT307   |
 
-```powershell
-npm.cmd run migrate:legacy
-# Kiểm tra các ID cũ đã có trong database mới:
-npm.cmd run check:migration
-```
+## Tài liệu
 
-Lệnh sao chép từ database `backbook`, giữ nguyên ObjectId và không sửa database nguồn. Những bản ghi đã có trong database mới không bị ghi đè. Bản sao lưu nằm ở `.local-backups/`; ảnh được sao chép vào `services/content/uploads/`.
-
-Đây là bước chuyển sang dùng hệ thống mới, không phải đồng bộ hai chiều. Sau khi chuyển, tiếp tục làm việc với các database `ptitsocial_*`.
-
-## Đọc tiếp
-
-- [Kiến trúc và quyền sở hữu dữ liệu](docs/ARCHITECTURE.md)
-- [Đường đi của API](docs/API.md)
-- [Nên đọc và sửa file nào](docs/CODE-GUIDE.md)
-- [Quiz: dùng thử, API và chấm điểm](docs/QUIZ.md)
-- [Thi đấu lập trình: dùng thử, bộ chấm và API](docs/CODING.md)
-- [Làm việc nhóm: clone, chia nhánh và Pull Request](docs/TEAM-WORKFLOW.md)
-- [Ghi chú giao diện](PTITSOCIAL-DESIGN.md)
-
-Source ban đầu được phát triển từ [Backbook frontend](https://github.com/msobkyy/backbook) và [Backbook backend](https://github.com/msobkyy/backbook-server). Giữ nguồn tham khảo này trong báo cáo môn học.
-## Thi đấu lập trình cùng bạn bè
-
-Mở `/coding` sau khi chạy localhost. Một người tổ chức tạo phòng công khai/riêng tư và chọn nhiều đề; ít nhất hai người thi tham gia (tổng cộng 3 tài khoản đã xác minh email). Người tổ chức điều hành riêng; người thi tự chọn C, C++17, Java hoặc Python 3 trên Monaco và chấm bằng Judge0 CE tự chạy. Xem [hướng dẫn tính năng và bộ chấm](docs/CODING.md).
-
+- [Kiến trúc và dữ liệu](docs/ARCHITECTURE.md)
+- [API và định tuyến](docs/API.md)
+- [Hướng dẫn đọc và sửa source](docs/CODE-GUIDE.md)
+- [Quiz](docs/QUIZ.md)
+- [Thi đấu lập trình](docs/CODING.md)
+- [Phòng học và hẹn học](docs/STUDY-MODULES.md)
+- [AI và lộ trình](docs/AI-LEARNING.md)
+- [Flashcard](docs/FLASHCARDS.md)
+- [Làm việc nhóm](docs/TEAM-WORKFLOW.md)

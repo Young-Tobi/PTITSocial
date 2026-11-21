@@ -588,7 +588,7 @@ export default function FocusRoom() {
                 </div>
                 <span>
                   <b>
-                    {p.user?.first_name} {p.user?.last_name}
+                    {p.user?.last_name} {p.user?.first_name}
                   </b>
                   <small>
                     {p.online === false
@@ -811,7 +811,7 @@ export default function FocusRoom() {
                 <img src={message.sender?.photo} alt="" />
                 <div>
                   <b>
-                    {message.sender?.first_name} {message.sender?.last_name}
+                    {message.sender?.last_name} {message.sender?.first_name}
                   </b>
                   <p>{message.text}</p>
                   <small>

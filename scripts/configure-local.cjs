@@ -14,10 +14,10 @@ function save(file, values) {
       .join('\n') + '\n'
   );
 }
-const previous = read(path.join(root, 'legacy/backbook-server/.env'));
 const current = read(path.join(root, '.env'));
 const shared = {
-  APP_NAME: 'BACKBOOK',
+  APP_NAME: 'PTITSocial',
+  COMPOSE_PROJECT_NAME: 'ptitsocial',
   FRONTEND_URL: 'http://localhost:3000',
   BACKEND_URL: 'http://localhost:8000',
   NODE_ENV: 'development',
@@ -28,7 +28,6 @@ const shared = {
   SMTP_HOST: '127.0.0.1',
   SMTP_PORT: '1025',
   EMAIL_ID: 'ptitsocial@localhost.test',
-  ...previous,
   ...current,
 };
 shared.INTERNAL_API_KEY = current.INTERNAL_API_KEY || crypto.randomBytes(48).toString('hex');

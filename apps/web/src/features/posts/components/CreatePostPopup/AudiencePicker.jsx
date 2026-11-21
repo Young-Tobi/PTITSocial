@@ -44,7 +44,7 @@ export default function AudiencePicker({ audience, setAudience, viewers, setView
       .replace(/đ/gi, 'd')
       .toLowerCase();
   const visibleFriends = friends.filter((friend) =>
-    normalize(`${friend.first_name} ${friend.last_name} ${friend.username}`).includes(
+    normalize(`${friend.last_name} ${friend.first_name} ${friend.username}`).includes(
       normalize(term.trim())
     )
   );
@@ -153,7 +153,7 @@ export default function AudiencePicker({ audience, setAudience, viewers, setView
                     <img src={friend.photo} alt="" />
                     <span className={classes.optionText}>
                       <strong>
-                        {friend.first_name} {friend.last_name}
+                        {friend.last_name} {friend.first_name}
                       </strong>
                       <small>@{friend.username}</small>
                     </span>

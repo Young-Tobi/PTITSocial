@@ -154,7 +154,7 @@ function Post({ post }) {
         <div className={classes.middle}>
           <div>
             <Link to={`/profile/${post?.user?.username}`} className={classes.username}>
-              {`${post.user.first_name} ${post.user.last_name}`}
+              {`${post.user.last_name} ${post.user.first_name}`}
               {post?.user?.confirmed && (
                 <i
                   style={{ marginLeft: '5px', transform: 'translateY(2px)' }}

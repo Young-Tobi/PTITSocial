@@ -32,7 +32,7 @@ exports.create = async (req, res) => {
         subject: quiz.subject,
         host: {
           id: req.user.id,
-          name: `${req.user.first_name} ${req.user.last_name}`,
+          name: `${req.user.last_name} ${req.user.first_name}`,
           photo: req.user.photo,
         },
         code: String(randomInt(100000, 1000000)),
@@ -79,7 +79,7 @@ exports.join = async (req, res) => {
     await Attempt.create({
       roomId: room._id,
       userId: req.user.id,
-      name: `${req.user.first_name} ${req.user.last_name}`,
+      name: `${req.user.last_name} ${req.user.first_name}`,
       photo: req.user.photo,
       optionOrders: room.questions.map(() => shuffledOptions(room.settings.shuffleOptions)),
     });

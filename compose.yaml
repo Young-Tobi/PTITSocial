@@ -1,4 +1,4 @@
-name: backbook-local
+name: ptitsocial
 services:
   judge-api:
     image: judge0/judge0:1.13.1
