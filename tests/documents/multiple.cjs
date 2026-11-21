@@ -11,10 +11,11 @@ module.exports = async function checkMultipleUploads(page, site, tag) {
       buffer: office('pptx'),
     },
   ];
-  await page.locator('input[type=file][multiple]').setInputFiles(files);
-  const titles = page.locator('input[name=title]');
-  assert.equal(await titles.count(), 2);
-  await titles.first().fill('Notes ' + tag);
+  const picker = page.locator('input[type=file][multiple]');
+  await picker.setInputFiles([
+    ...files,
+    { name: 'wrong.txt', mimeType: 'text/plain', buffer: Buffer.from('test') },
+  ]);
   await page
     .getByLabel('Mô tả', { exact: true })
     .fill('Tài liệu dùng để kiểm tra luồng đăng nhiều tệp.');
@@ -22,6 +23,14 @@ module.exports = async function checkMultipleUploads(page, site, tag) {
   await page.getByLabel('Chủ đề', { exact: true }).selectOption('outline');
   await page.getByRole('checkbox').check();
   const submit = page.getByRole('button', { name: 'Đăng tài liệu', exact: true });
+  await submit.click();
+  const validation = page.locator('form [role=alert]').filter({ hasText: 'wrong.txt' });
+  await validation.waitFor();
+  await picker.setInputFiles(files);
+  await validation.waitFor({ state: 'hidden' });
+  const titles = page.locator('input[name=title]');
+  assert.equal(await titles.count(), 2);
+  await titles.first().fill('Notes ' + tag);
   // Drop one response after the server has saved the file. A retry must reuse that record.
   const route = '**/api/v1/documents';
   const ids = [];
