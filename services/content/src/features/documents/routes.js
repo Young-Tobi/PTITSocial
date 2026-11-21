@@ -1,3 +1,4 @@
+const fs = require('node:fs/promises');
 const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
@@ -10,6 +11,7 @@ const catalog = require('./catalog');
 const v = require('./validation');
 const storage = require('./storage');
 const router = express.Router();
+const maxFiles = 30;
 const fields = 'first_name last_name username photo';
 const oid = (value) => new mongoose.Types.ObjectId(v.id(value));
 const success = (res, data, code = 200) => res.status(code).json({ status: 'success', data });
@@ -47,7 +49,7 @@ const counters = [
     },
   },
   { $addFields: { helpfulCount: { $size: '$votes' } } },
-  { $project: { votes: 0, storageKey: 0 } },
+  { $project: { votes: 0, storageKey: 0, 'additionalFiles.storageKey': 0 } },
 ];
 async function list(req, res, scope) {
   const { page, limit } = v.page(req.query);
@@ -96,7 +98,9 @@ async function list(req, res, scope) {
     limit,
   });
 }
-router.get('/catalog', (req, res) => success(res, { ...catalog, canModerate: moderator(req) }));
+router.get('/catalog', (req, res) =>
+  success(res, { ...catalog, maxFiles, canModerate: moderator(req) })
+);
 router.get(
   '/mine',
   asyncRoute((req, res) => list(req, res, 'mine'))
@@ -178,9 +182,18 @@ router.get(
   asyncRoute((req, res) => list(req, res))
 );
 const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { files: 1, fileSize: storage.maxBytes + 1, fields: 8, fieldSize: 32000 },
-}).single('file');
+  dest: storage.incoming,
+  limits: { files: maxFiles, fileSize: storage.maxBytes + 1, fields: 8, fieldSize: 32000 },
+}).array('file');
+function requestId(req) {
+  if (req.body.uploadId === undefined) return undefined;
+  if (typeof req.body.uploadId !== 'string' || !/^[a-f0-9]{32}$/.test(req.body.uploadId))
+    v.bad('Mã lượt đăng tài liệu không hợp lệ.');
+  const hash = createHash('sha256')
+    .update(req.user.id + ':' + req.body.uploadId)
+    .digest();
+  return new mongoose.Types.ObjectId(hash.subarray(0, 12));
+}
 router.post(
   '/',
   rateLimit({
@@ -189,64 +202,88 @@ router.post(
     keyGenerator: (req) => req.user.id,
     message: { message: 'Bạn đăng quá nhiều tài liệu. Vui lòng thử lại sau.' },
   }),
-  upload,
+  (req, res, next) =>
+    upload(req, res, (error) => {
+      if (error?.code === 'LIMIT_FILE_SIZE')
+        return next(new AppError('Mỗi tệp được tối đa 20 MB.', 400));
+      if (error?.code === 'LIMIT_FILE_COUNT')
+        return next(new AppError(`Mỗi bài được tối đa ${maxFiles} tệp.`, 400));
+      if (error instanceof multer.MulterError)
+        return next(new AppError('Biểu mẫu tệp không hợp lệ.', 400));
+      next(error);
+    }),
   asyncRoute(async (req, res) => {
-    const metadata = v.metadata(req.body);
-    if (![true, 'true'].includes(req.body.rightsConfirmed))
-      v.bad('Bạn cần xác nhận có quyền chia sẻ tài liệu.');
-    const file = await storage.validate(req.file);
-    // Give retries of the same selected file a stable document ID scoped to the uploader.
-    let uploadId;
-    if (req.body.uploadId !== undefined) {
-      if (typeof req.body.uploadId !== 'string' || !/^[a-f0-9]{32}$/.test(req.body.uploadId))
-        v.bad('Mã lượt đăng tài liệu không hợp lệ.');
-      const hash = createHash('sha256')
-        .update(req.user.id + ':' + req.body.uploadId)
-        .digest();
-      uploadId = new mongoose.Types.ObjectId(hash.subarray(0, 12));
-      const existing = await Document.findOne({
-        _id: uploadId,
-        author: req.user.id,
-        status: 'published',
-      });
-      if (existing) return success(res, existing);
-    }
-    const key = randomUUID() + '.' + file.format;
-    await Cleanup.create({ key });
-    let doc;
+    const keys = [];
+    let committed = false;
+    let creating = false;
     try {
-      await storage.write(key, req.file.buffer);
-      doc = await Document.create({
-        ...(uploadId && { _id: uploadId }),
-        ...metadata,
-        ...file,
-        author: req.user.id,
-        storageKey: key,
-        rightsConfirmedAt: new Date(),
-      });
-    } catch (error) {
-      try {
-        await storage.remove(key);
-        await Cleanup.deleteOne({ key });
-      } catch (cleanupError) {
-        console.error('Document cleanup queued:', cleanupError.message);
-      }
-      if (uploadId && error.code === 11000) {
-        const existing = await Document.findOne({
-          _id: uploadId,
-          author: req.user.id,
-          status: 'published',
-        });
+      const metadata = v.metadata(req.body);
+      if (![true, 'true'].includes(req.body.rightsConfirmed))
+        v.bad('Bạn cần xác nhận có quyền chia sẻ tài liệu.');
+      if (!req.files?.length) v.bad('Chọn ít nhất một tệp để đăng.');
+      const id = requestId(req);
+      const lookup = { _id: id, author: req.user.id, status: 'published' };
+      if (id) {
+        const existing = await Document.findOne(lookup);
         if (existing) return success(res, existing);
       }
-      throw error;
+      const files = [];
+      for (const part of req.files) {
+        const buffer = await fs.readFile(part.path);
+        const input = { ...part, buffer };
+        const info = await storage.validate(input).catch((error) => {
+          if (error.statusCode === 400)
+            throw new AppError(input.originalname + ': ' + error.message, 400);
+          throw error;
+        });
+        const key = randomUUID() + '.' + info.format;
+        await Cleanup.create({ key });
+        keys.push(key);
+        await storage.write(key, buffer);
+        files.push({ ...info, storageKey: key });
+      }
+      // The original fields remain the first attachment for existing clients and old posts.
+      const [first, ...additionalFiles] = files;
+      let doc;
+      try {
+        creating = true;
+        doc = await Document.create({
+          ...(id && { _id: id }),
+          ...metadata,
+          ...first,
+          additionalFiles,
+          author: req.user.id,
+          rightsConfirmedAt: new Date(),
+        });
+        committed = true;
+      } catch (error) {
+        if (id && error.code === 11000) {
+          creating = false;
+          const existing = await Document.findOne(lookup);
+          if (existing) return success(res, existing);
+        }
+        throw error;
+      }
+      const data = doc.toObject();
+      delete data.storageKey;
+      for (const item of data.additionalFiles) delete item.storageKey;
+      success(res, data, 201);
+    } finally {
+      for (const key of keys) {
+        try {
+          // On an ambiguous database write, keep files that a committed post references.
+          if (!committed && !(creating && (await storage.isReferenced(key))))
+            await storage.remove(key);
+          await Cleanup.deleteOne({ key });
+        } catch (error) {
+          console.error('Document cleanup queued:', error.message);
+        }
+      }
+      for (const part of req.files || [])
+        await fs
+          .rm(part.path, { force: true })
+          .catch((error) => console.error('Temporary upload cleanup pending:', error.message));
     }
-    await Cleanup.deleteOne({ key }).catch((error) =>
-      console.error('Document cleanup record retained:', error.message)
-    );
-    const data = doc.toObject();
-    delete data.storageKey;
-    success(res, data, 201);
   })
 );
 router.get(
@@ -298,12 +335,18 @@ for (const mode of ['preview', 'download'])
   router.get(
     '/:id/' + mode,
     asyncRoute(async (req, res, next) => {
-      const doc = await get(req);
+      const stored = await Document.findOne({
+        _id: oid(req.params.id),
+        status: 'published',
+      }).select('+storageKey +additionalFiles.storageKey');
+      if (!stored) throw new AppError('Tài liệu không còn được chia sẻ.', 404);
+      const index = req.query.file ?? '0';
+      if (typeof index !== 'string' || !/^(0|[1-9]\d*)$/.test(index))
+        v.bad('Số thứ tự tệp không hợp lệ.');
+      const doc = index === '0' ? stored : stored.additionalFiles?.[Number(index) - 1];
+      if (!doc) throw new AppError('Tệp không thuộc bài đăng này.', 404);
       if (mode === 'preview' && doc.format !== 'pdf')
         throw new AppError('Định dạng này chưa hỗ trợ xem trước. Hãy tải tài liệu xuống.', 415);
-      const stored = await Document.findById(doc._id).select('+storageKey');
-      if (!stored || stored.status !== 'published')
-        throw new AppError('Tài liệu không còn được chia sẻ.', 404);
       res.set({
         'Content-Type': doc.mime,
         'Cache-Control': 'private, no-store',
@@ -324,7 +367,7 @@ for (const mode of ['preview', 'download'])
         `${mode === 'preview' ? 'inline' : 'attachment'}; filename="document.${doc.format}"; filename*=UTF-8''${filename}`
       );
       res.sendFile(
-        storage.location(stored.storageKey),
+        storage.location(doc.storageKey),
         { acceptRanges: true, cacheControl: false },
         (error) => {
           if (error && !res.headersSent)

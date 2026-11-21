@@ -4,13 +4,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-hot-toast';
 import { request, useDocuments, useAction } from './api';
-import { Layout, State, validation } from './Common';
+import { Layout, State, documentFiles, validation } from './Common';
 import styles from './documents.module.css';
 function Fields({ doc }) {
   const catalog = useDocuments('/catalog');
   const navigate = useNavigate();
   const client = useQueryClient();
-  const [uploads, setUploads] = useState([]);
+  const [files, setFiles] = useState([]);
+  const uploadId = useRef();
   const [formError, setFormError] = useState('');
   const [publishing, setPublishing] = useState(false);
   const submitting = useRef(false);
@@ -19,19 +20,16 @@ function Fields({ doc }) {
     navigate('/documents/' + result.data._id);
   });
   function chooseFiles(e) {
-    const firstTitle = !uploads.length && new FormData(e.target.form).get('title');
-    const selected = Array.from(e.target.files, (file, index) => {
-      const stem = file.name.replace(/\.[^.]+$/, '');
-      const title =
-        index === 0 && firstTitle
-          ? firstTitle
-          : (stem.length >= 5 ? stem : file.name).slice(0, 200);
-      const id = Array.from(crypto.getRandomValues(new Uint8Array(16)), (n) =>
-        n.toString(16).padStart(2, '0')
-      ).join('');
-      return { file, title, id };
-    });
-    setUploads(selected);
+    const selected = Array.from(e.target.files);
+    const title = e.target.form.elements.title;
+    if (!title.value && selected.length) {
+      const name = selected[0].name.replace(/\.[^.]+$/, '');
+      title.value = (name.length >= 5 ? name : selected[0].name).slice(0, 200);
+    }
+    uploadId.current = Array.from(crypto.getRandomValues(new Uint8Array(16)), (n) =>
+      n.toString(16).padStart(2, '0')
+    ).join('');
+    setFiles(selected);
     setFormError('');
   }
   async function submit(e) {
@@ -54,43 +52,28 @@ function Fields({ doc }) {
       });
       return;
     }
-    if (!uploads.length) return setFormError('Chọn ít nhất một tệp để đăng.');
-    const invalid = uploads.find(
-      ({ file }) =>
-        !file.size || file.size > 20 * 1024 * 1024 || !/\.(pdf|docx|pptx)$/i.test(file.name)
+    if (!files.length) return setFormError('Chọn ít nhất một tệp để đăng.');
+    if (files.length > catalog.data.data.maxFiles)
+      return setFormError(`Mỗi bài được tối đa ${catalog.data.data.maxFiles} tệp.`);
+    const invalid = files.find(
+      (file) => !file.size || file.size > 20 * 1024 * 1024 || !/\.(pdf|docx|pptx)$/i.test(file.name)
     );
     if (invalid)
-      return setFormError(
-        invalid.file.name + ': Chọn tệp PDF, DOCX hoặc PPTX, tối đa 20 MB mỗi tệp.'
-      );
-    const titles = form.getAll('title');
-    form.delete('file');
+      return setFormError(invalid.name + ': Chọn tệp PDF, DOCX hoặc PPTX, tối đa 20 MB mỗi tệp.');
     form.set('keywords', JSON.stringify(keywords));
     form.set('rightsConfirmed', 'true');
+    form.set('uploadId', uploadId.current);
     submitting.current = true;
     setPublishing(true);
-    const results = uploads.map((item) => ({ ...item }));
     try {
-      for (const [i, item] of results.entries()) {
-        if (item.documentId) continue;
-        form.set('title', titles[i]);
-        form.set('file', item.file);
-        form.set('uploadId', item.id);
-        try {
-          const result = await request('', 'POST', form);
-          item.documentId = result.data._id;
-          item.error = '';
-        } catch (error) {
-          item.error = error.message;
-        }
-        setUploads(results.map((row) => ({ ...row })));
+      const result = await request('', 'POST', form);
+      await client.invalidateQueries({ queryKey: ['documents'] });
+      if (element.isConnected) {
+        toast.success('Đã đăng tài liệu.');
+        navigate('/documents/' + result.data._id);
       }
-      const published = results.filter((item) => item.documentId).length;
-      if (published) await client.invalidateQueries({ queryKey: ['documents'] });
-      if (!element.isConnected) return;
-      if (published < results.length) return;
-      toast.success(results.length === 1 ? 'Đã đăng tài liệu.' : `Đã đăng ${published} tài liệu.`);
-      navigate(results.length === 1 ? '/documents/' + results[0].documentId : '/documents/mine');
+    } catch (error) {
+      setFormError(error.message);
     } finally {
       submitting.current = false;
       setPublishing(false);
@@ -100,26 +83,16 @@ function Fields({ doc }) {
     <State query={catalog}>
       <form className={styles.card} {...validation} onSubmit={submit}>
         <fieldset className={styles.fields} disabled={publishing || action.isLoading}>
-          {(uploads.length ? uploads : [{ title: doc?.title || '' }]).map((item) => (
-            <div key={item.id || 'title'}>
-              <label>
-                {uploads.length > 1 ? 'Tên tài liệu · ' + item.file.name : 'Tên tài liệu'}
-                <input
-                  name="title"
-                  required
-                  minLength={5}
-                  maxLength={200}
-                  defaultValue={item.title}
-                  readOnly={!!item.documentId}
-                />
-              </label>
-              {item.documentId && <span role="status">Đã đăng</span>}
-              {item.error && <p role="alert">{item.error}</p>}
-            </div>
-          ))}
-          {uploads.length > 1 && (
-            <p>Mô tả, môn học, chủ đề, từ khóa và nguồn bên dưới áp dụng cho tất cả tệp đã chọn.</p>
-          )}
+          <label>
+            Tên tài liệu
+            <input
+              name="title"
+              required
+              minLength={5}
+              maxLength={200}
+              defaultValue={doc?.title || ''}
+            />
+          </label>
           <label>
             Mô tả
             <textarea
@@ -168,7 +141,8 @@ function Fields({ doc }) {
           </label>
           {!doc && (
             <label>
-              Chọn một hoặc nhiều tệp tài liệu (PDF, DOCX, PPTX; tối đa 20 MB mỗi tệp)
+              Tệp đính kèm (PDF, DOCX, PPTX; tối đa 20 MB mỗi tệp, {catalog.data?.data.maxFiles} tệp
+              mỗi bài)
               <input
                 name="file"
                 type="file"
@@ -179,6 +153,16 @@ function Fields({ doc }) {
               />
             </label>
           )}
+          {files.length > 0 && (
+            <div>
+              <p>{files.length} tệp đính kèm trong bài đăng này</p>
+              <ul>
+                {files.map((file, index) => (
+                  <li key={index}>{file.name}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           {!doc ? (
             <div className={styles.checks}>
               <label>
@@ -187,15 +171,15 @@ function Fields({ doc }) {
               </label>
             </div>
           ) : (
-            <p>Tệp hiện tại: {doc.originalName}. Muốn đổi tệp, hãy đăng tài liệu mới.</p>
-          )}
-          {formError && <p role="alert">{formError}</p>}
-          {!publishing && uploads.some((item) => item.error) && (
-            <p role="status">
-              Đã đăng {uploads.filter((item) => item.documentId).length}/{uploads.length} tài liệu.
-              Bấm đăng lại để gửi các tệp còn lỗi.
+            <p>
+              Tệp hiện tại:{' '}
+              {documentFiles(doc)
+                .map((file) => file.originalName)
+                .join(', ')}
+              . Muốn đổi tệp, hãy đăng tài liệu mới.
             </p>
           )}
+          {formError && <p role="alert">{formError}</p>}
           <button className={styles.primary}>
             {publishing || action.isLoading ? 'Đang lưu…' : doc ? 'Lưu thay đổi' : 'Đăng tài liệu'}
           </button>

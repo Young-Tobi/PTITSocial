@@ -15,6 +15,7 @@ const types = {
 const root = path.resolve(
   process.env.DOCUMENT_STORAGE_DIR || path.join(__dirname, '../../../private-documents')
 );
+const incoming = path.join(root, '.incoming');
 function location(key) {
   if (!/^[a-f0-9-]+\.(pdf|docx|pptx)$/.test(key)) throw new Error('Invalid storage key');
   return path.join(root, key);
@@ -212,13 +213,31 @@ async function remove(key) {
     if (err.code !== 'ENOENT') throw err;
   });
 }
+function isReferenced(key) {
+  return Document.exists({ $or: [{ storageKey: key }, { 'additionalFiles.storageKey': key }] });
+}
 async function sweep() {
-  for (const doc of await Document.find({ status: 'deleted' }).select('+storageKey').limit(30)) {
+  // Multer removes rejected uploads. Reclaim interrupted requests left by a process exit.
+  for (const name of await fs.readdir(incoming).catch((err) => {
+    if (err.code === 'ENOENT') return [];
+    throw err;
+  })) {
+    if (!/^[0-9a-f]{32}$/.test(name)) continue;
+    const temp = path.join(incoming, name);
+    const info = await fs.stat(temp).catch((err) => {
+      if (err.code !== 'ENOENT') throw err;
+    });
+    if (info && info.mtimeMs < Date.now() - 86400000) await fs.rm(temp, { force: true });
+  }
+  for (const doc of await Document.find({ status: 'deleted' })
+    .select('+storageKey +additionalFiles.storageKey')
+    .limit(30)) {
     try {
-      await remove(doc.storageKey);
+      const keys = [doc.storageKey, ...(doc.additionalFiles || []).map((f) => f.storageKey)];
+      for (const key of keys) await remove(key);
       for (const Model of [Favorite, Vote, Comment, Report])
         await Model.deleteMany({ document: doc._id });
-      await Cleanup.deleteOne({ key: doc.storageKey });
+      await Cleanup.deleteMany({ key: { $in: keys } });
       await Document.deleteOne({ _id: doc._id, status: 'deleted' });
     } catch (error) {
       console.error('Document deletion pending:', error.message);
@@ -228,7 +247,7 @@ async function sweep() {
     30
   )) {
     try {
-      if (!(await Document.exists({ storageKey: job.key }))) await remove(job.key);
+      if (!(await isReferenced(job.key))) await remove(job.key);
       await job.deleteOne();
     } catch (error) {
       console.error('Document cleanup pending:', error.message);
@@ -239,4 +258,14 @@ async function write(key, buffer) {
   await fs.mkdir(root, { recursive: true });
   await fs.writeFile(location(key), buffer, { flag: 'wx' });
 }
-module.exports = { validate, location, write, remove, sweep, maxBytes, types };
+module.exports = {
+  validate,
+  location,
+  write,
+  remove,
+  sweep,
+  maxBytes,
+  types,
+  incoming,
+  isReferenced,
+};

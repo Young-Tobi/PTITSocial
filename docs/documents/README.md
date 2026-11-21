@@ -4,7 +4,7 @@ Module độc lập với Hỏi đáp học thuật. Chọn **Chức năng học
 
 ## Các chức năng
 
-- Chọn nhiều tệp PDF, DOCX hoặc PPTX và bấm đăng một lần, tối đa 20 MB cho mỗi tệp. Mỗi tệp thành một tài liệu có tên riêng và dùng chung thông tin phân loại. Nếu có lỗi, biểu mẫu hiển thị kết quả từng tệp và chỉ gửi lại những tệp chưa đăng thành công. Tên 5–200 ký tự, mô tả 20–5.000 ký tự, môn học và chủ đề bắt buộc; tối đa 5 từ khóa (2–30 ký tự/từ), nguồn/tác giả tối đa 1.000 ký tự. Người đăng phải xác nhận quyền chia sẻ.
+- Một lần bấm đăng tạo một bài có một tên, mô tả và danh sách tệp đính kèm. Chọn từ 1 đến 30 tệp PDF, DOCX hoặc PPTX, tối đa 20 MB mỗi tệp. Nếu một tệp lỗi, cả bài chưa được công bố. Gửi lại cùng lượt sau khi mất phản hồi trả về bài đã tạo. Tên 5–200 ký tự, mô tả 20–5.000 ký tự, môn học và chủ đề bắt buộc; tối đa 5 từ khóa (2–30 ký tự/từ), nguồn/tác giả tối đa 1.000 ký tự. Người đăng phải xác nhận quyền chia sẻ.
 - Tìm tên/mô tả/từ khóa; kết hợp môn học, chủ đề, định dạng và khoảng ngày Việt Nam. Sắp xếp mới nhất/cũ nhất/Hữu ích nhất, 20 tài liệu/trang. Bộ lọc lưu trên URL. Tìm theo từ, chưa có tìm gần đúng.
 - PDF xem trước bằng trình duyệt, hỗ trợ HTTP Range. DOCX/PPTX tải xuống; không sử dụng dịch vụ chuyển đổi bên ngoài.
 - Lưu/bỏ yêu thích. Một lượt Hữu ích/tài khoản/tài liệu, có thể hủy, không tự bình chọn. Nhận xét một cấp 1–1.000 ký tự; người viết xóa nhận xét của mình.
@@ -26,9 +26,9 @@ API dưới `/api/v1/documents`:
 | --- | --- |
 | GET `/catalog` | Môn học, chủ đề, lý do báo cáo và quyền quản lý hiện tại |
 | GET `/`, `/mine`, `/saved` | `q`, `subject`, `topic`, `format`, `from`, `to`, `sort=newest/oldest/helpful`, `page` |
-| POST `/` | Multipart `file`, `title`, `description`, `subject`, `topic`, `keywords` JSON mảng, `source`, `rightsConfirmed=true` |
+| POST `/` | Multipart lặp trường `file` theo thứ tự đính kèm, `uploadId` tùy chọn cho cả bài, `title`, `description`, `subject`, `topic`, `keywords` JSON mảng, `source`, `rightsConfirmed=true` |
 | GET/PATCH/DELETE `/:id` | Chi tiết / sửa toàn bộ metadata bằng JSON / xóa của người đăng |
-| GET `/:id/preview`, `/:id/download` | Tệp có kiểm tra quyền và trạng thái; preview chỉ PDF |
+| GET `/:id/preview`, `/:id/download` | Thêm `?file=0`, `?file=1`, … để chọn tệp theo thứ tự từ 0. Mặc định tệp đầu, kể cả bài cũ. Kiểm tra quyền và trạng thái bài. Chỉ xem trước PDF |
 | PUT/DELETE `/:id/favorite`, `/:id/helpful` | Đặt/hủy lựa chọn của tài khoản hiện tại |
 | GET/POST `/:id/comments` | Phân trang / nhận xét `{body}` |
 | DELETE `/comments/:commentId` | Xóa nhận xét của mình |
