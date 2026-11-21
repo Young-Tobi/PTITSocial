@@ -1,12 +1,10 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { registerAcademicNotifications } from 'features/academic/notifications';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 import Header from 'features/navigation/components/header/Header';
 import Loading from 'shared/components/ui/Loading/Loading';
 import VerificationRequired from 'features/auth/components/activation/VerificationRequired';
-import Cookies from 'js-cookie';
-import { useEffect } from 'react';
-import { useState } from 'react';
 import { io } from 'socket.io-client';
 import { queryClient } from 'App';
 import chat_notification from 'assets/chat_notification.wav';
@@ -14,7 +12,8 @@ import notification_sweet from 'assets/notification_sweet.wav';
 import { setOnlineUsers } from 'app/slices/socketSlice';
 import { toast } from 'react-hot-toast';
 import Notification from 'shared/components/ui/Notification/Notification';
-import { reciveNoti } from 'app/slices/userSlice';
+import { reciveNoti, updateNStats } from 'app/slices/userSlice';
+import { normalizeMediaLinks } from 'shared/lib/mediaLinks';
 import {
   updateChatName,
   updateChatTheme,
@@ -26,12 +25,16 @@ export let socket;
 
 function playNotificationSound() {
   const audio = new Audio(chat_notification);
-  audio.play();
+  audio.play().catch(() => {
+    // Notifications still work when the browser blocks autoplay.
+  });
 }
 
 function playNotificationSound2() {
   const audio = new Audio(notification_sweet);
-  audio.play();
+  audio.play().catch(() => {
+    // Notifications still work when the browser blocks autoplay.
+  });
 }
 
 export default function IsLoggedIn({ user }) {
@@ -44,26 +47,25 @@ export default function IsLoggedIn({ user }) {
 
   useEffect(() => {
     if (user.userinfo?.verified) {
-      socket = io(process.env.REACT_APP_BACKEND_URL, {
+      socket = io(process.env.REACT_APP_BACKEND_URL || window.location.origin, {
         withCredentials: true,
-        auth: { token: JSON.parse(Cookies.get('token') || 'null') },
       });
-      socket.emit('setup', {
-        userId: user.userinfo._id,
-        info: {
-          id: user.userinfo._id,
-          username: user.userinfo.username,
-          first_name: user.userinfo.first_name,
-          last_name: user.userinfo.last_name,
-          photo: user.userinfo.photo,
-        },
+      socket.onAny((event, ...args) => args.forEach(normalizeMediaLinks));
+      registerAcademicNotifications(socket, dispatch);
+      socket.on('connect', () => {
+        socket.emit('setup', {});
+        queryClient.invalidateQueries({ queryKey: ['getFriendsPage'] });
       });
+      socket.on('disconnect', () => dispatch(setOnlineUsers({ type: 'connect', info: [] })));
 
       socket.on('online_user', ({ type, info }) => {
         dispatch(setOnlineUsers({ type, info }));
       });
 
       socket.on('new_notification', ({ notification }) => {
+        if (notification.type === 'friend') {
+          queryClient.invalidateQueries({ queryKey: ['getFriendsPage'] });
+        }
         playNotificationSound2();
         dispatch(
           reciveNoti({
@@ -84,13 +86,9 @@ export default function IsLoggedIn({ user }) {
         });
       });
 
-      socket.on('message_recieved', (newMessage) => {
+      socket.on('message_recieved', (newMessage, stats) => {
         playNotificationSound();
-        dispatch(
-          reciveNoti({
-            type: 'message',
-          })
-        );
+        if (stats) dispatch(updateNStats(stats));
         if (msgNoti(newMessage)) {
           toast.custom((t) => (
             <Notification

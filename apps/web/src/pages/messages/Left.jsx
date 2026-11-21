@@ -1,3 +1,4 @@
+import { messagePreview } from 'features/messaging/components/MessageContext';
 import React from 'react';
 import { useState, useRef } from 'react';
 
@@ -9,6 +10,7 @@ import Moment from 'react-moment';
 import Card from 'shared/components/ui/Card/Card';
 import ScrollContainer from 'react-indiana-drag-scroll';
 import SeenStatus from './SeenStatus';
+import { isMessageUnread } from 'shared/lib/messageReadState';
 import { Dots, Search } from 'shared/icons/index';
 import SearchUser from 'features/messaging/components/SearchUser';
 import CreateGroup from 'features/messaging/components/createGroup/CreateGroup';
@@ -102,10 +104,8 @@ function Left({ soketSlice, user, chatId }) {
                   >
                     <i className="create_icon"></i>
                     <div className={styles.menu_text}>
-                      <span>Create Group</span>
-                      <span className={styles.menu_col}>
-                        Create Group to chat with your contacts
-                      </span>
+                      <span>Tạo nhóm</span>
+                      <span className={styles.menu_col}>Tạo nhóm để trò chuyện với bạn bè</span>
                     </div>
                   </li>
                 </ul>
@@ -194,22 +194,17 @@ function Left({ soketSlice, user, chatId }) {
                   {chat?.latestMessage && (
                     <p
                       style={{
-                        color: `${
-                          chat?.latestMessage.seen === 'unseen' &&
-                          user._id !== chat?.latestMessage.sender._id
-                            ? '#0096ff'
-                            : ''
-                        }`,
+                        color: `${isMessageUnread(chat.latestMessage, user._id) ? '#0096ff' : ''}`,
                       }}
                     >
                       {renderMessage(
                         `${
                           user._id === chat?.latestMessage.sender._id
-                            ? 'You :'
+                            ? 'Bạn:'
                             : chat?.type === 'group'
                               ? `${chat?.latestMessage.sender.first_name} : `
                               : ''
-                        } ${chat?.latestMessage.content}`
+                        } ${messagePreview(chat?.latestMessage)}`
                       )}
                       {' . '}
                       <Moment fromNow interval={30}>

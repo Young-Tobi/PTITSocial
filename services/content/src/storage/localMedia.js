@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, '../../uploads');
 
 function safePath(folder) {
   const target = path.resolve(root, folder);
-  if (!target.startsWith(root + path.sep)) throw new Error('Invalid media path');
+  if (!target.startsWith(root + path.sep)) throw new Error('Đường dẫn tệp không hợp lệ');
   return target;
 }
 

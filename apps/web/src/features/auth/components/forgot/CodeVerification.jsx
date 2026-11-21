@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 function CodeVerification({ setVisible, setUserInfos, userInfos }) {
-  const { email, code } = userInfos;
+  const { email, code = '' } = userInfos;
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +19,7 @@ function CodeVerification({ setVisible, setUserInfos, userInfos }) {
   };
 
   const forgotValidation = Yup.object({
-    code: Yup.string().required('Security code is required.').max(6).min(6),
+    code: Yup.string().required('Vui lòng nhập mã xác nhận').matches(/^\d{6}$/, 'Mã xác nhận gồm 6 chữ số'),
   });
 
   const submitHandler = async (values) => {
@@ -40,7 +40,7 @@ function CodeVerification({ setVisible, setUserInfos, userInfos }) {
       setError('');
       setLoading(false);
     } catch (error) {
-      setError(error.response?.data?.message);
+      setError(error.response?.data?.message || 'Không thể kết nối máy chủ. Vui lòng thử lại.');
       setTimeout(() => {
         setLoading(false);
       }, 1000);
@@ -49,10 +49,10 @@ function CodeVerification({ setVisible, setUserInfos, userInfos }) {
 
   return (
     <Card className={styles.wrap}>
-      <div className={styles.header}>Enter security code</div>
+      <div className={styles.header}>Nhập mã xác nhận</div>
       {error ? (
         <div className={styles.error}>
-          <div className={styles.error_header}>Something went wrong!</div>
+          <div className={styles.error_header}>Chưa thể xác nhận mã</div>
           <span>{error}</span>
         </div>
       ) : (
@@ -61,7 +61,7 @@ function CodeVerification({ setVisible, setUserInfos, userInfos }) {
 
       <div className={styles.content}>
         <span className={styles.text}>
-          Please check your emails for a message with your code. Your code is 8 numbers long.
+          Kiểm tra email và nhập mã gồm 6 chữ số. Mã có hiệu lực trong 10 phút.
         </span>
         <Formik
           enableReinitialize
@@ -76,24 +76,24 @@ function CodeVerification({ setVisible, setUserInfos, userInfos }) {
               <FormLoader loading={loading} className={styles.code_form}>
                 <LoginInput
                   className={styles.input}
-                  type="number"
+                  type="text"
                   name="code"
-                  placeholder="Enter Code"
+                  placeholder="Mã xác nhận"
                   onChange={handleCodeChange}
                   disabled={loading}
                 />
                 <div className={styles.label_col}>
-                  <span>We sent your code to:</span>
+                  <span>Mã đã được gửi đến:</span>
                   <span>{userInfos.email}</span>
                 </div>
               </FormLoader>
 
               <div className={styles.btns}>
                 <Link className="gray_btn" to="/login">
-                  Cancel
+                  Hủy
                 </Link>
-                <button type="submit" className="btn_blue">
-                  Continue
+                <button type="submit" className="btn_blue" disabled={loading}>
+                  Tiếp tục
                 </button>
               </div>
             </Form>

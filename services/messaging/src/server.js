@@ -14,6 +14,7 @@ const sync = require('@ptitsocial/service-kit/projections').projectionSync({ Use
 const app = createApp('messaging');
 
 app.use('/internal', internalOnly);
+require('./features/academic')(app, sync);
 app.get(
   '/internal/stats/:userId',
   catchAsync(async (req, res) => {
@@ -39,7 +40,7 @@ app.post(
   catchAsync(async (req, res, next) => {
     const { action, payload } = req.body;
     if (!actions.includes(action) || !payload?.sender?._id || !payload?.recipient?._id)
-      return next(new AppError('Invalid notification event', 400));
+      return next(new AppError('Thông báo không hợp lệ', 400));
     await sync.sync();
     const notification = await new Notification(payload)[action]();
     if (notification) {

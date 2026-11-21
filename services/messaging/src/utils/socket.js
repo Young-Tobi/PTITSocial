@@ -2,6 +2,7 @@ const { Server } = require('socket.io');
 const { authenticate } = require('@ptitsocial/service-kit/auth');
 const Chat = require('../models/chatModel');
 const Message = require('../models/messageModel');
+const User = require('../models/userModel');
 let io;
 const online = new Map();
 
@@ -22,12 +23,12 @@ function init(server, options) {
       const account = await authenticate(
         socket.handshake.auth?.token || (cookie && decodeURIComponent(cookie.slice(4)))
       );
-      if (!account.verified) return next(new Error('Verified account required'));
+      if (!account.verified) return next(new Error('Vui lòng xác minh tài khoản'));
       const { id, username, first_name, last_name, photo } = account;
       socket.account = { id, username, first_name, last_name, photo };
       next();
     } catch {
-      next(new Error('Authentication failed'));
+      next(new Error('Xác thực thất bại'));
     }
   });
   io.on('connection', (socket) => {
@@ -66,9 +67,14 @@ function init(server, options) {
       if (!stored || String(stored.sender._id) !== info.id) return;
       const chat = await member(String(stored.chat), info.id);
       if (!chat) return;
-      for (const user of chat.users)
-        if (String(user._id) !== info.id)
-          io.to(`user:${user._id}`).emit('message_recieved', stored);
+      for (const user of chat.users) {
+        if (String(user._id) !== info.id) {
+          const recipient = await User.findById(user._id).select('unseenMessages');
+          io.to(`user:${user._id}`).emit('message_recieved', stored, {
+            unseenMessages: recipient?.unseenMessages || 0,
+          });
+        }
+      }
     });
     on('seen', async ({ message, chat }) => {
       const stored = await member(chat?._id, info.id);

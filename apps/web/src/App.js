@@ -13,12 +13,6 @@ function App() {
   const theme = useSelector((state) => state.user.theme);
   const createPost = useSelector((state) => state.createPost);
 
-  window.oncontextmenu = function (event) {
-    event.preventDefault();
-    event.stopPropagation();
-    return false;
-  };
-
   useEffect(() => {
     if (theme === 'dark') {
       document.body.classList.add('dark');

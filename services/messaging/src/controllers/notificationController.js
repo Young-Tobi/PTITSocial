@@ -31,7 +31,7 @@ exports.seenNotification = catchAsync(async (req, res, next) => {
   const notification = await NotificationModel.findById(nid);
 
   if (!notification || notification.recipient.toString() !== userId)
-    return next(new AppError('Notification not found', 404));
+    return next(new AppError('Không tìm thấy thông báo', 404));
 
   notification.seen = 'seen';
   await notification.save();

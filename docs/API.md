@@ -1,6 +1,10 @@
 # API qua Gateway
 
+API Kho tài liệu học tập cộng đồng: [docs/documents](documents/README.md), tiền tố `/api/v1/documents` do Content xử lý.
+
 Frontend chỉ gọi `http://localhost:8000`. Các URL giữ tương thích với giao diện hiện tại.
+
+API và cách tích hợp Hỏi đáp học thuật được mô tả riêng tại [docs/academic](academic/README.md).
 
 | Tiền tố/đường dẫn                                                                | Dịch vụ   |
 | -------------------------------------------------------------------------------- | --------- |
@@ -16,6 +20,10 @@ Frontend chỉ gọi `http://localhost:8000`. Các URL giữ tương thích vớ
 | `/api/v1/chats/*`, `/api/v1/messages/*`                                          | Messaging |
 | `/api/v1/users/notifications*`                                                   | Messaging |
 | `/socket.io/*`                                                                   | Messaging |
+| `/api/v1/quiz/*`, `/quiz-socket/*`                                                | Quiz      |
+| `/api/v1/coding/*`, `/coding-socket/*` | Coding |
+
+Chi tiết phòng thi lập trình và API nộp bài: [CODING.md](CODING.md).
 
 `resendEmailVerifivation` là tên route cũ có lỗi chính tả, tạm giữ để không làm hỏng giao diện. Khi chuẩn hóa API, đổi đồng thời route và nơi gọi, hoặc giữ alias trong một giai đoạn chuyển tiếp.
 

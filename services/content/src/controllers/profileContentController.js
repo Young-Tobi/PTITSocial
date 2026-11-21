@@ -1,3 +1,4 @@
+const { visibilityFilter } = require('../utils/postAccess');
 const User = require('../models/userModel');
 const Reaction = require('../models/reactionModel');
 
@@ -13,7 +14,7 @@ exports.getPhotos = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ username });
 
   if (!user) {
-    return next(new AppError('No user found with that username', 404));
+    return next(new AppError('Không tìm thấy tài khoản này', 404));
   }
 
   const path = `${process.env.APP_NAME}/users/${user.id}/public/*`;
@@ -54,7 +55,7 @@ exports.getUserPosts = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ username });
   if (!user) {
-    return next(new AppError('No user found with that username', 404));
+    return next(new AppError('Không tìm thấy tài khoản này', 404));
   }
 
   let filter = { user: user.id };
@@ -64,6 +65,7 @@ exports.getUserPosts = catchAsync(async (req, res, next) => {
     .limitFields()
     .paginate();
   // const doc = await features.query.explain();
+  features.query.and([visibilityFilter(userID, req.friendIds)]);
   const posts = await features.query;
   const ids = posts.map((el) => el._id.toString());
 

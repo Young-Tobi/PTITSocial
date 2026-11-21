@@ -33,7 +33,7 @@ function PostLikes({ showLikes, setShowLikes, postID }) {
       <div className={`blur ${classes.post_likes}`}>
         <Card className={classes.post_likes_card} innerRef={pRef}>
           <div className={classes.pheader}>
-            <span>All</span>
+            <span>Tất cả</span>
             {likesSkelton && (
               <Skeleton circle height={25} width={25} containerClassName="avatar-skeleton" />
             )}

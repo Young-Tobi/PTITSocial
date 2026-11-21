@@ -15,7 +15,9 @@
     "firebase": "^9.15.0",
     "formik": "^2.2.9",
     "js-cookie": "^3.0.1",
+    "markdown-to-jsx": "^9.10.6",
     "moment": "^2.29.4",
+    "prismjs": "^1.30.0",
     "react": "^18.2.0",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
@@ -38,9 +40,18 @@
     "socket.io-client": "^4.5.4",
     "styled-components": "^5.3.6",
     "web-vitals": "^2.1.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "leaflet": "^1.9.4",
+    "livekit-client": "^2.15.5",
+    "react-leaflet": "^4.2.1",
+    "@monaco-editor/react": "4.7.0",
+    "exceljs": "4.4.0",
+    "http-proxy-middleware": "2.0.6",
+    "monaco-editor": "0.52.2"
   },
   "scripts": {
+    "prestart": "node ../../scripts/copy-monaco.cjs",
+    "prebuild": "node ../../scripts/copy-monaco.cjs",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -66,5 +77,12 @@
   },
   "engines": {
     "node": ">=16.0.0"
-  }
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^markdown-to-jsx/react$": "<rootDir>/node_modules/markdown-to-jsx/dist/react.cjs",
+      "^markdown-to-jsx/entities$": "<rootDir>/node_modules/markdown-to-jsx/dist/entities.browser.cjs"
+    }
+  },
+  "devDependencies": {}
 }

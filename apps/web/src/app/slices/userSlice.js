@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { normalizeMediaLinks } from 'shared/lib/mediaLinks';
 
 const initialValue = {
-  userinfo: Cookies.get('user') ? JSON.parse(Cookies.get('user')) : null,
+  userinfo: Cookies.get('user') ? normalizeMediaLinks(JSON.parse(Cookies.get('user'))) : null,
   theme: Cookies.get('theme')
     ? JSON.parse(Cookies.get('theme'))
     : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -18,13 +19,11 @@ export const userSlice = createSlice({
   reducers: {
     login: (state, action) => {
       state.userinfo = action.payload.data.user;
+      Cookies.remove('token');
+      delete axios.defaults.headers.common.Authorization;
       Cookies.set('user', JSON.stringify(action.payload.data.user), {
         expires: 90,
       });
-      Cookies.set('token', JSON.stringify(action.payload.data.token), {
-        expires: 90,
-      });
-      axios.defaults.headers.common['Authorization'] = `Bearer ${action.payload.data.token}`;
     },
 
     updateProfilePhoto: (state, action) => {
@@ -76,6 +75,7 @@ export const userSlice = createSlice({
 
     logout: (state, action) => {
       state.userinfo = null;
+      delete axios.defaults.headers.common.Authorization;
       Cookies.set('user', null);
       Cookies.set('token', null);
     },

@@ -1,3 +1,4 @@
+import { reactionLabel } from 'app/locale';
 import { useRef } from 'react';
 import useOnClickOutside from 'shared/hooks/useOnClickOutside';
 import styles from './ReactsPopup.module.css';
@@ -49,7 +50,11 @@ export default function ReactsPopup({
     >
       {reactsArray.map((react, i) => (
         <div className={styles.react} key={i} onClick={() => reactHandler(react.name)}>
-          <img src={react.image} alt={react.name} />
+          <img
+            src={react.image}
+            alt={reactionLabel(react.name)}
+            title={reactionLabel(react.name)}
+          />
         </div>
       ))}
     </div>

@@ -5,7 +5,7 @@ import classes from './Comments.module.css';
 import axios from 'axios';
 import Comment from './Comment';
 
-function Comments({ lastComment, commentsCount, postID, lastCommentData, commentRef }) {
+function Comments({ lastComment, commentsCount, postID, lastCommentData }) {
   const [comments, setComments] = useState([]);
 
   const fetchProjects = async ({ pageParam = 1 }) => {
@@ -58,24 +58,11 @@ function Comments({ lastComment, commentsCount, postID, lastCommentData, comment
       {comments.map((comment) => (
         <Comment key={comment._id} comment={comment} />
       ))}
-      {commentsCount > comments.length ? (
-        <>
-          <div className={classes.view_more} onClick={viewMoreHandler}>
-            View more comments
-            {isFetching && ' Loading...'}
-          </div>
-        </>
-      ) : (
-        <>
-          <div
-            className={classes.view_more}
-            onClick={() => {
-              commentRef.current.focus();
-            }}
-          >
-            Viết bình luận...
-          </div>
-        </>
+      {commentsCount > comments.length && (
+        <div className={classes.view_more} onClick={viewMoreHandler}>
+          Xem thêm bình luận
+          {isFetching && ' Đang tải…'}
+        </div>
       )}
     </div>
   );

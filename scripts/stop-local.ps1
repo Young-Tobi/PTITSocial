@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $projectRoot
-foreach ($name in @('frontend','gateway','content','messaging','accounts')) {
+foreach ($name in @('frontend','gateway','learning','study','coding','quiz','content','messaging','accounts')) {
   $pidFile = Join-Path $projectRoot ".local-logs/$name.pid"
   if (-not (Test-Path -LiteralPath $pidFile)) { continue }
   $ownedProcessId = [int](Get-Content -LiteralPath $pidFile)

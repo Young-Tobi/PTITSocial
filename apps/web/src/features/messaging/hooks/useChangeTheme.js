@@ -32,12 +32,12 @@ export const useChangeTheme = (chat) => {
 
       sendMessage({
         content: `
-         ${name} changed the theme to ${chatThemes[newTheme - 1].name}.`,
+         ${name} đã đổi chủ đề thành ${chatThemes[newTheme - 1].name}.`,
         type: 'info',
         chatId: chat._id,
       });
 
-      toast.success('Theme changed successfully');
+      toast.success('Đã đổi chủ đề thành công');
 
       socket.emit('customize_chat', {
         userId,

@@ -5,15 +5,15 @@ import styles from './AllMenu.module.css';
 export default function AllMenu() {
   return (
     <div className={styles.all_menu}>
-      <div className={styles.all_menu_header}>Menu</div>
+      <div className={styles.all_menu_header}>Danh mục</div>
       <div className={`${styles.all_menu_wrap} scrollbar`}>
         <div className={styles.all_left}>
           <div className={styles.all_menu_search}>
             <i className="amm_s_ic"></i>
-            <input type="text" placeholder="Search Menu" />
+            <input type="text" placeholder="Tìm trong danh mục" />
           </div>
           <div className={styles.all_menu_group}>
-            <div className={styles.all_menu_group_header}>Social</div>
+            <div className={styles.all_menu_group_header}>Cộng đồng</div>
             {menu.slice(0, 6).map((item, i) => (
               <AllMenuItem
                 name={item.name}
@@ -24,7 +24,7 @@ export default function AllMenu() {
             ))}
           </div>
           <div className={styles.all_menu_group}>
-            <div className={styles.all_menu_group_header}>Entertainment</div>
+            <div className={styles.all_menu_group_header}>Giải trí</div>
             {menu.slice(6, 9).map((item, i) => (
               <AllMenuItem
                 name={item.name}
@@ -35,7 +35,7 @@ export default function AllMenu() {
             ))}
           </div>
           <div className={styles.all_menu_group}>
-            <div className={styles.all_menu_group_header}>Shopping</div>
+            <div className={styles.all_menu_group_header}>Mua sắm</div>
             {menu.slice(9, 11).map((item, i) => (
               <AllMenuItem
                 name={item.name}
@@ -46,7 +46,7 @@ export default function AllMenu() {
             ))}
           </div>
           <div className={styles.all_menu_group}>
-            <div className={styles.all_menu_group_header}>Personal</div>
+            <div className={styles.all_menu_group_header}>Cá nhân</div>
             {menu.slice(11, 15).map((item, i) => (
               <AllMenuItem
                 name={item.name}
@@ -57,7 +57,7 @@ export default function AllMenu() {
             ))}
           </div>
           <div className={styles.all_menu_group}>
-            <div className={styles.all_menu_group_header}>Professional</div>
+            <div className={styles.all_menu_group_header}>Công việc</div>
             {menu.slice(15, 17).map((item, i) => (
               <AllMenuItem
                 name={item.name}
@@ -68,7 +68,7 @@ export default function AllMenu() {
             ))}
           </div>
           <div className={styles.all_menu_group}>
-            <div className={styles.all_menu_group_header}>Community Resources</div>
+            <div className={styles.all_menu_group_header}>Nguồn lực cộng đồng</div>
             {menu.slice(17, 21).map((item, i) => (
               <AllMenuItem
                 name={item.name}
@@ -79,7 +79,7 @@ export default function AllMenu() {
             ))}
           </div>
           <div className={styles.all_menu_group}>
-            <div className={styles.all_menu_group_header}>More from Meta</div>
+            <div className={styles.all_menu_group_header}>Tiện ích khác</div>
             {menu.slice(21, 23).map((item, i) => (
               <AllMenuItem
                 name={item.name}
@@ -91,7 +91,7 @@ export default function AllMenu() {
           </div>
         </div>
         <div className={styles.all_right}>
-          <div className={styles.all_right_header}>Create</div>
+          <div className={styles.all_right_header}>Tạo</div>
           {create.map((item, i) => (
             <div className={`${styles.all_right_item} hover1`} key={i}>
               <div className={styles.all_right_circle}>

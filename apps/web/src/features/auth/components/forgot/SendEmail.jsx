@@ -24,7 +24,7 @@ function SendEmail({ setVisible, userInfos }) {
       setLoading(false);
       setVisible(2);
     } catch (error) {
-      setError(error.response?.data?.message);
+      setError(error.response?.data?.message || 'Không thể kết nối máy chủ. Vui lòng thử lại.');
       setTimeout(() => {
         setLoading(false);
       }, 1000);
@@ -33,10 +33,10 @@ function SendEmail({ setVisible, userInfos }) {
 
   return (
     <Card className={styles.wrap}>
-      <div className={styles.header}>Reset Your Password</div>
+      <div className={styles.header}>Khôi phục mật khẩu</div>
       {error ? (
         <div className={styles.error}>
-          <div className={styles.error_header}>Error</div>
+          <div className={styles.error_header}>Chưa thể gửi email</div>
           <span>{error}</span>
         </div>
       ) : (
@@ -47,12 +47,12 @@ function SendEmail({ setVisible, userInfos }) {
         <div className={styles.s_content}>
           <div className={styles.s_left}>
             <span className={styles.s_left_text}>
-              How do you want to receive the code to reset your password?
+              Gửi mã xác nhận để đặt lại mật khẩu qua email của bạn.
             </span>
             <label htmlFor="email" className="hover1">
               <input type="radio" name="" id="email" checked readOnly />
               <div className={styles.label_col}>
-                <span>Send code via email</span>
+                <span>Nhận mã qua email</span>
                 <span>{userInfos.email}</span>
               </div>
             </label>
@@ -66,10 +66,10 @@ function SendEmail({ setVisible, userInfos }) {
       </FormLoader>
       <div className={styles.btns}>
         <button className="gray_btn" onClick={() => setVisible(0)}>
-          Not You?
+          Chọn tài khoản khác
         </button>
-        <button className="btn_blue" onClick={submitHandler}>
-          Continue
+        <button className="btn_blue" onClick={submitHandler} disabled={loading}>
+          Gửi mã xác nhận
         </button>
       </div>
     </Card>

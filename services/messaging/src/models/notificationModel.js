@@ -10,8 +10,9 @@ const notificationSchema = mongoose.Schema(
     type: {
       type: String,
       enum: ['react', 'comment', 'follow', 'friend'],
-      required: [true, 'message type is required'],
+      required: [true, 'Vui lòng chọn loại tin nhắn'],
     },
+    reactionType: { type: String, enum: ['like', 'love', 'haha', 'wow', 'sad', 'angry'] },
     click: {
       type: String,
     },
@@ -24,7 +25,7 @@ const notificationSchema = mongoose.Schema(
           if (this.type === 'like') return true;
           return validator.isLength(val, { min: 1, max: 400 });
         },
-        message: 'Notification must have a content at least 1 charcters ',
+        message: 'Thông báo không được để trống ',
       },
     },
     seen: {

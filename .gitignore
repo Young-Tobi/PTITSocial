@@ -7,7 +7,13 @@ node_modules/
 .local-logs/
 .local-tools/
 .local-backups/
+.study-media-source-temp/
 services/content/uploads/
+services/messaging/uploads/
 apps/web/build/
 coverage/
+infra/judge0/judge0.conf
+apps/web/public/monaco/
 *.log
+
+services/content/private-documents/

@@ -8,6 +8,7 @@ import CreatePost from 'features/posts/components/home/CreatePost/CreatePost';
 import ActivateAccount from 'features/auth/components/activation/ActivateAccount';
 import SendVerification from 'features/auth/components/verification/SendVerification';
 import { logout, updateNStats } from 'app/slices/userSlice';
+import { queryClient } from 'App';
 
 import axios from 'axios';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
@@ -41,9 +42,7 @@ function Home() {
         mutate({ fcm: token });
       }
     } else if (permission === 'denied') {
-      alert(
-        'You denied for the notification access, please allow it to be able to recieve notifications'
-      );
+      alert('Bạn đã chặn thông báo. Vui lòng cho phép thông báo trong trình duyệt.');
     }
   }
 
@@ -137,10 +136,11 @@ function Home() {
         })
       );
     }
-    if (pingError) {
+    if (pingError?.response?.status === 401) {
+      queryClient.clear();
       dispatch(logout());
     }
-  }, [data, error]);
+  }, [pingdata, pingError, dispatch]);
 
   return (
     <div className={styles.home}>

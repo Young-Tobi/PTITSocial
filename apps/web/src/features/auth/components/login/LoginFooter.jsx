@@ -5,58 +5,45 @@ export default function LoginFooter() {
   return (
     <footer className={styles.footer}>
       <div className={styles.warp}>
-        <Link to="/">English(UK)</Link>
-        <Link to="/">Français(FR)</Link>
-        <Link to="/">العربية</Link>
-        <Link to="/">ⵜⴰⵎⴰⵣⵉⵖⵜ</Link>
-        <Link to="/">Español (España)</Link>
-        <Link to="/">italiano</Link>
-        <Link to="/">Deutsch</Link>
-        <Link to="/">Português (Brasil)</Link>
-        <Link to="/">हिन्दी</Link>
-        <Link to="/">中文(简体)</Link>
-        <Link to="/">日本語</Link>
-        <Link to="/" className={styles.square}>
-          <i className="plus_icon"></i>
-        </Link>
+        <span>Tiếng Việt</span>
       </div>
       <div className="line-spliter"></div>
       <div className={styles.warp}>
-        <Link to="/">Sign Up</Link>
-        <Link to="/">Log in</Link>
-        <Link to="/">Messenger</Link>
-        <Link to="/">Backbook Lite</Link>
-        <Link to="/">Watch</Link>
-        <Link to="/">Places</Link>
-        <Link to="/">Games</Link>
-        <Link to="/">Marketplace</Link>
-        <Link to="/">Backbook Pay</Link>
+        <Link to="/">Đăng ký</Link>
+        <Link to="/">Đăng nhập</Link>
+        <Link to="/">Tin nhắn</Link>
+        <Link to="/">PTITSocial rút gọn</Link>
+        <Link to="/">Video</Link>
+        <Link to="/">Địa điểm</Link>
+        <Link to="/">Trò chơi</Link>
+        <Link to="/">Chợ mua bán</Link>
+        <Link to="/">Thanh toán</Link>
         <Link to="/">Oculus</Link>
         <Link to="/">Portal</Link>
         <Link to="/">Instagram</Link>
-        <Link to="/">Bulletin</Link>
-        <Link to="/">Local</Link>
-        <Link to="/">Fundraisers</Link>
-        <Link to="/">Services</Link>
-        <Link to="/">Voting Information Centre</Link>
-        <Link to="/">Groups</Link>
+        <Link to="/">Bản tin</Link>
+        <Link to="/">Địa phương</Link>
+        <Link to="/">Gây quỹ</Link>
+        <Link to="/">Dịch vụ</Link>
+        <Link to="/">Trung tâm thông tin bầu cử</Link>
+        <Link to="/">Nhóm</Link>
         <Link to="/">Giới thiệu</Link>
-        <Link to="/">Create ad</Link>
-        <Link to="/">Create Page</Link>
-        <Link to="/">Developers</Link>
-        <Link to="/">Careers</Link>
-        <Link to="/">Privacy</Link>
-        <Link to="/">Cookies</Link>
+        <Link to="/">Tạo quảng cáo</Link>
+        <Link to="/">Tạo trang</Link>
+        <Link to="/">Nhà phát triển</Link>
+        <Link to="/">Tuyển dụng</Link>
+        <Link to="/">Quyền riêng tư</Link>
+        <Link to="/">Tệp cookie</Link>
         <Link to="/">
-          AdChoices
+          Lựa chọn quảng cáo
           <i className="adChoices_icon"></i>
         </Link>
-        <Link to="/">Terms</Link>
-        <Link to="/">Help</Link>
+        <Link to="/">Điều khoản</Link>
+        <Link to="/">Trợ giúp</Link>
       </div>
       <div className={styles.warp}>
         <Link to="/" style={{ fontSize: '12px', marginTop: '10px' }}>
-          Backbook © 2022
+          PTITSocial © 2026
         </Link>
       </div>
     </footer>

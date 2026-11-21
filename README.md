@@ -2,7 +2,7 @@
 
 Repository nhóm (private): [Young-Tobi/PTITSocial](https://github.com/Young-Tobi/PTITSocial).
 
-Mạng xã hội dành cho sinh viên, dùng React, Express, Node.js và MongoDB. Backend được tách thành ba dịch vụ và một API Gateway; mỗi dịch vụ sở hữu database riêng.
+Mạng xã hội dành cho sinh viên, dùng React, Express, Node.js và MongoDB. Backend được tách thành bảy dịch vụ và một API Gateway; mỗi dịch vụ sở hữu database riêng.
 
 ## Cấu trúc
 
@@ -18,12 +18,16 @@ services/
   accounts/                Tài khoản, hồ sơ, kết bạn, theo dõi, tìm kiếm
   content/                 Bài viết, bình luận, lượt thích, ảnh
   messaging/               Chat, tin nhắn, thông báo và trạng thái online
+  quiz/                    Bộ đề, phòng quiz trực tiếp, chấm điểm và lịch sử
+  coding/                  Phòng thi lập trình, hàng đợi chấm và xếp hạng
+  study/                   Phòng tập trung, Pomodoro, micro và hẹn học
+  learning/                Trợ lý AI, lộ trình học tập và flashcard
 packages/service-kit/      Xử lý lỗi, HTTP client, xác thực và bản sao dữ liệu công khai
 scripts/                   Khởi động, dừng, cấu hình, chuyển dữ liệu
 tests/                     Kiểm tra ranh giới dịch vụ và luồng tích hợp
 docs/                      Kiến trúc, API và hướng dẫn đọc source
 legacy/backbook-server/    Backend cũ để tham khảo/chuyển dữ liệu; không chạy cùng bản mới
-compose.yaml               MongoDB và Mailpit trên máy local
+compose.yaml               MongoDB, Mailpit, LiveKit và Judge0 (API/worker/PostgreSQL/Redis)
 ```
 
 ## Chạy local
@@ -50,6 +54,16 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\stop-local.ps1
 
 Máy đang làm bài đã được chuyển dữ liệu từ bản cũ, bao gồm tài khoản và các nội dung bạn tạo. Khi cài mới với MongoDB trống, đăng ký tài khoản qua website và xác minh email trong Mailpit.
 
+## Chia sẻ qua VS Code Ports
+
+Chạy hệ thống, chuyển tiếp **cổng 3000** và đặt Visibility là Public. Giao diện gọi API, ảnh upload và ba kết nối realtime qua proxy cùng cổng 3000; không cần mở các cổng của microservices hoặc Judge0.
+
+Trong `.env` ở thư mục gốc, đặt `PUBLIC_APP_URL` bằng địa chỉ công khai (ví dụ `https://your-name-3000.asse.devtunnels.ms`, không có dấu `/` cuối). Dừng rồi chạy lại hệ thống để cập nhật đường dẫn xác minh tài khoản trong email. Khi đổi tunnel, cập nhật biến này và chạy lại. Để trống biến để trở về link email localhost.
+
+Giữ cổng Mailpit `8025` ở chế độ Private: hộp thư này chứa cả mã khôi phục mật khẩu. Mailpit chỉ thu email thử nghiệm trên máy chủ, không gửi đến Gmail thật. Người vận hành xem email tại `http://localhost:8025` và cung cấp link/mã của đúng tài khoản cho người đang thử ứng dụng.
+
+Máy chủ, Docker và phiên chuyển tiếp VS Code phải tiếp tục chạy. Đây là cách chia sẻ bản phát triển để dùng thử; build production cần reverse proxy tương đương cho các đường dẫn trong `apps/web/src/setupProxy.js`.
+
 ## Dịch vụ
 
 | Thành phần | Cổng | Database               |
@@ -59,21 +73,45 @@ Máy đang làm bài đã được chuyển dữ liệu từ bản cũ, bao gồ
 | Accounts   | 8001 | `ptitsocial_accounts`  |
 | Content    | 8002 | `ptitsocial_content`   |
 | Messaging  | 8003 | `ptitsocial_messaging` |
+| Quiz       | 8004 | `ptitsocial_quiz`      |
+| Coding | 8005 | `ptitsocial_coding` |
+| Study | 8006 | `ptitsocial_study` |
+| Learning | 8007 | `ptitsocial_learning` |
+| LiveKit | 7880 | Không kết nối MongoDB |
+| Judge0 API | 2358 | PostgreSQL riêng trong Docker |
 
-Từng dịch vụ có `package.json`, `src/server.js`, `.env` và `/health` riêng. Có thể chạy riêng bằng `npm.cmd run start:accounts`, `start:content`, `start:messaging`, `start:gateway`. Khi gọi từ root bằng npm workspace, working directory được đặt vào dịch vụ tương ứng.
+Từng dịch vụ có `package.json`, `src/server.js`, `.env` và `/health` riêng. Có thể chạy riêng bằng `npm.cmd run start:accounts`, `start:content`, `start:messaging`, `start:quiz`, `start:coding`, `start:gateway`. Khi gọi từ root bằng npm workspace, working directory được đặt vào dịch vụ tương ứng.
 
-Một MongoDB local phục vụ ba database tách biệt; không có dịch vụ nào truy vấn trực tiếp database của dịch vụ khác. Các bản sao tên, avatar và quan hệ theo dõi chỉ phục vụ đọc, được đồng bộ qua API nội bộ.
+Một MongoDB local phục vụ bảy database tách biệt; không có dịch vụ nào truy vấn trực tiếp database của dịch vụ khác. Các bản sao tên, avatar và quan hệ theo dõi chỉ phục vụ đọc, được đồng bộ qua API nội bộ.
+
+Các chức năng học tập nằm trong menu **Chức năng học tập** trên header (cả desktop/mobile) và sidebar bảng tin. Đường dẫn chính: `/questions`, `/documents`, `/focus`, `/study-spots`, `/study-meetups`, `/learning`, `/learning/ai`, `/learning/flashcards`, `/quiz`, `/coding`.
+
+Trình duyệt sử dụng cookie HttpOnly cho phiên đăng nhập; API vẫn trả token để tương thích với các API client và bộ kiểm thử. Không lưu token vào cookie JavaScript. Cả bốn kết nối realtime (chat, Quiz, Coding, Study) hỗ trợ phiên cookie.
+
+AI cần `GEMINI_API_KEYS` trong `services/learning/.env` (hoặc cấu hình chung ở root trước lần chạy đầu). Không đưa key thật lên Git. Khi chưa cấu hình, trang AI thông báo chưa sẵn sàng; lộ trình tĩnh và flashcard thủ công vẫn dùng được. Test AI sử dụng provider giả lập, không tiêu thụ API thật.
+
+Quyền quản lý tài liệu được cấu hình bằng `DOCUMENT_MODERATOR_IDS`, là danh sách MongoDB `_id` của tài khoản, cách nhau bằng dấu phẩy, trong `services/content/.env`. Mặc định không tự cấp quyền quản lý cho người đăng ký.
+
+LiveKit mặc định phục vụ micro trên máy local qua `ws://localhost:7880`. Nếu người dùng ở máy khác truy cập qua Dev Tunnels, phần micro cần một LiveKit endpoint công khai có TLS và kết nối WebRTC phù hợp; chỉ chuyển tiếp cổng web 3000 không cung cấp đường truyền âm thanh. Cấu hình `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` trong `.env` root và khởi động lại. Chat chữ/Pomodoro/phòng học không phụ thuộc việc cấp quyền micro.
 
 ## Kiểm tra
 
 ```powershell
 npm.cmd run test:architecture
+npm.cmd run test:quiz
+npm.cmd run test:coding
+npm.cmd --prefix apps/web test -- --watchAll=false --runInBand
 # Cần hệ thống đang chạy:
 npm.cmd run test:integration
+npm.cmd run test:quiz:integration
+npm.cmd run test:coding:integration
+npm.cmd run test:coding:languages
 npm.cmd run build:web
 ```
 
-Kiểm tra tích hợp tạo tài khoản thử riêng và xóa dữ liệu thử trong các database mới khi kết thúc. Email thử và file ảnh thử có thể còn trong Mailpit/thư mục upload; không xóa dữ liệu người dùng hiện có.
+Nếu Gateway chạy ở cổng khác, đặt `$env:TEST_API_URL='http://localhost:8010'` trước khi chạy kiểm tra tích hợp.
+
+Kiểm tra tích hợp bao gồm xác minh email, kết bạn, ảnh, bình luận, WebSocket, quyền đọc tin nhắn và trạng thái đã đọc riêng cho từng thành viên nhóm. Các kiểm thử giao diện kiểm tra tên tiếng Việt, bài chia sẻ đã mất bài gốc và cập nhật trạng thái đọc. Bộ kiểm tra tích hợp tạo tài khoản thử riêng rồi dọn dữ liệu, email trong Mailpit và ảnh local của lần chạy đó; không xóa dữ liệu người dùng hiện có.
 
 ## Chuyển dữ liệu cũ
 
@@ -85,14 +123,20 @@ npm.cmd run check:migration
 
 Lệnh sao chép từ database `backbook`, giữ nguyên ObjectId và không sửa database nguồn. Những bản ghi đã có trong database mới không bị ghi đè. Bản sao lưu nằm ở `.local-backups/`; ảnh được sao chép vào `services/content/uploads/`.
 
-Đây là bước chuyển sang dùng hệ thống mới, không phải đồng bộ hai chiều. Sau khi chuyển, tiếp tục làm việc với ba database `ptitsocial_*`.
+Đây là bước chuyển sang dùng hệ thống mới, không phải đồng bộ hai chiều. Sau khi chuyển, tiếp tục làm việc với các database `ptitsocial_*`.
 
 ## Đọc tiếp
 
 - [Kiến trúc và quyền sở hữu dữ liệu](docs/ARCHITECTURE.md)
 - [Đường đi của API](docs/API.md)
 - [Nên đọc và sửa file nào](docs/CODE-GUIDE.md)
+- [Quiz: dùng thử, API và chấm điểm](docs/QUIZ.md)
+- [Thi đấu lập trình: dùng thử, bộ chấm và API](docs/CODING.md)
 - [Làm việc nhóm: clone, chia nhánh và Pull Request](docs/TEAM-WORKFLOW.md)
 - [Ghi chú giao diện](PTITSOCIAL-DESIGN.md)
 
 Source ban đầu được phát triển từ [Backbook frontend](https://github.com/msobkyy/backbook) và [Backbook backend](https://github.com/msobkyy/backbook-server). Giữ nguồn tham khảo này trong báo cáo môn học.
+## Thi đấu lập trình cùng bạn bè
+
+Mở `/coding` sau khi chạy localhost. Một người tổ chức tạo phòng công khai/riêng tư và chọn nhiều đề; ít nhất hai người thi tham gia (tổng cộng 3 tài khoản đã xác minh email). Người tổ chức điều hành riêng; người thi tự chọn C, C++17, Java hoặc Python 3 trên Monaco và chấm bằng Judge0 CE tự chạy. Xem [hướng dẫn tính năng và bộ chấm](docs/CODING.md).
+

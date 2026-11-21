@@ -34,7 +34,7 @@ function ChatTheme({ showChatTheme, setShowChatTheme, chatTheme, chat }) {
     <div className={`${styles.wrap} blur`}>
       <Card className={styles.card} innerRef={popUpRef}>
         <div className={styles.header}>
-          <span>Themes</span>
+          <span>Chủ đề</span>
           <div
             onClick={() => {
               setShowChatTheme(false);
@@ -77,7 +77,7 @@ function ChatTheme({ showChatTheme, setShowChatTheme, chatTheme, chat }) {
                 setShowChatTheme(false);
               }}
             >
-              cancel
+              Hủy
             </button>
             <button
               disabled={nochange}
@@ -91,7 +91,7 @@ function ChatTheme({ showChatTheme, setShowChatTheme, chatTheme, chat }) {
                 color: `${nochange ? '#8a8a8a' : '#fff'}`,
               }}
             >
-              Save
+              Lưu
             </button>
           </div>
         </div>

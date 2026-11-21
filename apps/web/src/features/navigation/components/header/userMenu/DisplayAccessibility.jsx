@@ -16,16 +16,16 @@ export default function DisplayAccessibility({ setVisible }) {
         >
           <i className="arrow_back_icon"></i>
         </div>
-        Display & Accessibility
+        Hiển thị và trợ năng
       </div>
       <div className={styles.mmenu_main}>
         <div className={styles.small_circle} style={{ width: '50px' }}>
           <i className="dark_filled_icon"></i>
         </div>
         <div className={styles.mmenu_col}>
-          <span className={styles.mmenu_span1}>Dark Mode</span>
+          <span className={styles.mmenu_span1}>Chế độ tối</span>
           <span className={styles.mmenu_span2}>
-            Adjust the appearance of Facebook to reduce glare and give your eyes a break.
+            Điều chỉnh giao diện để giảm chói và giúp mắt thoải mái hơn.
           </span>
         </div>
       </div>
@@ -36,7 +36,7 @@ export default function DisplayAccessibility({ setVisible }) {
           dispatch(changeTheme('light'));
         }}
       >
-        <span>Off</span>
+        <span>Tắt</span>
         {theme === 'light' ? (
           <input type="radio" name="dark" id="darkOff" defaultChecked={true} />
         ) : (
@@ -50,7 +50,7 @@ export default function DisplayAccessibility({ setVisible }) {
           dispatch(changeTheme('dark'));
         }}
       >
-        <span>On</span>
+        <span>Bật</span>
         {theme === 'light' ? (
           <input type="radio" name="dark" id="darkOn" />
         ) : (
@@ -62,25 +62,25 @@ export default function DisplayAccessibility({ setVisible }) {
           <i className="compact_icon"></i>
         </div>
         <div className={styles.mmenu_col}>
-          <span className={styles.mmenu_span1}>Compact mode</span>
+          <span className={styles.mmenu_span1}>Chế độ thu gọn</span>
           <span className={styles.mmenu_span2}>
-            Make your font size smaller so more content can fit on the screen.
+            Giảm kích thước chữ để hiển thị được nhiều nội dung hơn.
           </span>
         </div>
       </div>
       <label htmlFor="compactOff" className="hover1">
-        <span>Off</span>
+        <span>Tắt</span>
         <input type="radio" name="compact" id="compactOff" />
       </label>
       <label htmlFor="compactOn" className="hover1">
-        <span>On</span>
+        <span>Bật</span>
         <input type="radio" name="compact" id="compactOn" />
       </label>
       <div className={`${styles.mmenu_item} hover3`}>
         <div className={styles.small_circle} style={{ width: '50px' }}>
           <i className="keyboard_icon"></i>
         </div>
-        <span>Keyboard</span>
+        <span>Bàn phím</span>
         <div className="rArrow">
           <i className="right_icon"></i>
         </div>

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './SignupForm.module.css';
 import { useMediaQuery } from 'react-responsive';
 import Popper from 'shared/components/Popper/Popper';
-import { Field } from 'formik';
+import { Field, useFormikContext } from 'formik';
 
 export default function DateSelector({
   birth_Day,
@@ -14,6 +14,7 @@ export default function DateSelector({
 }) {
   const [trigger, setTrigger] = useState(null);
   const [show, setShow] = useState(false);
+  const { setFieldValue } = useFormikContext();
 
   const desktopView = useMediaQuery({
     query: '(min-width: 850px)',
@@ -27,6 +28,9 @@ export default function DateSelector({
   };
 
   const days = Array.from(new Array(getDays()), (val, index) => 1 + index);
+  useEffect(() => {
+    if (Number(birth_Day) > days.length) setFieldValue('birth_Day', days.length);
+  }, [birth_Day, days.length, setFieldValue]);
 
   return (
     <div
@@ -36,7 +40,7 @@ export default function DateSelector({
       onMouseLeave={() => setShow(false)}
     >
       <div className={styles.colHeader}>
-        Date of birth{' '}
+        Ngày sinh{' '}
         {dateError ? (
           <i className={`error_icon ${styles.err_icon}`}></i>
         ) : (
@@ -59,6 +63,7 @@ export default function DateSelector({
         </Field>
         <Field
           name="birth_Month"
+          disabled={disabled}
           // value={birth_Month}
           // onChange={handleSignupChange}
           as="select"
@@ -71,6 +76,7 @@ export default function DateSelector({
         </Field>
         <Field
           name="birth_Year"
+          disabled={disabled}
           // value={birth_Year}
           // onChange={handleSignupChange}
           as="select"

@@ -3,43 +3,44 @@ import { queryClient } from 'App';
 export function updateMessages(newMessage) {
   queryClient.setQueryData(['getMessages', newMessage.chat], (oldData) => {
     if (!oldData) return oldData;
-    let newData = oldData;
-    newData.pages[0].data.messages = [newMessage, ...newData.pages[0].data.messages];
-    newData.pages[0].data.chat.latestMessage = newMessage;
     return {
       ...oldData,
-      newData,
+      pages: oldData.pages.map((page, index) =>
+        index !== 0
+          ? page
+          : {
+              ...page,
+              data: {
+                ...page.data,
+                messages: [
+                  newMessage,
+                  ...page.data.messages.filter((message) => message._id !== newMessage._id),
+                ],
+                chat: page.data.chat
+                  ? { ...page.data.chat, latestMessage: newMessage }
+                  : page.data.chat,
+              },
+            }
+      ),
     };
   });
-
+  const cachedChats = queryClient.getQueryData(['getChats']);
+  if (!cachedChats?.data.chats.some((chat) => chat._id === newMessage.chat)) {
+    queryClient.invalidateQueries({ queryKey: ['getChats'] });
+    return;
+  }
   queryClient.setQueryData(['getChats'], (oldData) => {
     if (!oldData) return oldData;
-    let newData = oldData;
-    newData.data.chats = newData.data.chats.map((chat) => {
-      if (chat._id === newMessage.chat) {
-        return {
-          ...chat,
-          latestMessage: newMessage,
-        };
-      }
-      return chat;
-    });
-
-    const targetChat = newData.data.chats.find((chat) => chat._id === newMessage.chat);
-    if (targetChat) {
-      const index = newData.data.chats.indexOf(targetChat);
-      newData.data.chats.splice(index, 1);
-      newData.data.chats.unshift(targetChat);
-    } else {
-      queryClient.refetchQueries({
-        queryKey: ['getChats'],
-        type: 'active',
-      });
-    }
-
+    const target = oldData.data.chats.find((chat) => chat._id === newMessage.chat);
     return {
       ...oldData,
-      newData,
+      data: {
+        ...oldData.data,
+        chats: [
+          { ...target, latestMessage: newMessage },
+          ...oldData.data.chats.filter((chat) => chat._id !== newMessage.chat),
+        ],
+      },
     };
   });
 }
@@ -47,30 +48,36 @@ export function updateMessages(newMessage) {
 export function updateSeenMessages(newMessage, chat) {
   queryClient.setQueryData(['getMessages', chat._id], (oldData) => {
     if (!oldData) return oldData;
-    let newData = oldData;
-    newData.pages[0].data.chat.latestMessage = newMessage;
     return {
       ...oldData,
-      newData,
+      pages: oldData.pages.map((page) => ({
+        ...page,
+        data: {
+          ...page.data,
+          messages: page.data.messages.map((message) =>
+            message._id === newMessage._id ? newMessage : message
+          ),
+          chat:
+            page.data.chat?.latestMessage?._id === newMessage._id
+              ? { ...page.data.chat, latestMessage: newMessage }
+              : page.data.chat,
+        },
+      })),
     };
   });
 
   queryClient.setQueryData(['getChats'], (oldData) => {
     if (!oldData) return oldData;
-    let newData = oldData;
-    newData.data.chats = newData.data.chats.map((chat) => {
-      if (chat._id === newMessage.chat) {
-        return {
-          ...chat,
-          latestMessage: newMessage,
-        };
-      }
-      return chat;
-    });
-
     return {
       ...oldData,
-      newData,
+      data: {
+        ...oldData.data,
+        chats: oldData.data.chats.map((item) =>
+          item._id === newMessage.chat && item.latestMessage?._id === newMessage._id
+            ? { ...item, latestMessage: newMessage }
+            : item
+        ),
+      },
     };
   });
 }

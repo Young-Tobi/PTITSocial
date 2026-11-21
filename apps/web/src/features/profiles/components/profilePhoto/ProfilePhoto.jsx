@@ -132,7 +132,7 @@ function ProfilePhoto({ showProfilePhoto, setShowProfilePhoto, pRef, photosData 
             accept="image/jpeg,image/png,image/webp,image/gif"
           />
           <div className={classes.header}>
-            Update profile picture
+            Cập nhật ảnh đại diện
             <div className="small_circle" onClick={() => setShowProfilePhoto(false)}>
               <i className="exit_icon"></i>
             </div>
@@ -142,11 +142,11 @@ function ProfilePhoto({ showProfilePhoto, setShowProfilePhoto, pRef, photosData 
               <>
                 <button className="light_blue_btn" onClick={() => refInput.current.click()}>
                   <i className="plus_icon filter_blue"></i>
-                  Upload photo
+                  Tải ảnh lên
                 </button>
                 {photosData?.profilePhotos.length > 0 && (
                   <>
-                    <div>Choose from old profile picture</div>
+                    <div>Chọn ảnh đại diện cũ</div>
                     <div className={classes.old_photos}>
                       {photosData?.profilePhotos.map((photo) => (
                         <img
@@ -161,7 +161,7 @@ function ProfilePhoto({ showProfilePhoto, setShowProfilePhoto, pRef, photosData 
                 )}
                 {photosData?.resources.length > 0 && (
                   <>
-                    <div>Choose from your profile photos</div>
+                    <div>Chọn từ ảnh trên trang cá nhân</div>
                     <div className={classes.old_photos}>
                       {photosData?.resources.map((photo) => (
                         <img
@@ -182,7 +182,7 @@ function ProfilePhoto({ showProfilePhoto, setShowProfilePhoto, pRef, photosData 
                     fontSize: `${description && description.length > 75 ? '15px' : ''}`,
                     direction: `${isRTL(description) ? 'rtl' : 'ltr'}`,
                   }}
-                  placeholder="Description"
+                  placeholder="Mô tả"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className={classes.textarea_blue}
@@ -222,10 +222,10 @@ function ProfilePhoto({ showProfilePhoto, setShowProfilePhoto, pRef, photosData 
                 </div>
                 <div className={classes.btns}>
                   <button className="gray_btn" onClick={() => setShowProfilePhoto(false)}>
-                    Cancel
+                    Hủy
                   </button>
                   <button className="btn_blue" onClick={() => updateProfielPicture()}>
-                    Save
+                    Lưu
                   </button>
                 </div>
               </FormLoader>

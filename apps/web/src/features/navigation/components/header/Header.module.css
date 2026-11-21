@@ -117,6 +117,14 @@
 .active .icon {
   display: none;
 }
+.middle svg.roadmapIcon {
+  fill: none;
+  color: var(--color-secondary);
+}
+.middle .active svg.roadmapIcon {
+  fill: none;
+  color: var(--blue-color);
+}
 .profile_active {
   color: var(--blue-color);
   background: var(--light-blue-color);
@@ -239,9 +247,26 @@
   }
 }
 
-/* Keep the two remaining navigation tabs centered at each viewport size. */
+/* Keep navigation centered at each viewport size. */
 .middle {
   transform: none;
+}
+
+.middle_icon.quiz_tab {
+  display: flex;
+}
+.quiz_tab svg {
+  width: 26px;
+  height: 26px;
+  color: #65676b;
+}
+.quiz_tab.active svg {
+  color: var(--blue-color);
+}
+@media (max-width: 620px) {
+  .middle .middle_icon:nth-child(1) {
+    display: none;
+  }
 }
 
 @media (max-width: 620px) {
@@ -269,3 +294,6 @@
     right: 4px;
   }
 }
+.middle .coding_tab { display: flex; }
+.middle .coding_tab svg { fill: none; color: #65676b; }
+.middle .coding_tab.active svg { color: var(--blue-color); }

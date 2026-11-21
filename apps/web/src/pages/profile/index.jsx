@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import ProfileMenu from './ProfileMenu';
 import Post from 'features/posts/components/post/index';
 import Card from 'shared/components/ui/Card/Card';
 import Photos from './Photos';
@@ -261,7 +260,6 @@ function Profile() {
 
           <div className="line"></div>
 
-          <ProfileMenu />
         </div>
       </div>
       <div className={classes.bottom}>
@@ -304,7 +302,7 @@ function Profile() {
                   {page.data.length > 0 ? (
                     page.data.map((post) => <Post key={post._id} post={post} />)
                   ) : (
-                    <Card className={classes.no_posts}>No posts available</Card>
+                    <Card className={classes.no_posts}>Chưa có bài viết</Card>
                   )}
                 </React.Fragment>
               ))}
@@ -312,7 +310,7 @@ function Profile() {
               {isFetchingNextPage ? (
                 <PostSkeleton />
               ) : hasNextPage ? (
-                'Load Newer'
+                'Tải nội dung mới hơn'
               ) : (
                 'Bạn đã xem hết nội dung'
               )}

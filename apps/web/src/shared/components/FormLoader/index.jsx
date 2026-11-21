@@ -18,7 +18,7 @@ function FormLoader({ children, loading, className, isError, type }) {
         <div className={styles.isError}>
           <div>{isError?.response?.data.message}</div>
           <button className="btn_blue" onClick={() => setShowError(false)}>
-            Try again
+            Thử lại
           </button>
         </div>
       ) : (

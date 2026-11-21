@@ -11,7 +11,7 @@ function ImagePreview({ images }) {
   const handleImages = (e) => {
     let files = Array.from(e.target.files);
     if (files.length + images.length > 5) {
-      alert('You can uplad onlay 5 images');
+      alert('Bạn chỉ có thể tải lên tối đa 5 ảnh');
       return;
     }
     files.forEach((img) => {
@@ -50,7 +50,7 @@ function ImagePreview({ images }) {
                 }}
               >
                 <i className="addPhoto_icon"></i>
-                Add more photos
+                Thêm ảnh
               </button>
             </div>
             <div
@@ -88,8 +88,8 @@ function ImagePreview({ images }) {
               <div className="small_circle hover1">
                 <i className="addPhoto_icon"></i>
               </div>
-              <span>Add Photos/Videos</span>
-              <span>or drag and drop</span>
+              <span>Thêm ảnh/video</span>
+              <span>hoặc kéo và thả</span>
             </div>
           </div>
         )}
@@ -98,7 +98,7 @@ function ImagePreview({ images }) {
             <div className="small_circle">
               <i className="phone_icon"></i>
             </div>
-            <span>Add photos from your mobile device</span>
+            <span>Thêm ảnh từ điện thoại</span>
           </div>
           <span
             className="gray_btn"
@@ -106,7 +106,7 @@ function ImagePreview({ images }) {
               imageInputRef.current.click();
             }}
           >
-            Add
+            Thêm
           </span>
         </div>
       </div>

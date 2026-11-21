@@ -32,7 +32,7 @@ function CreateGroup({ setShowCreateGroup, showCreateGroup, type, chat }) {
   const createGroupValidation = Yup.object({
     chatName:
       type === 'create' || type === 'rename'
-        ? Yup.string().required('Group name is required.').min(3).max(40)
+        ? Yup.string().required('Vui lòng nhập tên nhóm.').min(3).max(40)
         : Yup.string(),
   });
 
@@ -133,11 +133,11 @@ function CreateGroup({ setShowCreateGroup, showCreateGroup, type, chat }) {
         <div className={styles.header}>
           <span>
             {type === 'create'
-              ? 'Create Group'
+              ? 'Tạo nhóm'
               : type === 'add'
-                ? 'Add member'
+                ? 'Thêm thành viên'
                 : type === 'rename'
-                  ? 'Chane Group Name'
+                  ? 'Đổi tên nhóm'
                   : ''}
           </span>
           <div
@@ -158,10 +158,10 @@ function CreateGroup({ setShowCreateGroup, showCreateGroup, type, chat }) {
             }}
             onSubmit={(values) => {
               if (members.length < 2 && type === 'create') {
-                toast.error('Please add at least 2 members to group');
+                toast.error('Vui lòng thêm ít nhất 2 thành viên vào nhóm');
                 return;
               } else if (members.length < 1 && type === 'add') {
-                toast.error('Please select member first');
+                toast.error('Vui lòng chọn thành viên trước');
                 return;
               }
 
@@ -175,13 +175,13 @@ function CreateGroup({ setShowCreateGroup, showCreateGroup, type, chat }) {
                     <LoginInput
                       type="text"
                       name="chatName"
-                      placeholder="Group Name"
+                      placeholder="Tên nhóm"
                       disabled={isLoading}
                     />
                   )}
 
                   {(type === 'create' || type === 'add') && (
-                    <p className={styles.label}>Add members to group</p>
+                    <p className={styles.label}>Thêm thành viên vào nhóm</p>
                   )}
                   {members.length > 0 && (
                     <div className={styles.members}>
@@ -208,7 +208,7 @@ function CreateGroup({ setShowCreateGroup, showCreateGroup, type, chat }) {
                       <div className={`${styles.input_wrap}`}>
                         <input
                           type="text"
-                          placeholder="search for members to add"
+                          placeholder="Tìm thành viên để thêm"
                           ref={input}
                           onChange={(e) => setDebouncedTerm(e.target.value)}
                           value={debouncedTerm}
@@ -261,9 +261,9 @@ function CreateGroup({ setShowCreateGroup, showCreateGroup, type, chat }) {
                 </FormLoader>
                 <button type="submit" className="btn_blue" disabled={isLoading}>
                   {type === 'create'
-                    ? 'Create'
+                    ? 'Tạo'
                     : type === 'add'
-                      ? 'Add'
+                      ? 'Thêm'
                       : type === 'rename'
                         ? 'Change'
                         : ''}

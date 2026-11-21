@@ -10,12 +10,12 @@ const userSchema = new mongoose.Schema(
   {
     first_name: {
       type: String,
-      required: [true, 'A user must have a first name'],
+      required: [true, 'Vui lòng nhập tên'],
       validate: {
         validator: function (val) {
-          return validator.isLength(val, { min: 3, max: 25 });
+          return validator.isLength(val, { min: 2, max: 25 });
         },
-        message: 'First name should be between 3 and 25 charcters',
+        message: 'Tên phải có từ 2 đến 25 ký tự',
       },
       trim: true,
       text: true,
@@ -23,12 +23,12 @@ const userSchema = new mongoose.Schema(
 
     last_name: {
       type: String,
-      required: [true, 'A user must have a last name'],
+      required: [true, 'Vui lòng nhập họ và tên đệm'],
       validate: {
         validator: function (val) {
-          return validator.isLength(val, { min: 3, max: 25 });
+          return validator.isLength(val, { min: 2, max: 25 });
         },
-        message: 'Last name should be between 3 and 25 charcters',
+        message: 'Họ và tên đệm phải có từ 2 đến 25 ký tự',
       },
       trim: true,
       text: true,
@@ -43,28 +43,28 @@ const userSchema = new mongoose.Schema(
 
     email: {
       type: String,
-      required: [true, 'A user must have a email'],
+      required: [true, 'Vui lòng nhập email'],
       lowercase: true,
       unique: true,
-      validate: [validator.isEmail, 'user email must be a valid email'],
+      validate: [validator.isEmail, 'Email không hợp lệ'],
     },
 
     password: {
       type: String,
-      required: [true, 'user must have a password'],
+      required: [true, 'Vui lòng nhập mật khẩu'],
       minlength: 8,
       select: false,
-      validate: [validator.isStrongPassword, 'Please input a strong password'],
+      validate: [validator.isStrongPassword, 'Vui lòng chọn mật khẩu đủ mạnh'],
     },
 
     passwordConfirm: {
       type: String,
-      required: [true, 'Please confirm your password'],
+      required: [true, 'Vui lòng nhập lại mật khẩu'],
       validate: {
         validator: function (el) {
           return el === this.password;
         },
-        message: 'Passwords are not the same',
+        message: 'Mật khẩu nhập lại không khớp',
       },
     },
     passwordChangedAt: {
@@ -107,26 +107,26 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: ['male', 'female'],
-      required: [true, 'user must have a gender'],
+      required: [true, 'Vui lòng chọn giới tính'],
     },
 
     birth_Year: {
       type: Number,
-      required: [true, 'user must have a birhday Year'],
+      required: [true, 'Vui lòng chọn năm sinh'],
       trim: true,
       select: false,
     },
 
     birth_Month: {
       type: Number,
-      required: [true, 'user must have a birhday Month'],
+      required: [true, 'Vui lòng chọn tháng sinh'],
       trim: true,
       select: false,
     },
 
     birth_Day: {
       type: Number,
-      required: [true, 'user must have a birhday Day'],
+      required: [true, 'Vui lòng chọn ngày sinh'],
       trim: true,
       select: false,
     },
