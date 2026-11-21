@@ -1,4 +1,6 @@
 import React from 'react';
+import academicPages from 'features/academic/routes';
+import documentPages from 'features/documents/routes';
 
 const Home = React.lazy(() => import('pages/home/index'));
 const Login = React.lazy(() => import('pages/login/index'));
@@ -9,6 +11,8 @@ const PostPage = React.lazy(() => import('pages/post/PostPage'));
 const Messages = React.lazy(() => import('pages/messages/index'));
 
 const pagesData = [
+  ...documentPages,
+  ...academicPages,
   {
     path: '',
     element: <Home />,

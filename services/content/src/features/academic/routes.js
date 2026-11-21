@@ -1,0 +1,14 @@
+const router = require('express').Router();
+const controller = require('./controllers/academicController');
+const interests = require('./controllers/interestsController');
+router.route('/interests').get(interests.get).put(interests.update);
+router.get('/subjects', controller.subjects);
+router.get('/questions/recommended', controller.recommended);
+router.route('/questions').get(controller.list).post(controller.create);
+router.get('/questions/:id', controller.detail);
+router.route('/questions/:id/answers').get(controller.answers).post(controller.answer);
+router.put('/questions/:id/accepted-answer', controller.accept);
+router.route('/answers/:id/comments').get(controller.comments).post(controller.comment);
+router.route('/answers/:id/helpful').put(controller.helpful).delete(controller.helpful);
+router.use(require('./utils/error'));
+module.exports = router;

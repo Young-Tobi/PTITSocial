@@ -1,12 +1,18 @@
-$ErrorActionPreference = 'Stop'
-$projectRoot = Split-Path -Parent $PSScriptRoot
-Set-Location -LiteralPath $projectRoot
-foreach ($name in @('frontend','gateway','content','messaging','accounts')) {
-  $pidFile = Join-Path $projectRoot ".local-logs/$name.pid"
-  if (-not (Test-Path -LiteralPath $pidFile)) { continue }
-  $ownedProcessId = [int](Get-Content -LiteralPath $pidFile)
-  $ownedProcess = Get-CimInstance Win32_Process -Filter "ProcessId=$ownedProcessId" -ErrorAction SilentlyContinue
-  if ($ownedProcess -and $ownedProcess.Name -eq 'node.exe' -and $ownedProcess.CommandLine.Contains($projectRoot)) { taskkill.exe /PID $ownedProcessId /T /F | Out-Null }
+. (Join-Path $PSScriptRoot 'local-common.ps1')
+$localLock = Enter-LocalLock
+try {
+  $components = @(Get-LocalComponents)
+  [array]::Reverse($components)
+  $failed = @()
+  foreach ($component in $components) {
+    try { Stop-LocalComponent $component } catch {
+      $failed += $component.Name
+      Write-Warning $_.Exception.Message
+    }
+  }
+  if ($failed.Count) { throw "Could not stop: $($failed -join ', '). Inspect $logDir" }
+  Write-Host 'PTITSocial stopped. Databases, uploaded files and email history are preserved.'
+} finally {
+  $localLock.ReleaseMutex()
+  $localLock.Dispose()
 }
-docker compose stop
-Write-Host 'PTITSocial stopped. Databases and uploads are preserved.'

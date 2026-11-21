@@ -40,6 +40,8 @@ app.post(
 );
 
 app.use('/api', auth.protect, auth.requireVerified, sync.middleware);
+require('./features/academic')(app);
+require('./features/documents')(app);
 app.use('/api/v1/posts', require('./routes/postRoutes'));
 app.get('/api/v1/users/getProfile/:username/photos', profiles.getPhotos);
 app.get('/api/v1/users/getProfile/:username/posts', profiles.getUserPosts);

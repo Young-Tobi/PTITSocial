@@ -19,6 +19,7 @@ export const useRelationship = (usernameID) => {
     mutationKey: 'useRelationship',
     mutationFn: AddFriend,
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['getFriendsPage'] });
       const newNotification = data?.data?.newNotification;
 
       queryClient.setQueryData(['getProfile', usernameID], (oldData) => {

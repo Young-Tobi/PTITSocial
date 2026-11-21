@@ -7,6 +7,10 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./start-local.ps1",
+    "stop": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./stop-local.ps1",
+    "test:documents": "node --test tests/documents/*.test.cjs",
+    "test:documents:integration": "node tests/documents/integration.cjs",
     "start:accounts": "npm run start --workspace @ptitsocial/accounts",
     "start:content": "npm run start --workspace @ptitsocial/content",
     "start:messaging": "npm run start --workspace @ptitsocial/messaging",
@@ -17,7 +21,13 @@
     "check:migration": "node scripts/check-migration.cjs",
     "test:architecture": "node --test tests/architecture.test.cjs",
     "test:integration": "node tests/integration.cjs",
-    "format": "prettier --write services packages scripts tests apps/web/src"
+    "format": "prettier --write services packages scripts tests apps/web/src",
+    "test:academic": "node --test tests/academic/*.test.cjs",
+    "test:academic:integration": "node tests/academic/integration.cjs",
+    "test:academic:browser": "node tests/academic/browser.cjs",
+    "test:academic:notifications": "node tests/academic/notifications.cjs",
+    "test:academic:checklist": "node tests/academic/checklist.cjs",
+    "migrate:academic": "node scripts/academic/migrate.cjs"
   },
   "engines": {
     "node": ">=22"
@@ -47,6 +57,7 @@
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
+    "playwright": "^1.65.1",
     "prettier": "3.6.2"
   }
 }

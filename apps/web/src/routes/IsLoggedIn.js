@@ -1,4 +1,5 @@
 import React from 'react';
+import { registerAcademicNotifications } from 'features/academic/notifications';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 import Header from 'features/navigation/components/header/Header';
@@ -48,22 +49,21 @@ export default function IsLoggedIn({ user }) {
         withCredentials: true,
         auth: { token: JSON.parse(Cookies.get('token') || 'null') },
       });
-      socket.emit('setup', {
-        userId: user.userinfo._id,
-        info: {
-          id: user.userinfo._id,
-          username: user.userinfo.username,
-          first_name: user.userinfo.first_name,
-          last_name: user.userinfo.last_name,
-          photo: user.userinfo.photo,
-        },
+      registerAcademicNotifications(socket, dispatch);
+      socket.on('connect', () => {
+        socket.emit('setup', {});
+        queryClient.invalidateQueries({ queryKey: ['getFriendsPage'] });
       });
+      socket.on('disconnect', () => dispatch(setOnlineUsers({ type: 'connect', info: [] })));
 
       socket.on('online_user', ({ type, info }) => {
         dispatch(setOnlineUsers({ type, info }));
       });
 
       socket.on('new_notification', ({ notification }) => {
+        if (notification.type === 'friend') {
+          queryClient.invalidateQueries({ queryKey: ['getFriendsPage'] });
+        }
         playNotificationSound2();
         dispatch(
           reciveNoti({

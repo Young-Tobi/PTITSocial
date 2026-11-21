@@ -7,6 +7,9 @@
     "dev": "node --watch src/server.js"
   },
   "dependencies": {
-    "@ptitsocial/service-kit": "*"
+    "@ptitsocial/service-kit": "*",
+    "pdf-lib": "^1.17.1",
+    "saxes": "^6.0.0",
+    "yauzl": "^3.4.0"
   }
 }
