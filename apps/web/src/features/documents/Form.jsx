@@ -11,6 +11,7 @@ function Fields({ doc }) {
   const navigate = useNavigate();
   const client = useQueryClient();
   const [uploads, setUploads] = useState([]);
+  const [formError, setFormError] = useState('');
   const [publishing, setPublishing] = useState(false);
   const submitting = useRef(false);
   const action = useAction((result) => {
@@ -31,10 +32,12 @@ function Fields({ doc }) {
       return { file, title, id };
     });
     setUploads(selected);
+    setFormError('');
   }
   async function submit(e) {
     e.preventDefault();
     if (submitting.current) return;
+    setFormError('');
     const element = e.currentTarget;
     const form = new FormData(element);
     const keywords = form
@@ -42,7 +45,7 @@ function Fields({ doc }) {
       .split(',')
       .map((s) => s.trim())
       .filter(Boolean);
-    if (keywords.length > 5) return toast.error('Chọn tối đa 5 từ khóa.');
+    if (keywords.length > 5) return setFormError('Chọn tối đa 5 từ khóa.');
     if (doc) {
       action.mutate({
         path: '/' + doc._id,
@@ -51,13 +54,13 @@ function Fields({ doc }) {
       });
       return;
     }
-    if (!uploads.length) return toast.error('Chọn ít nhất một tệp để đăng.');
+    if (!uploads.length) return setFormError('Chọn ít nhất một tệp để đăng.');
     const invalid = uploads.find(
       ({ file }) =>
         !file.size || file.size > 20 * 1024 * 1024 || !/\.(pdf|docx|pptx)$/i.test(file.name)
     );
     if (invalid)
-      return toast.error(
+      return setFormError(
         invalid.file.name + ': Chọn tệp PDF, DOCX hoặc PPTX, tối đa 20 MB mỗi tệp.'
       );
     const titles = form.getAll('title');
@@ -85,10 +88,7 @@ function Fields({ doc }) {
       const published = results.filter((item) => item.documentId).length;
       if (published) await client.invalidateQueries({ queryKey: ['documents'] });
       if (!element.isConnected) return;
-      if (published < results.length) {
-        toast.error(`Đã đăng ${published}/${results.length} tài liệu. Kiểm tra các tệp còn lại.`);
-        return;
-      }
+      if (published < results.length) return;
       toast.success(results.length === 1 ? 'Đã đăng tài liệu.' : `Đã đăng ${published} tài liệu.`);
       navigate(results.length === 1 ? '/documents/' + results[0].documentId : '/documents/mine');
     } finally {
@@ -189,8 +189,12 @@ function Fields({ doc }) {
           ) : (
             <p>Tệp hiện tại: {doc.originalName}. Muốn đổi tệp, hãy đăng tài liệu mới.</p>
           )}
-          {uploads.some((item) => item.error) && (
-            <p>Đăng lại để gửi các tệp còn lỗi. Chọn tệp khác để bắt đầu lượt đăng mới.</p>
+          {formError && <p role="alert">{formError}</p>}
+          {!publishing && uploads.some((item) => item.error) && (
+            <p role="status">
+              Đã đăng {uploads.filter((item) => item.documentId).length}/{uploads.length} tài liệu.
+              Bấm đăng lại để gửi các tệp còn lỗi.
+            </p>
           )}
           <button className={styles.primary}>
             {publishing || action.isLoading ? 'Đang lưu…' : doc ? 'Lưu thay đổi' : 'Đăng tài liệu'}
