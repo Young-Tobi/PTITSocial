@@ -100,19 +100,6 @@ function Fields({ doc }) {
     <State query={catalog}>
       <form className={styles.card} {...validation} onSubmit={submit}>
         <fieldset className={styles.fields} disabled={publishing || action.isLoading}>
-          {!doc && (
-            <label>
-              Chọn một hoặc nhiều tệp tài liệu (PDF, DOCX, PPTX; tối đa 20 MB mỗi tệp)
-              <input
-                name="file"
-                type="file"
-                accept=".pdf,.docx,.pptx"
-                multiple
-                required
-                onChange={chooseFiles}
-              />
-            </label>
-          )}
           {(uploads.length ? uploads : [{ title: doc?.title || '' }]).map((item) => (
             <div key={item.id || 'title'}>
               <label>
@@ -179,6 +166,19 @@ function Fields({ doc }) {
             Nguồn/tác giả
             <input name="source" maxLength={1000} defaultValue={doc?.source || ''} />
           </label>
+          {!doc && (
+            <label>
+              Chọn một hoặc nhiều tệp tài liệu (PDF, DOCX, PPTX; tối đa 20 MB mỗi tệp)
+              <input
+                name="file"
+                type="file"
+                accept=".pdf,.docx,.pptx"
+                multiple
+                required
+                onChange={chooseFiles}
+              />
+            </label>
+          )}
           {!doc ? (
             <div className={styles.checks}>
               <label>
