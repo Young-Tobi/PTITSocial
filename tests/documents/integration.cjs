@@ -24,7 +24,7 @@ run(async ({ a, b, api, tag }) => {
     body = 'Detailed study outline on sorting and graph algorithms.';
   const buffer = await pdf();
   let browser;
-  async function upload(format = 'pdf', overrides = {}, expected = 201) {
+  async function upload(format = 'pdf', overrides = {}, expected = 201, attachment) {
     const form = new FormData();
     for (const [key, value] of Object.entries({
       title,
@@ -42,6 +42,8 @@ run(async ({ a, b, api, tag }) => {
       new Blob([format === 'pdf' ? buffer : office(format)], { type: types[format] }),
       'study.' + format
     );
+    if (attachment)
+      form.append('file', new Blob([attachment], { type: types.pdf }), 'chapter-2.pdf');
     return (await api('POST', '/documents', a, form, expected)).data;
   }
   async function file(route, user, expected = 200, headers = {}) {
@@ -53,7 +55,16 @@ run(async ({ a, b, api, tag }) => {
   }
   try {
     await api('GET', '/documents', null, undefined, 401);
-    const main = await upload();
+    const secondPdf = await require('pdf-lib').PDFDocument.load(buffer);
+    secondPdf.addPage();
+    const chapter = Buffer.from(await secondPdf.save());
+    const main = await upload('pdf', {}, 201, chapter);
+    const attachment = '/' + main._id + '/download?file=1';
+    assert.deepEqual(Buffer.from(await (await file(attachment, b)).arrayBuffer()), chapter);
+    await file(attachment, null, 401);
+    await file('/' + main._id + '/download?file=2', b, 404);
+    await file('/' + main._id + '/download?file=-1', b, 400);
+    await file('/' + main._id + '/preview?file=1', b, 206, { range: 'bytes=0-9' });
     assert(!main.storageKey);
     assert.equal(main.author, a._id);
     assert.deepEqual(
@@ -161,6 +172,9 @@ run(async ({ a, b, api, tag }) => {
     const errors = [];
     for (const p of [first, second, manager]) p.on('pageerror', (e) => errors.push(e.message));
     await require('./multiple.cjs')(first, site, tag);
+    console.log(
+      'PASS two files in one post: upload retry, atomic validation, single gallery entry and exact downloads'
+    );
     await first.goto(site + '/documents/new');
     await first.getByRole('button', { name: 'Đăng tài liệu', exact: true }).click();
     assert(
@@ -185,10 +199,11 @@ run(async ({ a, b, api, tag }) => {
     await first.getByRole('button', { name: 'Lưu thay đổi', exact: true }).click();
     await first.getByRole('heading', { name: uiTitle + ' sửa' }).waitFor();
     await second.goto(site + '/documents/' + main._id);
-    await second.getByRole('button', { name: 'Xem trước PDF', exact: true }).click();
+    const mainFile = second.getByRole('region', { name: 'study.pdf', exact: true });
+    await mainFile.getByRole('button', { name: 'Xem trước PDF', exact: true }).click();
     await second.locator('iframe[title="Xem trước tài liệu PDF"]').waitFor();
     const download = second.waitForEvent('download');
-    await second.getByRole('link', { name: 'Tải tài liệu xuống' }).click();
+    await mainFile.getByRole('link', { name: 'Tải tài liệu xuống' }).click();
     assert.equal((await download).suggestedFilename(), 'study.pdf');
     await second.getByRole('button', { name: 'Bỏ lưu', exact: true }).click();
     await second.getByRole('button', { name: 'Lưu yêu thích', exact: true }).waitFor();
@@ -212,6 +227,8 @@ run(async ({ a, b, api, tag }) => {
     await manager.getByText('Đã xử lý báo cáo.', { exact: true }).waitFor();
     await file('/' + main._id + '/download', b, 404);
     await file('/' + main._id + '/preview', b, 404);
+    await file(attachment, b, 404);
+    await file('/' + main._id + '/preview?file=1', b, 404);
     await api('GET', '/documents/' + main._id, b, undefined, 404);
     assert.equal((await api('GET', '/documents/saved', b)).total, 0);
     assert(
@@ -232,6 +249,7 @@ run(async ({ a, b, api, tag }) => {
     await card.getByRole('button', { name: 'Khôi phục tài liệu', exact: true }).click();
     assert.equal((await restored).status(), 200);
     await file('/' + main._id + '/download', b);
+    await file(attachment, b);
     assert.equal(
       (await api('GET', '/documents/moderation/reports?status=resolved', admin)).data.find(
         (r) => r._id === report._id

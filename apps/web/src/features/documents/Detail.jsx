@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-hot-toast';
 import { base, useDocuments, useAction } from './api';
-import { Layout, State, Person, Pager, validation } from './Common';
+import { Layout, State, Person, Pager, documentFiles, validation } from './Common';
 import styles from './documents.module.css';
 function Comments({ id, user, published }) {
   const [page, setPage] = useState(1),
@@ -101,6 +101,43 @@ function Report({ id, catalog }) {
     </>
   );
 }
+function Attachments({ doc }) {
+  const [preview, setPreview] = useState(null);
+  const files = documentFiles(doc);
+  return files.map((file, index) => {
+    const prefix = base + '/' + doc._id;
+    const query = index === 0 ? '' : '?file=' + index;
+    return (
+      <section key={index} aria-label={file.originalName}>
+        <p>
+          {file.originalName} · {file.format.toUpperCase()} ·{' '}
+          {(file.bytes / 1024 / 1024).toFixed(2)} MB
+        </p>
+        {doc.status === 'published' && (
+          <>
+            <div className={styles.bar}>
+              <a href={prefix + '/download' + query}>Tải tài liệu xuống</a>
+              {file.format === 'pdf' ? (
+                <button onClick={() => setPreview(preview === index ? null : index)}>
+                  {preview === index ? 'Đóng xem trước' : 'Xem trước PDF'}
+                </button>
+              ) : (
+                <span>Định dạng này chưa hỗ trợ xem trước.</span>
+              )}
+            </div>
+            {preview === index && (
+              <iframe
+                title="Xem trước tài liệu PDF"
+                src={prefix + '/preview' + query}
+                style={{ width: '100%', height: 600, border: 0 }}
+              />
+            )}
+          </>
+        )}
+      </section>
+    );
+  });
+}
 export default function Detail() {
   const { id } = useParams();
   const query = useDocuments('/' + id),
@@ -112,7 +149,6 @@ export default function Detail() {
     toast.success('Đã xóa tài liệu.');
     navigate('/documents/mine');
   });
-  const [preview, setPreview] = useState(false);
   const doc = query.data?.data;
   return (
     <Layout>
@@ -128,10 +164,7 @@ export default function Detail() {
               </p>
               <div className={styles.body}>{doc.description}</div>
               <p>Nguồn/tác giả: {doc.source || 'Người đăng chưa cung cấp'}</p>
-              <p>
-                {doc.originalName} · {doc.format.toUpperCase()} ·{' '}
-                {(doc.bytes / 1024 / 1024).toFixed(2)} MB
-              </p>
+              <Attachments key={doc._id} doc={doc} />
               <div className={styles.bar}>
                 {doc.keywords.map((k) => (
                   <span className={styles.badge} key={k}>
@@ -144,14 +177,6 @@ export default function Detail() {
               ) : (
                 <>
                   <div className={styles.bar}>
-                    <a href={base + '/' + id + '/download'}>Tải tài liệu xuống</a>
-                    {doc.format === 'pdf' ? (
-                      <button onClick={() => setPreview(!preview)}>
-                        {preview ? 'Đóng xem trước' : 'Xem trước PDF'}
-                      </button>
-                    ) : (
-                      <span>Định dạng này chưa hỗ trợ xem trước.</span>
-                    )}
                     <button
                       aria-pressed={doc.isFavorite}
                       disabled={action.isLoading}
@@ -177,16 +202,6 @@ export default function Detail() {
                       Hữu ích ({doc.helpfulCount})
                     </button>
                   </div>
-                  {preview && doc.format === 'pdf' && (
-                    <>
-                      <p>Nếu không xem được PDF, hãy chọn Tải tài liệu xuống.</p>
-                      <iframe
-                        title="Xem trước tài liệu PDF"
-                        src={base + '/' + id + '/preview'}
-                        style={{ width: '100%', height: 600, border: 0 }}
-                      />
-                    </>
-                  )}
                   <Report id={id} catalog={catalog.data?.data} />
                 </>
               )}
