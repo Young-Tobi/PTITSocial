@@ -5,7 +5,7 @@ import styles from './academic.module.css';
 export function Layout({ children }) {
   return (
     <main className={styles.page}>
-      <nav className={styles.bar} aria-label="Điều hướng hỏi đáp">
+      <nav className={styles.navigation} aria-label="Điều hướng hỏi đáp">
         <Link to="/questions">Hỏi đáp học thuật</Link>
         <Link to="/questions/new">Đặt câu hỏi</Link>
         <Link to="/questions/interests">Lĩnh vực quan tâm</Link>

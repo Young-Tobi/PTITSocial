@@ -4,7 +4,7 @@ Module độc lập với Hỏi đáp học thuật. Chọn **Chức năng học
 
 ## Các chức năng
 
-- Đăng một PDF, DOCX hoặc PPTX, tối đa 20 × 1.024 × 1.024 byte. Tên 5–200 ký tự, mô tả 20–5.000 ký tự, môn học và chủ đề bắt buộc; tối đa 5 từ khóa (2–30 ký tự/từ), nguồn/tác giả tối đa 1.000 ký tự. Người đăng phải xác nhận quyền chia sẻ.
+- Chọn nhiều tệp PDF, DOCX hoặc PPTX và bấm đăng một lần, tối đa 20 MB cho mỗi tệp. Mỗi tệp thành một tài liệu có tên riêng và dùng chung thông tin phân loại. Nếu có lỗi, biểu mẫu hiển thị kết quả từng tệp và chỉ gửi lại những tệp chưa đăng thành công. Tên 5–200 ký tự, mô tả 20–5.000 ký tự, môn học và chủ đề bắt buộc; tối đa 5 từ khóa (2–30 ký tự/từ), nguồn/tác giả tối đa 1.000 ký tự. Người đăng phải xác nhận quyền chia sẻ.
 - Tìm tên/mô tả/từ khóa; kết hợp môn học, chủ đề, định dạng và khoảng ngày Việt Nam. Sắp xếp mới nhất/cũ nhất/Hữu ích nhất, 20 tài liệu/trang. Bộ lọc lưu trên URL. Tìm theo từ, chưa có tìm gần đúng.
 - PDF xem trước bằng trình duyệt, hỗ trợ HTTP Range. DOCX/PPTX tải xuống; không sử dụng dịch vụ chuyển đổi bên ngoài.
 - Lưu/bỏ yêu thích. Một lượt Hữu ích/tài khoản/tài liệu, có thể hủy, không tự bình chọn. Nhận xét một cấp 1–1.000 ký tự; người viết xóa nhận xét của mình.

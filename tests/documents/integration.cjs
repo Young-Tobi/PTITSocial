@@ -161,6 +161,7 @@ run(async ({ a, b, api, apiBase, tag }) => {
       manager = await pageFor('admin@gmail.com', adminPassword);
     const errors = [];
     for (const p of [first, second, manager]) p.on('pageerror', (e) => errors.push(e.message));
+    await require('./multiple.cjs')(first, site, tag);
     await first.goto(site + '/documents/new');
     await first.getByRole('button', { name: 'Đăng tài liệu', exact: true }).click();
     assert(
