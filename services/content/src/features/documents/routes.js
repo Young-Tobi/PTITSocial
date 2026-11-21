@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const rateLimit = require('express-rate-limit');
-const { randomUUID } = require('node:crypto');
+const { createHash, randomUUID } = require('node:crypto');
 const AppError = require('@ptitsocial/service-kit/appError');
 const asyncRoute = require('@ptitsocial/service-kit/catchAsync');
 const { Document, Favorite, Vote, Comment, Report, Cleanup } = require('./models');
@@ -195,12 +195,29 @@ router.post(
     if (![true, 'true'].includes(req.body.rightsConfirmed))
       v.bad('Bạn cần xác nhận có quyền chia sẻ tài liệu.');
     const file = await storage.validate(req.file);
+    // Give retries of the same selected file a stable document ID scoped to the uploader.
+    let uploadId;
+    if (req.body.uploadId !== undefined) {
+      if (typeof req.body.uploadId !== 'string' || !/^[a-f0-9]{32}$/.test(req.body.uploadId))
+        v.bad('Mã lượt đăng tài liệu không hợp lệ.');
+      const hash = createHash('sha256')
+        .update(req.user.id + ':' + req.body.uploadId)
+        .digest();
+      uploadId = new mongoose.Types.ObjectId(hash.subarray(0, 12));
+      const existing = await Document.findOne({
+        _id: uploadId,
+        author: req.user.id,
+        status: 'published',
+      });
+      if (existing) return success(res, existing);
+    }
     const key = randomUUID() + '.' + file.format;
     await Cleanup.create({ key });
     let doc;
     try {
       await storage.write(key, req.file.buffer);
       doc = await Document.create({
+        ...(uploadId && { _id: uploadId }),
         ...metadata,
         ...file,
         author: req.user.id,
@@ -213,6 +230,14 @@ router.post(
         await Cleanup.deleteOne({ key });
       } catch (cleanupError) {
         console.error('Document cleanup queued:', cleanupError.message);
+      }
+      if (uploadId && error.code === 11000) {
+        const existing = await Document.findOne({
+          _id: uploadId,
+          author: req.user.id,
+          status: 'published',
+        });
+        if (existing) return success(res, existing);
       }
       throw error;
     }

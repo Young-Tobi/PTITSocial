@@ -28,6 +28,7 @@
 .page a {
   color: #1877d2;
 }
+.navigation,
 .bar {
   display: flex;
   align-items: center;
@@ -35,6 +36,14 @@
   gap: 12px;
   margin: 12px 0;
 }
+.navigation {
+  gap: 10px clamp(28px, 4vw, 48px);
+  margin: 16px 0 20px;
+}
+.navigation a {
+  padding-block: 6px;
+}
+.navigation a,
 .bar a {
   font-weight: 600;
 }

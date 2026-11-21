@@ -6,7 +6,7 @@ export function Layout({ children }) {
   const catalog = useDocuments('/catalog');
   return (
     <main className={styles.page}>
-      <nav className={styles.bar} aria-label="Điều hướng kho tài liệu">
+      <nav className={styles.navigation} aria-label="Điều hướng kho tài liệu">
         <Link to="/documents">Kho tài liệu</Link>
         <Link to="/documents/new">Đăng tài liệu</Link>
         <Link to="/documents/mine">Tài liệu của tôi</Link>
