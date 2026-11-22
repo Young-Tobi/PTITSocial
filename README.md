@@ -128,7 +128,7 @@ Một số bộ kiểm thử trình duyệt dùng Chrome đã cài trên máy. K
 | Sinh viên        | Mã sinh viên |
 | ---------------- | ------------ |
 | Nguyễn Mạnh Công | B23DCAT032   |
-| Nguyễn Đăng Khoa | B23DCAT152   |
+| Nguyễn Huy Hoàng | B23DCAT112   |
 | Nguyễn Đức Mạnh  | B23DCAT182   |
 | Lê Duy Trường    | B23DCAT307   |
 
