@@ -181,7 +181,7 @@ run(async ({ a, b, c, api, tag }) => {
     const menu = owner.locator('[class*="NotificationMenu_menu"]');
     const row = menu
       .getByText(
-        b.first_name + ' ' + b.last_name + ' đã trả lời câu hỏi của bạn: “' + title + '”.',
+        b.last_name + ' ' + b.first_name + ' đã trả lời câu hỏi của bạn: “' + title + '”.',
         { exact: true }
       )
       .first();

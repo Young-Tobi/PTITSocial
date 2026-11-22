@@ -51,12 +51,14 @@ function filters(query) {
   if (query.q) filter.$text = { $search: text(query.q, 'Từ tìm kiếm', 1, 200) };
   if (query.subject) filter.subject = choice(query.subject, subjects, 'Môn học');
   if (query.topic) filter.topic = choice(query.topic, topics, 'Chủ đề');
-  if (query.format)
-    filter.format = choice(
+  if (query.format) {
+    const format = choice(
       query.format,
       ['pdf', 'docx', 'pptx'].map((id) => ({ id })),
       'Định dạng'
     );
+    filter.$or = [{ format }, { 'additionalFiles.format': format }];
+  }
   function date(value) {
     if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) bad('Ngày không hợp lệ.');
     const parsed = new Date(value + 'T00:00:00Z');

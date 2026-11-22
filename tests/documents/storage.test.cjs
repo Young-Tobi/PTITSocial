@@ -73,6 +73,7 @@ for (const failure of ['write', 'database'])
       jobs.push(job);
     });
     t.mock.method(Cleanup, 'deleteOne', async () => {});
+    t.mock.method(Document, 'exists', async () => null);
     t.mock.method(Document, 'create', async () => {
       throw new Error('Injected DB failure');
     });
@@ -104,15 +105,20 @@ for (const failure of ['write', 'database'])
         rightsConfirmed: 'true',
       }))
         form.set(key, value);
-      form.set('file', new Blob([await pdf()], { type: 'application/pdf' }), 'study.pdf');
+      for (const name of ['first.pdf', 'second.pdf'])
+        form.append('file', new Blob([await pdf()], { type: 'application/pdf' }), name);
       const response = await fetch('http://127.0.0.1:' + server.address().port + '/documents', {
         method: 'POST',
         body: form,
       });
       assert.equal(response.status, 500);
-      assert.equal(jobs.length, 1);
-      assert.deepEqual(removed, [jobs[0].key]);
-      await assert.rejects(fs.access(storage.location(jobs[0].key)), { code: 'ENOENT' });
+      assert.equal(jobs.length, failure === 'write' ? 1 : 2);
+      assert.deepEqual(
+        removed,
+        jobs.map((job) => job.key)
+      );
+      for (const { key } of jobs)
+        await assert.rejects(fs.access(storage.location(key)), { code: 'ENOENT' });
     } finally {
       await new Promise((resolve) => server.close(resolve));
     }

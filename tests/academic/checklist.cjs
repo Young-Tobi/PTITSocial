@@ -217,7 +217,7 @@ run(async ({ a, b, api, tag }) => {
         await answer.getByText(answerOne.body, { exact: true }).waitFor();
         assert.equal(
           await answer.locator('a[href="/profile/' + b.username + '"]').innerText(),
-          b.first_name + ' ' + b.last_name
+          b.last_name + ' ' + b.first_name
         );
         assert.equal(await answer.locator('time').getAttribute('datetime'), answerOne.createdAt);
         assert.match(await answer.locator('time').innerText(), /\d{2}:\d{2}.*\d{2}\/\d{2}\/\d{4}/);

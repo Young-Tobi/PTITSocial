@@ -6,7 +6,7 @@ export function Layout({ children }) {
   const catalog = useDocuments('/catalog');
   return (
     <main className={styles.page}>
-      <nav className={styles.bar} aria-label="Điều hướng kho tài liệu">
+      <nav className={styles.navigation} aria-label="Điều hướng kho tài liệu">
         <Link to="/documents">Kho tài liệu</Link>
         <Link to="/documents/new">Đăng tài liệu</Link>
         <Link to="/documents/mine">Tài liệu của tôi</Link>
@@ -58,7 +58,13 @@ export function Person({ author, time }) {
     </p>
   );
 }
+export function documentFiles(doc) {
+  return [doc, ...(doc.additionalFiles || [])];
+}
 export function Card({ doc, catalog }) {
+  const files = documentFiles(doc);
+  const formats = [...new Set(files.map((file) => file.format.toUpperCase()))].join(', ');
+  const bytes = files.reduce((sum, file) => sum + file.bytes, 0);
   return (
     <article className={styles.card}>
       <h2>
@@ -69,8 +75,8 @@ export function Card({ doc, catalog }) {
         {catalog?.topics.find((t) => t.id === doc.topic)?.name}
       </p>
       <p>
-        {doc.format.toUpperCase()} · {(doc.bytes / 1024 / 1024).toFixed(2)} MB · Hữu ích (
-        {doc.helpfulCount})
+        {files.length > 1 && files.length + ' tệp · '}
+        {formats} · {(bytes / 1024 / 1024).toFixed(2)} MB · Hữu ích ({doc.helpfulCount})
       </p>
       {doc.status === 'hidden' && <p role="status">Đã ẩn: {doc.moderationReason}</p>}
       <div className={styles.bar}>

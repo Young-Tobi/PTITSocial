@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const ref = (name) => ({ type: Schema.Types.ObjectId, ref: name, required: true });
+const fileFields = {
+  originalName: String,
+  format: String,
+  mime: String,
+  bytes: Number,
+  storageKey: { type: String, select: false },
+};
 const schema = new Schema(
   {
     author: ref('User'),
@@ -11,11 +18,8 @@ const schema = new Schema(
     keywords: [String],
     source: String,
     rightsConfirmedAt: Date,
-    originalName: String,
-    format: String,
-    mime: String,
-    bytes: Number,
-    storageKey: { type: String, select: false },
+    ...fileFields,
+    additionalFiles: { type: [new Schema(fileFields, { _id: false })], default: undefined },
     status: { type: String, enum: ['published', 'hidden', 'deleted'], default: 'published' },
     moderationReason: String,
     moderatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
